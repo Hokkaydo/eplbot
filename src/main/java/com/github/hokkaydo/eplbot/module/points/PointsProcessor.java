@@ -18,8 +18,6 @@ public class PointsProcessor extends ListenerAdapter {
 
         private long guildId;
 
-        //Create an empty list for relevant roles
-        private List<String> roles = List.of("Shrendrickx love, Shrendrickx life","geruitiste","Rockiste","StoffelKing");
         private PointsRepositorySQLite pointsRepo;
 
         public PointsProcessor (long guildId) {
@@ -28,7 +26,6 @@ public class PointsProcessor extends ListenerAdapter {
             DataSource datasource = DatabaseManager.getDataSource();
             this.guildId = guildId;
             this.pointsRepo = new PointsRepositorySQLite(datasource);
-            this.roles = roles;
 
         }
         public int getPoints(String username) {
@@ -55,11 +52,6 @@ public class PointsProcessor extends ListenerAdapter {
 
         }
 
-        public int getPointsOfRole (String role) {
-            return this.pointsRepo.getPointsOfRole(role);
-
-
-        }
         public boolean hasClaimedDaily(String username,int day, int month) {
             return this.pointsRepo.dailyStatus(username,day, month);
         }
@@ -79,14 +71,11 @@ public class PointsProcessor extends ListenerAdapter {
         return true;
     }
 
-
-
-
-
     public void activateAuthor(Member author) {
             if (pointsRepo.checkPresence(author)) {
                 return;
             }
+        List<String> roles = this.pointsRepo.getRoles();
         //Get author roles
         List<String> authorRoles = author.getRoles().stream().map(role -> role.getName()).toList();
         //Check if author has a role in the list of relevant roles

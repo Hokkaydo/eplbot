@@ -23,10 +23,10 @@ public class AddRoleCommand implements Command {
         public void executeCommand(CommandContext context) {
             if (context.interaction().getGuild() == null) return;
             String role = context.options().get(0).getAsRole().getName();
-
-
-
-            this.processor.addRole(role);
+            role = STR."role_\{role}";
+            int a = this.processor.addRole(role);
+            if (a == -1) context.replyCallbackAction().setContent(Strings.getString("ADD_ROLE_COMMAND_ALREADY_EXISTS")).queue();
+            else
             context.replyCallbackAction().setContent(Strings.getString("ADD_ROLE_COMMAND_SUCCESSFUL")).queue();
 
 

@@ -161,5 +161,6 @@
   "ADD_ROLE_COMMAND_DESCRIPTION": "Permet d'ajouter un rôle parmi ceux qui accumulent des points",
   "ADD_ROLE_COMMAND_HELP": "Permet d'ajouter un rôle parmi ceux qui accumulent des points \n role : le role à rajouter",
   "ADD_ROLE_COMMAND_OPTION_ROLE_DESCRIPTION": "Role à rajouter",
-  "ADD_ROLE_COMMAND_SUCCESSFUL": "Role ajouté"
+  "ADD_ROLE_COMMAND_SUCCESSFUL": "Role ajouté",
+  "ADD_ROLE_COMMAND_ALREADY_EXISTS": "Ce rôle est déjà ajouté"
 }

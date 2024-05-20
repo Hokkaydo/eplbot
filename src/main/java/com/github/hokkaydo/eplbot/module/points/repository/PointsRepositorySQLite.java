@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 
@@ -101,13 +100,18 @@ public class PointsRepositorySQLite implements PointsRepository {
         jdbcTemplate.update("DELETE FROM points");
     }
 
-    public int getPointsOfRole(String role) {
-        //Get the sum of points of all users with the role
-        return jdbcTemplate.queryForStream(
-                "SELECT SUM(points) FROM points WHERE role = ?",
-                mapper,
-                role
-        ).toList().get(0).points();
+    public List getRoles() {
+        //Get all users that start with role_
+        List<Points> rolePoints = jdbcTemplate.query(
+                "SELECT * FROM points WHERE username LIKE 'role_%'",
+                mapper
+        );
+        List<String> roles = new ArrayList<>();
+        for (Points rolePoint : rolePoints) {
+            roles.add(rolePoint.username().substring(5));
+        }
+        return roles;
+
     }
     public void update(String username, int points) {
         jdbcTemplate.update("""

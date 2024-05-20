@@ -25,8 +25,11 @@ public class PointsCommand implements Command {
             boolean isSelf = true;
             if (context.options().isEmpty()) {
                 username = context.user().getName();
-            } else {
+            } else if (context.options().getFirst().getType() == OptionType.STRING) {
                 username = context.options().getFirst().getAsString();
+                isSelf = false;
+            } else {
+                username = STR."role_\{context.options().get(0).getAsRole().getName()}";
                 isSelf = false;
             }
             this.processor.activateAuthor(context.author());
@@ -35,9 +38,12 @@ public class PointsCommand implements Command {
 
             context.replyCallbackAction().setContent(STR."Vous avez actuellement \{value} points.").queue();
         }
+            else if (username.startsWith("role_")) {
+
+                username = username.substring(5);
+                context.replyCallbackAction().setContent(STR."Le clan \{username} a actuellement \{value} points.").queue();
+            }
             else {
-
-
                 context.replyCallbackAction().setContent(STR."\{username} a actuellement \{value} points.").queue();
             }
         }
@@ -55,7 +61,7 @@ public class PointsCommand implements Command {
     @Override
     public List<OptionData> getOptions() {
 
-            return List.of(new OptionData(OptionType.STRING, "username", Strings.getString("POINTS_COMMAND_OPTION_USER_DESCRIPTION"), false));
+            return List.of(new OptionData(OptionType.STRING, "username", Strings.getString("POINTS_COMMAND_OPTION_USER_DESCRIPTION"), false), new OptionData(OptionType.ROLE, "role", Strings.getString("POINTS_COMMAND_OPTION_ROLE_DESCRIPTION"), false));
     }
 
     @Override

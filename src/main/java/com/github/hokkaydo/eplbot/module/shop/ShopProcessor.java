@@ -2,6 +2,8 @@ package com.github.hokkaydo.eplbot.module.shop;
 
 import com.github.hokkaydo.eplbot.Main;
 import com.github.hokkaydo.eplbot.database.DatabaseManager;
+import com.github.hokkaydo.eplbot.module.points.model.Points;
+import com.github.hokkaydo.eplbot.module.points.repository.PointsRepositorySQLite;
 import com.github.hokkaydo.eplbot.module.shop.model.Item;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.json.JSONArray;
@@ -24,9 +26,9 @@ public class ShopProcessor extends ListenerAdapter {
 
         private long guildId;
 
-        //Create an empty list for relevant roles
-        private static Map<String,Integer> roles = new HashMap<>();
+
         private static Map<Integer, Item> shop = new HashMap<>();
+        private PointsRepositorySQLite pointsRepo;
 
 
         public ShopProcessor(long guildId) {
@@ -34,6 +36,7 @@ public class ShopProcessor extends ListenerAdapter {
             Main.getJDA().addEventListener(this);
             DataSource datasource = DatabaseManager.getDataSource();
             this.guildId = guildId;
+            this.pointsRepo = new PointsRepositorySQLite(datasource);
             try {
                 loadRoles();
                 loadShop();
@@ -44,15 +47,7 @@ public class ShopProcessor extends ListenerAdapter {
         }
 
         public static void loadRoles() throws JSONException {
-            InputStream stream = ShopProcessor.class.getClassLoader().getResourceAsStream("roles.json");
-            assert stream != null;
-            JSONObject object = new JSONObject(new JSONTokener(stream));
-            if(object.isEmpty()) return;
-            JSONArray names = object.names();
-            for (int i = 0; i < names.length(); i++) {
-                String key = names.getString(i);
-                roles.put(key, object.getInt(key));
-            }
+
         }
 
         public static void loadShop() throws JSONException {
@@ -103,25 +98,14 @@ public class ShopProcessor extends ListenerAdapter {
             shop.put(item.id(), item);
         }
 
-        public void addRole(String role) {
-            InputStream stream = ShopProcessor.class.getClassLoader().getResourceAsStream("roles.json");
-            assert stream != null;
-
-            JSONObject object = new JSONObject(new JSONTokener(stream));
-            roles.put(role, roles.size()+1);
-
-            for (String key : roles.keySet()) {
-                object.put(key, roles.get(key));
-            }
-
-            System.out.println(object.toString(2));
-
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/resources/roles.json"))) {
-                writer.write(object.toString(2));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+        public int addRole(String role) {
+        if (this.pointsRepo.getUser(role) != null) {
+            return -1;
+        }
+        else {
+            this.pointsRepo.create(new Points(role, 0, role.substring(5), 0, 0));
+            return 0;
+        }
 
         }
         public List<Item> getShop() {

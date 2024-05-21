@@ -25,11 +25,11 @@ public class PointsCommand implements Command {
             boolean isSelf = true;
             if (context.options().isEmpty()) {
                 username = context.user().getName();
-            } else if (context.options().getFirst().getType() == OptionType.STRING) {
-                username = context.options().getFirst().getAsString();
+            } else if (context.options().getFirst().getType() == OptionType.USER) {
+                username = context.options().getFirst().getAsUser().getName();
                 isSelf = false;
             } else {
-                username = STR."role_\{context.options().get(0).getAsRole().getName()}";
+                username = STR."role_\{context.options().getFirst().getAsRole().getName()}";
                 isSelf = false;
             }
             this.processor.activateAuthor(context.author());
@@ -61,7 +61,7 @@ public class PointsCommand implements Command {
     @Override
     public List<OptionData> getOptions() {
 
-            return List.of(new OptionData(OptionType.STRING, "username", Strings.getString("POINTS_COMMAND_OPTION_USER_DESCRIPTION"), false), new OptionData(OptionType.ROLE, "role", Strings.getString("POINTS_COMMAND_OPTION_ROLE_DESCRIPTION"), false));
+            return List.of(new OptionData(OptionType.USER, "user", Strings.getString("POINTS_COMMAND_OPTION_USER_DESCRIPTION"), false), new OptionData(OptionType.ROLE, "role", Strings.getString("POINTS_COMMAND_OPTION_ROLE_DESCRIPTION"), false));
     }
 
     @Override

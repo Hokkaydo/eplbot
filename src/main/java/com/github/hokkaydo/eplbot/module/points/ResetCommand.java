@@ -21,7 +21,7 @@ public class ResetCommand implements Command {
         @Override
         public void executeCommand(CommandContext context) {
             if(context.interaction().getGuild() == null) return;
-            String username = context.options().getFirst().getAsString();
+            String username = context.options().getFirst().getAsUser().getName();
             int points = -(this.processor.getPoints(username));
             this.processor.resetPoints(username);
             this.processor.addPoints(STR."role_\{this.processor.getRole(username)}", points);
@@ -41,7 +41,7 @@ public class ResetCommand implements Command {
     @Override
     public List<OptionData> getOptions() {
 
-            return List.of(new OptionData(OptionType.STRING, "username", Strings.getString("RESET_POINTS_COMMAND_OPTION_USER_DESCRIPTION"), true));
+            return List.of(new OptionData(OptionType.USER, "user", Strings.getString("RESET_POINTS_COMMAND_OPTION_USER_DESCRIPTION"), true));
     }
 
     @Override

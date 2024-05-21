@@ -22,7 +22,7 @@ public class AddPointsCommand implements Command {
         public void executeCommand(CommandContext context) {
             if (context.interaction().getGuild() == null) return;
 
-            String username = context.options().getFirst().getAsString();
+            String username = context.options().getFirst().getAsUser().getName();
             long points = context.options().get(1).getAsLong();
             String role = STR."role_\{this.processor.getRole(username)}";
 
@@ -48,7 +48,7 @@ public class AddPointsCommand implements Command {
     public List<OptionData> getOptions() {
 
             return List.of(
-                    new OptionData(OptionType.STRING, "username", Strings.getString("ADD_POINTS_COMMAND_OPTION_USER_DESCRIPTION"), true),
+                    new OptionData(OptionType.USER, "user", Strings.getString("ADD_POINTS_COMMAND_OPTION_USER_DESCRIPTION"), true),
                     new OptionData(OptionType.INTEGER, "points", Strings.getString("ADD_POINTS_COMMAND_OPTION_POINTS_DESCRIPTION"), true)
 
             );

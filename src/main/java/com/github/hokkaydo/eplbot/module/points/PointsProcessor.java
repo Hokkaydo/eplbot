@@ -33,6 +33,10 @@ public class PointsProcessor extends ListenerAdapter {
             return this.pointsRepo.get(username);
         }
 
+        public Points getUser(String username) {
+            return this.pointsRepo.getUser(username);
+        }
+
         public void addPoints(String username, int points) {
             int currentPoints = getPoints(username);
             this.pointsRepo.update(username, max(currentPoints + points, 0));
@@ -122,6 +126,8 @@ public class PointsProcessor extends ListenerAdapter {
             return user.role();
 
     }
+
+
 
 
 }

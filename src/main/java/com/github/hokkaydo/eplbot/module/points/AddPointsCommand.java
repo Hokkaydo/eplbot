@@ -21,6 +21,7 @@ public class AddPointsCommand implements Command {
         @Override
         public void executeCommand(CommandContext context) {
             if (context.interaction().getGuild() == null) return;
+            this.processor.activateAuthor(context.author());
 
             String username = context.options().getFirst().getAsUser().getName();
             long points = context.options().get(1).getAsLong();

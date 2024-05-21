@@ -16,6 +16,7 @@ import com.github.hokkaydo.eplbot.module.globalcommand.GlobalCommandModule;
 import com.github.hokkaydo.eplbot.module.graderetrieve.ExamsRetrieveModule;
 import com.github.hokkaydo.eplbot.module.mirror.MirrorModule;
 import com.github.hokkaydo.eplbot.module.notice.NoticeModule;
+import com.github.hokkaydo.eplbot.module.points.PointsListener;
 import com.github.hokkaydo.eplbot.module.points.PointsModule;
 import com.github.hokkaydo.eplbot.module.quote.QuoteModule;
 import com.github.hokkaydo.eplbot.module.ratio.RatioModule;
@@ -101,6 +102,7 @@ public class Main {
         DatabaseManager.initialize(PERSISTENCE_DIR_PATH);
         DatabaseManager.regenerateDatabase(false);
         final GuildStateListener guildStateListener = new GuildStateListener();
+        final PointsListener pointsListener = new PointsListener();
         Path path = Path.of(Main.PERSISTENCE_DIR_PATH);
         if (!Files.exists(path))
             Files.createDirectory(path);
@@ -112,7 +114,7 @@ public class Main {
                       .disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE)
                       .setBulkDeleteSplittingEnabled(false)
                       .setActivity(Activity.playing("compter les moutons"))
-                      .addEventListeners(commandManager, guildStateListener)
+                      .addEventListeners(commandManager, guildStateListener, pointsListener)
                       .build();
         jda.awaitReady();
 

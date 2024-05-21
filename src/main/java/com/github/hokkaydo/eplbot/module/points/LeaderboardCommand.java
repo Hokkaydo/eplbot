@@ -22,6 +22,7 @@ public class LeaderboardCommand implements Command {
         @Override
         public void executeCommand(CommandContext context) {
             if (context.interaction().getGuild() == null) return;
+            this.processor.activateAuthor(context.author());
             List<Points> leaderboard;
             boolean role = false;
             if (!context.options().isEmpty() && context.options().getFirst().getAsBoolean()) {
@@ -32,10 +33,12 @@ public class LeaderboardCommand implements Command {
                 leaderboard = this.processor.getLeaderboard();
             }
             StringBuilder sb = new StringBuilder();
+            if (role) sb.append("## Classement des guildes :\n\n");
+            else sb.append("### Classement des joueurs :\n\n");
             for (int i = 0; i < Math.min(leaderboard.size(),10); i++) {
                 Points point = leaderboard.get(i);
                 if (role) sb.append(i + 1).append(". ").append(point.username().substring(5)).append(" - ").append(point.points()).append("\n");
-                else sb.append(i + 1).append(". ").append(point.username()).append(" - ").append(point.points()).append("\n");
+                else sb.append(i + 1).append(". ").append(point.username()).append(" - ").append(point.points()).append(" - *").append(point.role()).append("*\n");
             }
             context.replyCallbackAction().setContent(sb.toString()).queue();
         }

@@ -147,7 +147,20 @@ public class PointsRepositorySQLite implements PointsRepository {
                 mapper,
                 author.getUser().getName()
         );
-        return !userPoints.isEmpty();
+        String autRole = author.getRoles().stream().map(role -> role.getName()).findFirst().orElse("membre");
+        if (userPoints.isEmpty()) {
+            return false;
+        }
+        Points user = userPoints.getFirst();
+        if (!user.role().equals(autRole)) {
+            //Update role in the database
+            jdbcTemplate.update("""
+                    UPDATE points
+                    SET role = ?
+                    WHERE username = ?
+                    """, autRole, author.getUser().getName());
+        }
+        return true;
     }
 
 

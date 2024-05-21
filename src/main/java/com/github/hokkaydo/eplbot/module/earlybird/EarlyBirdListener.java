@@ -125,6 +125,7 @@ public class EarlyBirdListener extends ListenerAdapter {
             role.getGuild().addRoleToMember(event.getAuthor(), role).queue();
             event.getMessage().addReaction(Emoji.fromUnicode("❤")).queue();
             this.pointsProcessor.addPoints(event.getAuthor().getName(), 100);
+            this.pointsProcessor.addPoints("role_%s".formatted(role.getName()), 100);
 
         });
 

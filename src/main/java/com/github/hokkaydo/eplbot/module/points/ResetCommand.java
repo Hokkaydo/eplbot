@@ -20,10 +20,12 @@ public class ResetCommand implements Command {
         }
         @Override
         public void executeCommand(CommandContext context) {
-           if(context.interaction().getGuild() == null) return;
-              String username = context.options().getFirst().getAsString();
-                this.processor.resetPoints(username);
-                context.replyCallbackAction().setContent(Strings.getString("RESET_POINTS_COMMAND_SUCCESSFUL")).queue();
+            if(context.interaction().getGuild() == null) return;
+            String username = context.options().getFirst().getAsString();
+            int points = -(this.processor.getPoints(username));
+            this.processor.resetPoints(username);
+            this.processor.addPoints(STR."role_\{this.processor.getRole(username)}", points);
+            context.replyCallbackAction().setContent(Strings.getString("RESET_POINTS_COMMAND_SUCCESSFUL")).queue();
         }
 
         @Override

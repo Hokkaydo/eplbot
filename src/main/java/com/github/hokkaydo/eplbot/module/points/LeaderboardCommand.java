@@ -23,16 +23,19 @@ public class LeaderboardCommand implements Command {
         public void executeCommand(CommandContext context) {
             if (context.interaction().getGuild() == null) return;
             List<Points> leaderboard;
+            boolean role = false;
             if (!context.options().isEmpty() && context.options().getFirst().getAsBoolean()) {
                 leaderboard = this.processor.getRoleLB();
+                role = true;
             }
             else {
                 leaderboard = this.processor.getLeaderboard();
             }
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < leaderboard.size(); i++) {
+            for (int i = 0; i < Math.min(leaderboard.size(),10); i++) {
                 Points point = leaderboard.get(i);
-                sb.append(i + 1).append(". ").append(point.username()).append(" - ").append(point.points()).append("\n");
+                if (role) sb.append(i + 1).append(". ").append(point.username().substring(5)).append(" - ").append(point.points()).append("\n");
+                else sb.append(i + 1).append(". ").append(point.username()).append(" - ").append(point.points()).append("\n");
             }
             context.replyCallbackAction().setContent(sb.toString()).queue();
         }

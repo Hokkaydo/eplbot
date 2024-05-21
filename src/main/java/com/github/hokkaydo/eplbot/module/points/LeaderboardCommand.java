@@ -5,9 +5,9 @@ import com.github.hokkaydo.eplbot.command.Command;
 import com.github.hokkaydo.eplbot.command.CommandContext;
 import com.github.hokkaydo.eplbot.module.points.model.Points;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -22,7 +22,13 @@ public class LeaderboardCommand implements Command {
         @Override
         public void executeCommand(CommandContext context) {
             if (context.interaction().getGuild() == null) return;
-            List<Points> leaderboard = this.processor.getLeaderboard();
+            List<Points> leaderboard;
+            if (!context.options().isEmpty() && context.options().getFirst().getAsBoolean()) {
+                leaderboard = this.processor.getRoleLB();
+            }
+            else {
+                leaderboard = this.processor.getLeaderboard();
+            }
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < leaderboard.size(); i++) {
                 Points point = leaderboard.get(i);
@@ -30,6 +36,8 @@ public class LeaderboardCommand implements Command {
             }
             context.replyCallbackAction().setContent(sb.toString()).queue();
         }
+
+
 
         @Override
         public String getName() {
@@ -44,7 +52,9 @@ public class LeaderboardCommand implements Command {
     @Override
     public List<OptionData> getOptions() {
 
-            return Collections.emptyList();
+            return List.of(
+                    new OptionData(OptionType.BOOLEAN,"role",Strings.getString("LEADERBOARD_COMMAND_OPTION_ROLE_DESCRIPTION"),false)
+            );
     }
 
     @Override

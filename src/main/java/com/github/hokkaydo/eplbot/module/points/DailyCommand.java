@@ -34,6 +34,8 @@ public class DailyCommand implements Command {
                 return;
             }
             this.processor.daily(username, day, month);
+            String role = STR."role_\{this.processor.getRole(username)}";
+            if (!role.equals("role_membre")) this.processor.addPoints(role,25);
             String newPoints = String.valueOf(this.processor.getPoints(username));
             context.replyCallbackAction().setContent(STR."Vous avez maintenant \{newPoints} points.").queue();
         }

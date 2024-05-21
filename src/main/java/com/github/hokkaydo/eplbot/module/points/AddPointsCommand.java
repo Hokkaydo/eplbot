@@ -24,8 +24,10 @@ public class AddPointsCommand implements Command {
 
             String username = context.options().getFirst().getAsString();
             long points = context.options().get(1).getAsLong();
+            String role = STR."role_\{this.processor.getRole(username)}";
 
             this.processor.addPoints(username, (int) points);
+            this.processor.addPoints(role, (int) points);
             String newPoints = String.valueOf(this.processor.getPoints(username));
             context.replyCallbackAction().setContent(STR."\{username} a maintenant \{newPoints} points.").queue();
 

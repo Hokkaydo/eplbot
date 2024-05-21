@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.lang.Math.max;
 
@@ -18,7 +19,7 @@ public class PointsProcessor extends ListenerAdapter {
 
         private long guildId;
 
-        private PointsRepositorySQLite pointsRepo;
+        private final PointsRepositorySQLite pointsRepo;
 
         public PointsProcessor (long guildId) {
             super();
@@ -56,19 +57,18 @@ public class PointsProcessor extends ListenerAdapter {
             return this.pointsRepo.dailyStatus(username,day, month);
         }
 
-    public boolean daily(String username, int currentDay, int currentMonth) {
+    public void daily(String username, int currentDay, int currentMonth) {
         //Get day and month
         Points userPoints = pointsRepo.getUser(username);
         int day = userPoints.day();
         int month = userPoints.month();
         if (day == currentDay && month == currentMonth) {
-            System.out.println("Already claimed");
-            return false;
+            return ;
         }
         addPoints(username, 25);
         //Update day and month
         this.pointsRepo.updateDate(username, currentDay, currentMonth);
-        return true;
+
     }
 
     public void activateAuthor(Member author) {
@@ -81,7 +81,7 @@ public class PointsProcessor extends ListenerAdapter {
         //Check if author has a role in the list of relevant roles
         if (authorRoles.stream().anyMatch(role -> roles.contains(role))) {
             //If yes, add the author to the list of active authors
-            String autRole = authorRoles.stream().filter(role -> roles.contains(role)).toList().get(0);
+            String autRole = authorRoles.stream().filter(role -> roles.contains(role)).toList().getFirst();
             this.pointsRepo.create(new Points(author.getUser().getName(), 0, autRole, 0, 0));
         }
         else {
@@ -93,11 +93,35 @@ public class PointsProcessor extends ListenerAdapter {
 
     public List<Points> getLeaderboard() {
         List <Points> all = this.pointsRepo.readAll();
+        all = all.stream().filter(p -> !(p.username().startsWith("role_"))).collect(Collectors.toList());
+        all.sort((p1, p2) -> p2.points() - p1.points());
+        return all.subList(0, Math.min(10, all.size()));
+    }
+
+    public List<Points> getRoleLB() {
+        List <Points> all = this.pointsRepo.readAll();
+        all = all.stream().filter(p -> (p.username().startsWith("role_"))).collect(Collectors.toList());
         all.sort((p1, p2) -> p2.points() - p1.points());
         return all.subList(0, Math.min(10, all.size()));
     }
 
 
+    public int addRole(String role) {
+        if (this.pointsRepo.getUser(role) != null) {
+            return -1;
+        }
+        else {
+            this.pointsRepo.create(new Points(role, 0, role.substring(5), 0, 0));
+            return 0;
+        }
+
+    }
+
+    public String getRole(String username) {
+            Points user = this.pointsRepo.getUser(username);
+            return user.role();
+
+    }
 
 
 }

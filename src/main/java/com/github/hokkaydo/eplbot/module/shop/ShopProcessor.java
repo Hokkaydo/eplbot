@@ -2,7 +2,6 @@ package com.github.hokkaydo.eplbot.module.shop;
 
 import com.github.hokkaydo.eplbot.Main;
 import com.github.hokkaydo.eplbot.database.DatabaseManager;
-import com.github.hokkaydo.eplbot.module.points.model.Points;
 import com.github.hokkaydo.eplbot.module.points.repository.PointsRepositorySQLite;
 import com.github.hokkaydo.eplbot.module.shop.model.Item;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -24,11 +23,12 @@ public class ShopProcessor extends ListenerAdapter {
 
 
 
-        private long guildId;
+        private final long guildId;
 
 
-        private static Map<Integer, Item> shop = new HashMap<>();
-        private PointsRepositorySQLite pointsRepo;
+        private final static Map<Integer, Item> shop = new HashMap<>();
+        private final PointsRepositorySQLite pointsRepo;
+        private List<String> roles;
 
 
         public ShopProcessor(long guildId) {
@@ -37,8 +37,8 @@ public class ShopProcessor extends ListenerAdapter {
             DataSource datasource = DatabaseManager.getDataSource();
             this.guildId = guildId;
             this.pointsRepo = new PointsRepositorySQLite(datasource);
+            this.roles = pointsRepo.getRoles();
             try {
-                loadRoles();
                 loadShop();
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -46,9 +46,7 @@ public class ShopProcessor extends ListenerAdapter {
 
         }
 
-        public static void loadRoles() throws JSONException {
 
-        }
 
         public static void loadShop() throws JSONException {
             InputStream stream = ShopProcessor.class.getClassLoader().getResourceAsStream("shop.json");
@@ -98,16 +96,7 @@ public class ShopProcessor extends ListenerAdapter {
             shop.put(item.id(), item);
         }
 
-        public int addRole(String role) {
-        if (this.pointsRepo.getUser(role) != null) {
-            return -1;
-        }
-        else {
-            this.pointsRepo.create(new Points(role, 0, role.substring(5), 0, 0));
-            return 0;
-        }
 
-        }
         public List<Item> getShop() {
             return List.copyOf(shop.values());
         }

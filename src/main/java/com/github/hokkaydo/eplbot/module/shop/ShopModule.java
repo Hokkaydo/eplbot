@@ -2,6 +2,7 @@ package com.github.hokkaydo.eplbot.module.shop;
 
 import com.github.hokkaydo.eplbot.command.Command;
 import com.github.hokkaydo.eplbot.module.Module;
+import com.github.hokkaydo.eplbot.module.points.PointsProcessor;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,9 +12,9 @@ import java.util.List;
 public class ShopModule extends Module{
 
         private final ShopProcessor processor;
+        private final PointsProcessor ptsProcessor;
         private final ShopCommand shopCommand;
         private final AddItemCommand addItemCommand;
-        private final AddRoleCommand addRoleCommand;
 
 
 
@@ -22,9 +23,9 @@ public class ShopModule extends Module{
             super(guildId);
 
             this.processor = new ShopProcessor(guildId);
+            this.ptsProcessor = new PointsProcessor(guildId);
             this.shopCommand = new ShopCommand(this.processor);
             this.addItemCommand = new AddItemCommand(this.processor);
-            this.addRoleCommand = new AddRoleCommand(this.processor);
 
 
 
@@ -40,8 +41,7 @@ public class ShopModule extends Module{
         public List<Command> getCommands() {
             return List.of(
                     shopCommand,
-                    addItemCommand,
-                    addRoleCommand
+                    addItemCommand
             );
         }
 

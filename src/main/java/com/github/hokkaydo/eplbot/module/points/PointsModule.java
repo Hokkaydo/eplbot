@@ -16,6 +16,7 @@ public class PointsModule extends Module{
         private final LeaderboardCommand leaderboardCommand;
         private final ResetCommand resetCommand;
         private final ResetAllCommand resetAllCommand;
+        private final AddRoleCommand addRoleCommand;
 
 
 
@@ -29,6 +30,7 @@ public class PointsModule extends Module{
             this.leaderboardCommand = new LeaderboardCommand(this.processor);
             this.resetCommand = new ResetCommand(this.processor);
             this.resetAllCommand = new ResetAllCommand(this.processor);
+            this.addRoleCommand = new AddRoleCommand(this.processor);
 
 
         }
@@ -46,7 +48,8 @@ public class PointsModule extends Module{
                     dailyCommand,
                     leaderboardCommand,
                     resetCommand,
-                    resetAllCommand
+                    resetAllCommand,
+                    addRoleCommand
             );
         }
 

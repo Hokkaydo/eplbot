@@ -15,7 +15,7 @@ import java.util.List;
 public class PointsRepositorySQLite implements PointsRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    private List<String> roles = new ArrayList<>();
+    private List<String> roles;
     private static final RowMapper<Points> mapper = (ResultSet rs, int _) ->
             new Points(
                     rs.getString("username"),
@@ -27,10 +27,7 @@ public class PointsRepositorySQLite implements PointsRepository {
 
     public PointsRepositorySQLite(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-        this.roles = jdbcTemplate.queryForStream(
-                "SELECT DISTINCT role FROM points",
-                (ResultSet rs, int _) -> rs.getString("role")
-        ).toList();
+        this.roles = getRoles();
     }
 
 
@@ -71,7 +68,7 @@ public class PointsRepositorySQLite implements PointsRepository {
             return 0;
         }
 
-        return userPoints.get(0).points();
+        return userPoints.getFirst().points();
     }
 
     public Points getUser(String username) {
@@ -85,7 +82,7 @@ public class PointsRepositorySQLite implements PointsRepository {
             return null;
         }
 
-        return userPoints.get(0);
+        return userPoints.getFirst();
     }
 
     public void updateDate(String username, int day, int month) {
@@ -100,7 +97,7 @@ public class PointsRepositorySQLite implements PointsRepository {
         jdbcTemplate.update("DELETE FROM points");
     }
 
-    public List getRoles() {
+    public List<String> getRoles() {
         //Get all users that start with role_
         List<Points> rolePoints = jdbcTemplate.query(
                 "SELECT * FROM points WHERE username LIKE 'role_%'",
@@ -126,6 +123,7 @@ public class PointsRepositorySQLite implements PointsRepository {
                 UPDATE points
                 SET points = 0
                 """);
+
 }
     public boolean dailyStatus(String username, int day, int month) {
         //Get day and month
@@ -138,10 +136,7 @@ public class PointsRepositorySQLite implements PointsRepository {
             System.out.println("User not found");
             return false;
         }
-        if (userPoints.get(0).day() == day && userPoints.get(0).month() == month) {
-            return true;
-        }
-        return false;
+        return userPoints.getFirst().day() == day && userPoints.getFirst().month() == month;
     }
 
     @Transactional
@@ -152,10 +147,7 @@ public class PointsRepositorySQLite implements PointsRepository {
                 mapper,
                 author.getUser().getName()
         );
-        if (userPoints.isEmpty()) {
-            return false;
-        }
-        return true;
+        return !userPoints.isEmpty();
     }
 
 

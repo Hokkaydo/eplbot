@@ -1,4 +1,4 @@
-package com.github.hokkaydo.eplbot.module.shop;
+package com.github.hokkaydo.eplbot.module.points;
 
 import com.github.hokkaydo.eplbot.Strings;
 import com.github.hokkaydo.eplbot.command.Command;
@@ -13,21 +13,20 @@ import java.util.function.Supplier;
 public class AddRoleCommand implements Command {
 
 
-        private final ShopProcessor processor;
+        private final PointsProcessor processor;
 
 
-        public AddRoleCommand(ShopProcessor processor) {
+        public AddRoleCommand(PointsProcessor processor) {
             this.processor = processor;
         }
         @Override
         public void executeCommand(CommandContext context) {
             if (context.interaction().getGuild() == null) return;
-            String role = context.options().get(0).getAsRole().getName();
+            String role = context.options().getFirst().getAsRole().getName();
             role = STR."role_\{role}";
             int a = this.processor.addRole(role);
             if (a == -1) context.replyCallbackAction().setContent(Strings.getString("ADD_ROLE_COMMAND_ALREADY_EXISTS")).queue();
-            else
-            context.replyCallbackAction().setContent(Strings.getString("ADD_ROLE_COMMAND_SUCCESSFUL")).queue();
+            else context.replyCallbackAction().setContent(Strings.getString("ADD_ROLE_COMMAND_SUCCESSFUL")).queue();
 
 
         }

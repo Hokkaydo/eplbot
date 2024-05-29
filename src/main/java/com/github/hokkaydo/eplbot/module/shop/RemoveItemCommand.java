@@ -5,54 +5,58 @@ import com.github.hokkaydo.eplbot.command.Command;
 import com.github.hokkaydo.eplbot.command.CommandContext;
 import com.github.hokkaydo.eplbot.module.shop.model.ShopItem;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class ShopCommand implements Command {
+public class RemoveItemCommand implements Command {
 
 
         private final ShopProcessor processor;
 
 
-        public ShopCommand(ShopProcessor processor) {
+        public RemoveItemCommand(ShopProcessor processor) {
             this.processor = processor;
         }
         @Override
         public void executeCommand(CommandContext context) {
             if (context.interaction().getGuild() == null) return;
+            int id = context.options().getFirst().getAsInt();
             List<ShopItem> shop = this.processor.getShop();
-            StringBuilder builder = new StringBuilder();
             for (ShopItem item : shop) {
-                builder.append(item.name()).append(" - ").append(item.cost()).append(" points - ").append(item.description()).append(" - ").append(item.id()).append("\n");
-
+                if (item.id() == id) {
+                    this.processor.removeItem(id);
+                    context.replyCallbackAction().setContent(Strings.getString("REMOVE_ITEM_COMMAND_SUCCESSFUL")).queue();
+                    return;
+                }
             }
-            context.replyCallbackAction().setContent(builder.toString()).queue();
+            context.replyCallbackAction().setContent(Strings.getString("REMOVE_ITEM_COMMAND_FAILURE")).queue();
 
 
         }
 
         @Override
         public String getName() {
-            return "shop";
+            return "removeitem";
         }
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString( "SHOP_COMMAND_DESCRIPTION");
+        return () -> Strings.getString( "REMOVE_ITEM_COMMAND_DESCRIPTION");
     }
 
     @Override
     public List<OptionData> getOptions() {
 
-            return Collections.emptyList();
+            return List.of(new OptionData(OptionType.INTEGER, "id", Strings.getString("REMOVE_ITEM_COMMAND_OPTION_ID_DESCRIPTION"), true)
+            );
     }
 
     @Override
         public boolean ephemeralReply() {
-            return false;
+            return true;
         }
 
         @Override
@@ -62,12 +66,12 @@ public class ShopCommand implements Command {
 
         @Override
         public boolean adminOnly() {
-            return false;
+            return true;
         }
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("SHOP_COMMAND_HELP");
+        return () -> Strings.getString("REMOVE_ITEM_COMMAND_HELP");
     }
 
 

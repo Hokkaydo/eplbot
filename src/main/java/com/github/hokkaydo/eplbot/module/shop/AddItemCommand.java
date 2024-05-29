@@ -3,7 +3,7 @@ package com.github.hokkaydo.eplbot.module.shop;
 import com.github.hokkaydo.eplbot.Strings;
 import com.github.hokkaydo.eplbot.command.Command;
 import com.github.hokkaydo.eplbot.command.CommandContext;
-import com.github.hokkaydo.eplbot.module.shop.model.Item;
+import com.github.hokkaydo.eplbot.module.shop.model.ShopItem;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -23,13 +23,19 @@ public class AddItemCommand implements Command {
         @Override
         public void executeCommand(CommandContext context) {
             if (context.interaction().getGuild() == null) return;
-
-            Item item = new Item(999, context.options().get(0).getAsString(), context.options().get(1).getAsInt(), context.options().get(2).getAsString(), context.options().get(3).getAsInt(), (float) context.options().get(4).getAsDouble());
+            List<ShopItem> shop = this.processor.getShop();
+            int id = 0;
+            for (ShopItem item : shop) {
+                if (item.id() == id) {
+                    id++;
+                }
+            }
+            ShopItem item = new ShopItem(id, context.options().getFirst().getAsString(), context.options().get(1).getAsInt(), context.options().get(2).getAsString(), context.options().get(3).getAsInt(), (float) context.options().get(4).getAsDouble());
             if (item.cost() < 0 || item.multiplier() < 0 || !(List.of(-1,0,1).contains(item.type()))) {
                 context.replyCallbackAction().setContent(Strings.getString("ADD_ITEM_COMMAND_FAILURE")).queue();
                 return;
             }
-            this.processor.addItem(item);
+            this.processor.addShopItem(item);
             context.replyCallbackAction().setContent(Strings.getString("ADD_ITEM_COMMAND_SUCCESSFUL")).queue();
 
 
@@ -58,7 +64,7 @@ public class AddItemCommand implements Command {
 
     @Override
         public boolean ephemeralReply() {
-            return false;
+            return true;
         }
 
         @Override

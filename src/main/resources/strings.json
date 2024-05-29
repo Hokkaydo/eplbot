@@ -160,9 +160,22 @@
   "ADD_ITEM_COMMAND_OPTION_MULTIPLIER_DESCRIPTION": "Multiplicateur. Mettre 1 si ne modifie pas les gains de points",
   "ADD_ITEM_COMMAND_SUCCESSFUL": "Item ajouté",
   "ADD_ITEM_COMMAND_FAILURE": "Echec de l'ajout de l'item",
+  "REMOVE_ITEM_COMMAND_DESCRIPTION": "Permet de retirer un item de la boutique",
+  "REMOVE_ITEM_COMMAND_HELP": "Permet de retirer un item de la boutique \n name : Nom de l'item",
+  "REMOVE_ITEM_COMMAND_OPTION_ID_DESCRIPTION": "ID de l'item",
+  "REMOVE_ITEM_COMMAND_SUCCESSFUL": "Item retiré",
+  "REMOVE_ITEM_COMMAND_FAILURE": "Echec du retrait de l'item",
   "ADD_ROLE_COMMAND_DESCRIPTION": "Permet d'ajouter une guilde (un rôle) parmi ceux qui accumulent des points",
   "ADD_ROLE_COMMAND_HELP": "Permet d'ajouter une guilde (un rôle) parmi ceux qui accumulent des points \n rôle : le rôle à rajouter",
   "ADD_ROLE_COMMAND_OPTION_ROLE_DESCRIPTION": "Rôle à rajouter",
   "ADD_ROLE_COMMAND_SUCCESSFUL": "Rôle ajouté",
-  "ADD_ROLE_COMMAND_ALREADY_EXISTS": "Ce rôle est déjà ajouté"
+  "ADD_ROLE_COMMAND_ALREADY_EXISTS": "Ce rôle est déjà ajouté",
+  "INVENTORY_COMMAND_DESCRIPTION": "Permet de consulter son inventaire",
+  "INVENTORY_COMMAND_HELP": "Permet de consulter son inventaire",
+  "BUY_COMMAND_DESCRIPTION": "Permet d'acheter un objet du magasin",
+  "BUY_COMMAND_HELP": "Permet d'acheter un objet du magasin \n id : Numéro d'identification de l'objet (faire /shop pour voir les objets)",
+  "BUY_COMMAND_OPTION_ID_DESCRIPTION": "Numéro d'identification de l'objet (faire /shop pour voir les objets)",
+  "BUY_COMMAND_SUCCESSFUL": "Achat effectué",
+  "BUY_COMMAND_FAILURE": "Echec de l'achat",
+    "BUY_COMMAND_NOT_ENOUGH_POINTS": "Vous n'avez pas assez de points pour acheter cet objet"
 }

@@ -15,6 +15,9 @@ public class ShopModule extends Module{
         private final PointsProcessor ptsProcessor;
         private final ShopCommand shopCommand;
         private final AddItemCommand addItemCommand;
+        private final RemoveItemCommand removeItemsCommand;
+        private final InventoryCommand inventoryCommand;
+        private final BuyCommand buyCommand;
 
 
 
@@ -26,8 +29,9 @@ public class ShopModule extends Module{
             this.ptsProcessor = new PointsProcessor(guildId);
             this.shopCommand = new ShopCommand(this.processor);
             this.addItemCommand = new AddItemCommand(this.processor);
-
-
+            this.removeItemsCommand = new RemoveItemCommand(this.processor);
+            this.inventoryCommand = new InventoryCommand(this.processor);
+            this.buyCommand = new BuyCommand(this.processor, this.ptsProcessor);
 
 
         }
@@ -41,7 +45,10 @@ public class ShopModule extends Module{
         public List<Command> getCommands() {
             return List.of(
                     shopCommand,
-                    addItemCommand
+                    addItemCommand,
+                    removeItemsCommand,
+                    inventoryCommand,
+                    buyCommand
             );
         }
 

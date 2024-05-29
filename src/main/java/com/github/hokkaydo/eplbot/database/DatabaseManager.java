@@ -31,7 +31,8 @@ public class DatabaseManager {
             new TableModel("mirrors", Map.of("first_id", INTEGER, "second_id", INTEGER)),
             new TableModel("notices", Map.of("author_id", TEXT, "subject_id", TEXT, "content", TEXT, "timestamp", "timestamp", "type", TEXT)),
             new TableModel("bookmarks", Map.of("user_id", INTEGER, "message_id", INTEGER, "description", TEXT, "message_link", TEXT)),
-            new TableModel("points", Map.of("username", TEXT, "points", INTEGER, "role", TEXT, "daily", INTEGER))
+            new TableModel("points", Map.of("username", TEXT, "points", INTEGER, "role", TEXT, "day", INTEGER, "month", INTEGER)),
+            new TableModel("inventories", Map.of("username",TEXT,"capacity",INTEGER,"items",TEXT))
     );
 
 

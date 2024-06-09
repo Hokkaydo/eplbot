@@ -1,0 +1,26 @@
+[
+  {
+    "cost": 1000,
+    "multiplier": 1,
+    "name": "Eau bénite",
+    "description": "Permet d'annuler tous les effets néfastes",
+    "id": 0,
+    "type": 0
+  },
+  {
+    "cost": 300,
+    "multiplier": 0.5,
+    "name": "Boue du marais",
+    "description": "Permet de ralentir les autres joueurs",
+    "id": 1,
+    "type": -1
+  },
+  {
+    "cost": 300,
+    "multiplier": 0.5,
+    "name": "Poutre déformable",
+    "description": "Permet de ralentir les autres joueurs",
+    "id": 2,
+    "type": -1
+  }
+]

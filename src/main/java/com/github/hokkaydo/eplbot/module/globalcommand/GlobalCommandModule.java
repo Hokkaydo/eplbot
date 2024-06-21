@@ -2,7 +2,6 @@ package com.github.hokkaydo.eplbot.module.globalcommand;
 
 import com.github.hokkaydo.eplbot.command.Command;
 import com.github.hokkaydo.eplbot.module.Module;
-import com.github.hokkaydo.eplbot.module.code.CodeCommand;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +25,6 @@ public class GlobalCommandModule extends Module {
     private final WikiCommand wikiCommand;
     private final SayCommand sayCommand;
     private final MenuCommand menuCommand;
-    private final CodeCommand codeCommand;
     public GlobalCommandModule(@NotNull Long guildId) {
         super(guildId);
         enableCommand = new EnableCommand(getGuildId());
@@ -43,7 +41,6 @@ public class GlobalCommandModule extends Module {
         wikiCommand = new WikiCommand();
         sayCommand = new SayCommand();
         menuCommand = new MenuCommand();
-        codeCommand = new CodeCommand();
     }
 
     @Override
@@ -67,8 +64,7 @@ public class GlobalCommandModule extends Module {
                 lmgtCommand,
                 wikiCommand,
                 sayCommand,
-                menuCommand,
-                codeCommand
+                menuCommand
         );
     }
 

@@ -128,6 +128,9 @@ public class Config {
                 "christmas", MODULE_DISABLED.get(),
                 "bookmark", MODULE_DISABLED.get()
         ));
+        DEFAULT_CONFIGURATION.put(
+                "code", new ConfigurationParser(() -> true, Object::toString, Boolean::valueOf, "Booléen")
+        );
     }
     private static final Map<Long, Map<String, Object>> GUILD_CONFIGURATION = new HashMap<>();
     private static final Map<Long, Map<String, Object>> GUILD_STATE = new HashMap<>();

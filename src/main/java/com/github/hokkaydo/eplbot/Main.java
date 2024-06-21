@@ -9,6 +9,7 @@ import com.github.hokkaydo.eplbot.module.ModuleManager;
 import com.github.hokkaydo.eplbot.module.autopin.AutoPinModule;
 import com.github.hokkaydo.eplbot.module.bookmark.BookMarkModule;
 import com.github.hokkaydo.eplbot.module.christmas.ChristmasModule;
+import com.github.hokkaydo.eplbot.module.code.CodeModule;
 import com.github.hokkaydo.eplbot.module.confession.ConfessionModule;
 import com.github.hokkaydo.eplbot.module.earlybird.EarlyBirdModule;
 import com.github.hokkaydo.eplbot.module.eplcommand.EPLCommandModule;
@@ -157,7 +158,8 @@ public class Main {
                 ExamsRetrieveModule.class,
                 RatioModule.class,
                 EarlyBirdModule.class,
-                ChristmasModule.class
+                ChristmasModule.class,
+                CodeModule.class
         );
         Map<Long, List<Command>> guildCommands = new HashMap<>();
         for (Long guildId : specialDiscordIds) {

@@ -59,7 +59,7 @@ Pour exécuter le bot dans un conteneur Docker, voici la marche à suivre.
 2. Lancer le docker
 
     ```shell
-        docker run --rm -e docker run --rm  -e DISCORD_BOT_TOKEN=token -e TEST_DISCORD_ID=id-de-votre-discord-de-test -t eplbot
+        docker run --rm  -e DISCORD_BOT_TOKEN=token -e TEST_DISCORD_ID=id-de-votre-discord-de-test -t eplbot
     ```
 
 ## Configuration du bot Discord

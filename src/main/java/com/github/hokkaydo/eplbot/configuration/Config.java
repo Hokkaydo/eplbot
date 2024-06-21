@@ -66,7 +66,8 @@ public class Config {
             "CONFESSION_CHANNEL_ID", STRING_CONFIGURATION_VALUE.get(),
             "CONFESSION_VALIDATION_CHANNEL_ID", STRING_CONFIGURATION_VALUE.get(),
             "CONFESSION_EMBED_COLOR", COLOR_CONFIGURATION_VALUE.apply(Color.decode("#3498DB")),
-            "DRIVE_ADMIN_CHANNEL_ID", STRING_CONFIGURATION_VALUE.get()
+            "DRIVE_ADMIN_CHANNEL_ID", STRING_CONFIGURATION_VALUE.get(),
+            "COMMAND_CODE_TIMELIMIT", INTEGER_CONFIGURATION_VALUE.apply(60)
     ));
 
     public static Map<String, ConfigurationParser> getDefaultConfiguration() {

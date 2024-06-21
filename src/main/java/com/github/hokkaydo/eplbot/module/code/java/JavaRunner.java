@@ -64,13 +64,12 @@ public class JavaRunner implements Runner {
         processBuilder.redirectErrorStream(true);
         return processBuilder.start();
     }
-    private boolean captureProcessOutput(Process process, StringBuilder builder) throws IOException {
+    private void captureProcessOutput(Process process, StringBuilder builder) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 builder.append(line).append("\n");
             }
-            return true;
         }
     }
     public static boolean requiresWrapper(String javaCode) {

@@ -138,5 +138,7 @@
   "COMMAND_CODE_DESCRIPTION":"execute du code en java envoyant des fichier lisibles ex : .txt",
   "COMMAND_CODE_LANG_OPTION_DESCRIPTION":"Le language choisis",
   "COMMAND_CODE_FILE_OPTION_DESCRIPTION":"Le fichier compilé et executé, doit etre lié a un language",
-  "COMMAND_CODE_HELP":"Permet de compiler et executer du code en : java"
+  "COMMAND_CODE_HELP":"Permet de compiler et executer du code en : java",
+  "COMMAND_CODE_NO_LANGUAGE_SPECIFIED": "Uh Oh, il semble qu'un des problèmes suivants ait surgi : aucun code n'a été soumis, aucun langage n'a été spécifié, ou l'interaction a été trop longue. Pour résoudre ce problème, veuillez réessayer. Si le problème persiste, veuillez contacter un administrateur. Désolé pour le contretemps.",
+  "COMMAND_CODE_EXCEEDED_FILE_SIZE":"Le fichier a atteint la taille de plus de 8mb, nous ne pouvons l'envoyer"
 }

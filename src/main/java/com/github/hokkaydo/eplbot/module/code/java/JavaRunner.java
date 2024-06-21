@@ -1,6 +1,7 @@
 package com.github.hokkaydo.eplbot.module.code.java;
 
 import com.github.hokkaydo.eplbot.module.code.Runner;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class JavaRunner implements Runner {
     private static final ScheduledExecutorService SCHEDULER = new ScheduledThreadPoolExecutor(1);
 
     @Override
-    public String run(String code, Integer timeout) {
+    public Pair<String,Integer> run(String code, Integer timeout) {
         if (requiresWrapper(code)){
             code = WRAPPER_TEMPLATE.formatted(code);
         }
@@ -41,22 +42,22 @@ public class JavaRunner implements Runner {
             process = startProcessInDocker(code);
         } catch (IOException e){
             SCHEDULER.shutdownNow();
-            return STR."Server side error with code 10\n\{e.getMessage()}";
+            return Pair.of(STR."Server side error with code 10\n\{e.getMessage()}", 1);
         }
         try {
             captureProcessOutput(process,builder); // raises IOException
             exitCode = process.waitFor(); // raise InterruptedException
         } catch (IOException e) {
-            return STR."Server side error with code 11\n\{e.getMessage()}";
+            return Pair.of(STR."Server side error with code 11\n\{e.getMessage()}",1);
         } catch (InterruptedException e) {
-            return STR."Server side error with code 12\n\{e.getMessage()}";
+            return Pair.of(STR."Server side error with code 12\n\{e.getMessage()}",1);
         } finally {
             SCHEDULER.shutdownNow();
         }
         builder.append("\nExited with code: ").append(exitCode);
         timer.cancel(false);
         SCHEDULER.shutdownNow();
-        return builder.toString();
+        return Pair.of(builder.toString(),0);
     }
     private Process startProcessInDocker(String code) throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder(

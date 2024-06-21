@@ -26,6 +26,8 @@ public class Config {
     private static final String STRING_FORMAT = "Chaîne de caractères";
     private static final Supplier<ConfigurationParser> MODULE_DISABLED = () -> new ConfigurationParser(() -> false, Object::toString, Boolean::valueOf, "Booléen");
     private static final String INTEGER_FORMAT = "Nombre entier";
+    private static final String COLOR_FORMAT = "RGB sous forme hexadécimale : Ex #FFFFFF = Blanc";
+
     private static final IntFunction<ConfigurationParser> INTEGER_CONFIGURATION_VALUE = init -> new ConfigurationParser(
             () -> init,
             Object::toString,
@@ -44,6 +46,13 @@ public class Config {
             s -> s,
             STRING_FORMAT
     );
+    private static final Function<Color, ConfigurationParser> COLOR_CONFIGURATION_VALUE = init -> new ConfigurationParser(
+            () -> init,
+            c -> STR."#\{Integer.toHexString(((Color) c).getRGB()).substring(2)}",
+            Color::decode,
+            COLOR_FORMAT
+    );
+
     private static ConfigurationRepository repository;
     private static final Map<String, ConfigurationParser> DEFAULT_CONFIGURATION = new HashMap<>(Map.of(
             "PIN_REACTION_NAME", new ConfigurationParser(
@@ -56,12 +65,7 @@ public class Config {
             "ADMIN_CHANNEL_ID", STRING_CONFIGURATION_VALUE.get(),
             "CONFESSION_CHANNEL_ID", STRING_CONFIGURATION_VALUE.get(),
             "CONFESSION_VALIDATION_CHANNEL_ID", STRING_CONFIGURATION_VALUE.get(),
-            "CONFESSION_EMBED_COLOR", new ConfigurationParser(
-                    () -> Color.decode("#3498DB"),
-                    c -> Integer.toString(((Color)c).getRGB(), 16),
-                    Color::decode,
-                    "RGB sous forme hexadécimale : Ex #FFFFFF = Blanc"
-            ),
+            "CONFESSION_EMBED_COLOR", COLOR_CONFIGURATION_VALUE.apply(Color.decode("#3498DB")),
             "DRIVE_ADMIN_CHANNEL_ID", STRING_CONFIGURATION_VALUE.get()
     ));
 
@@ -90,12 +94,7 @@ public class Config {
                         "Liste de liens séparés par `;`"
                 ),
                 "RSS_FEEDS_CHANNEL_ID", STRING_CONFIGURATION_VALUE.get(),
-                "RSS_FEEDS_COLOR", new ConfigurationParser(
-                        () -> Color.YELLOW,
-                        c -> Integer.toString(((Color)c).getRGB(), 16),
-                        Color::decode,
-                        "RGB sous forme hexadécimale : Ex #FFFFFF = Blanc"
-                ),
+                "RSS_FEEDS_COLOR", COLOR_CONFIGURATION_VALUE.apply(Color.YELLOW),
                 "RSS_UPDATE_PERIOD", LONG_CONFIGURATION_VALUE.apply(15L),
                 "ADMIN_CHANNEL_ID", STRING_CONFIGURATION_VALUE.get(),
                 "CONFESSION_WARN_THRESHOLD", INTEGER_CONFIGURATION_VALUE.apply(3),
@@ -211,7 +210,6 @@ public class Config {
                 .stream()
                 .filter(m -> DEFAULT_STATE.containsKey(m.key()))
                 .forEach(m -> load(DEFAULT_STATE, GUILD_STATE, m));
-
         repository.getGuildVariables()
                 .stream()
                 .filter(m -> DEFAULT_CONFIGURATION.containsKey(m.key()))
@@ -222,7 +220,6 @@ public class Config {
         if(!current.containsKey(m.guildId()))
             current.put(m.guildId(), new HashMap<>(defaultValues.entrySet().stream().map(e -> Map.entry(e.getKey(),e.getValue().defaultValue.get())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))));
         current.get(m.guildId()).put(m.key(), defaultValues.get(m.key()).fromConfig.apply(m.value()));
-
     }
 
     public static Map<String, ConfigurationParser> getDefaultState() {
@@ -234,7 +231,6 @@ public class Config {
             updateValue(guildId, entry.getKey(), entry.getValue().defaultValue.get());
         }
     }
-
 
     public record ConfigurationParser(Supplier<Object> defaultValue,
                                       Function<Object, String> toConfig,

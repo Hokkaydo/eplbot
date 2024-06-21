@@ -134,5 +134,9 @@
   "SAY_COMMAND_HELP": "Permet d'envoyer un message dans un canal spécifique. \n- `/say <message>` pour envoyer un message dans le canal actuel\n- `/say <channel> <message>` pour envoyer un message dans un canal spécifique\n- `/say <message> <channel> <reply-to-message-id>` pour répondre à un message",
   "MENU_COMMAND_DESCRIPTION": "Permet de voir le menu du restaurant universitaire \"Le Galilée\"",
   "MENU_COMMAND_HELP": "Permet de voir le menu du restaurant universitaire \"Le Galilée\"",
-  "MENU_COMMAND_NOT_FOUND": "Menu introuvable"
+  "MENU_COMMAND_NOT_FOUND": "Menu introuvable",
+  "COMMAND_CODE_DESCRIPTION":"execute du code en java envoyant des fichier lisibles ex : .txt",
+  "COMMAND_CODE_LANG_OPTION_DESCRIPTION":"Le language choisis",
+  "COMMAND_CODE_FILE_OPTION_DESCRIPTION":"Le fichier compilé et executé, doit etre lié a un language",
+  "COMMAND_CODE_HELP":"Permet de compiler et executer du code en : java"
 }

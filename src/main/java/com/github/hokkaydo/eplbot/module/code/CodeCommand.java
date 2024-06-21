@@ -36,8 +36,8 @@ public class CodeCommand extends ListenerAdapter implements Command {
     static {
         RUNNER_MAP = Map.of("java", new JavaRunner());
     }
-    private static String INPUT_FILENAME = "input.txt";
-    private PerformResponse response = new PerformResponse();
+    private final static String INPUT_FILENAME = "input.txt";
+    private final PerformResponse response = new PerformResponse();
     @Override
     public void executeCommand(CommandContext context) {
         if (context.options().size() <= 1) {
@@ -54,23 +54,27 @@ public class CodeCommand extends ListenerAdapter implements Command {
                 .getProxy()
                 .downloadToFile(new File((INPUT_FILENAME)))
                 .thenAcceptAsync(file -> {
-                    String code = readFromFile(file).orElse("");
+                    String code = readFromFile(file,context.channel()).orElse(null);
+                    if (code == null){return;}
                     Runner runner = RUNNER_MAP.get(context.options().getFirst().getAsString());
                     Pair<String,Integer> result = runner.run(code, Config.getGuildVariable(Objects.requireNonNull(context.interaction().getGuild()).getIdLong(), "COMMAND_CODE_TIMELIMIT"));
                     response.sendSubmittedCode(context.channel(),code,context.options().getFirst().getAsString());
+                    response.sendResult(context.channel(),result.getLeft(),result.getRight());
                     file.delete();
                 })
                 .exceptionally(t -> {
-                    t.printStackTrace();
+                    response.sendMessageInChannel(context.channel(), STR."""
+                        \{Strings.getString("COMMAND_CODE_UNEXPECTED_ERROR")}
+                        The error is : \{t.getMessage()}""");
                     return null;
                 });
 
     }
-    private Optional<String> readFromFile(File file) {
+    private Optional<String> readFromFile(File file, MessageChannel textChannel) {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             return Optional.of(reader.lines().collect(Collectors.joining(System.lineSeparator())));
         } catch (IOException e) {
-            e.printStackTrace();
+            response.sendMessageInChannel(textChannel,Strings.getString("COMMAND_CODE_INACCESSIBLE_FILE"));
             return Optional.empty();
         }
     }

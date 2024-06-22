@@ -1,5 +1,6 @@
 package com.github.hokkaydo.eplbot.module.code;
 
+import com.github.hokkaydo.eplbot.Main;
 import com.github.hokkaydo.eplbot.Strings;
 import com.github.hokkaydo.eplbot.command.Command;
 import com.github.hokkaydo.eplbot.command.CommandContext;
@@ -30,6 +31,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class CodeCommand extends ListenerAdapter implements Command {
@@ -64,7 +66,9 @@ public class CodeCommand extends ListenerAdapter implements Command {
                     Pair<String,Integer> result = runner.run(code, Config.getGuildVariable(Objects.requireNonNull(context.interaction().getGuild()).getIdLong(), "COMMAND_CODE_TIMELIMIT"));
                     response.sendSubmittedCode(context.channel(),code,context.options().getFirst().getAsString());
                     response.sendResult(context.channel(),result.getLeft(),result.getRight());
-                    file.delete();
+                    if (file!= null && !file.delete()){
+                        Main.LOGGER.log(Level.INFO,"File not deleted");
+                    }
                 })
                 .exceptionally(t -> {
                     response.sendMessageInChannel(context.channel(), STR."""

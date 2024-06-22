@@ -20,13 +20,12 @@ public class PerformResponse {
     private void sendResponseAsFile(MessageChannel textChannel, File serverFile, String filename) {
         FileUpload file = FileUpload.fromData(serverFile, filename);
         textChannel.sendFiles(file)
-                .queue(s -> serverFile.delete());
+                .queue( _ -> deleteFile(serverFile));
     }
     private boolean validateFileSize(File file){
         long fileSizeInBytes = file.length();
         return fileSizeInBytes <= MAX_SENT_FILE_SIZE;
     }
-
 
     private File createFileFromString(MessageChannel textChannel, String input, String fileName){
         try (FileWriter myWriter = new FileWriter((STR."\{fileName}"))){
@@ -48,22 +47,29 @@ public class PerformResponse {
         }
         File responseFile = createFileFromString(textChannel,code,OUT_RESPONSE);
         sendResponseAsFile(textChannel, responseFile,OUT_RESPONSE);
-        responseFile.delete();
+        deleteFile(responseFile);
 
     }
+    @SuppressWarnings("unused")
     public void sendResult(MessageChannel textChannel, String result, int exitCode){
+
         if (validateMessageLength(result)){
             textChannel.sendMessage(STR."`\{result}`").queue();
             return;
         }
         File responseFile = createFileFromString(textChannel,result,OUT_FILE);
-        if (validateFileSize(responseFile)){
+        if (responseFile != null && validateFileSize(responseFile)){
             sendResponseAsFile(textChannel,responseFile,OUT_FILE);
-            responseFile.delete();
+            deleteFile(responseFile);
             return;
         }
-        responseFile.delete();
+        deleteFile(responseFile);
         sendMessageInChannel(textChannel, Strings.getString("COMMAND_CODE_EXCEEDED_FILE_SIZE"));
 
+    }
+    public void deleteFile(File file){
+        if (file!= null && !file.delete()){
+            Main.LOGGER.log(Level.INFO,"File not deleted");
+        }
     }
 }

@@ -12,7 +12,7 @@ public class CRunner implements Runner {
 
     private static final String WRAPPER_TEMPLATE = """
         #include <stdlib.h>
-        #include <string,h>
+        #include <string.h>
         #include <stdio.h>
         int main(int argc, char *argv[]){
             %s

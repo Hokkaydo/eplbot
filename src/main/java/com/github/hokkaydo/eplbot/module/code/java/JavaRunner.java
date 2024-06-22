@@ -11,7 +11,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
-
 import static java.lang.StringTemplate.STR;
 
 public class JavaRunner implements Runner {
@@ -19,7 +18,7 @@ public class JavaRunner implements Runner {
         import java.util.*;
         import java.lang.Math;
 
-        public class Wrapper {
+        public class Main {
             public static void main(String[] args){
                 %s
             }
@@ -36,14 +35,12 @@ public class JavaRunner implements Runner {
         int exitCode;
         ScheduledFuture<?> timer =SCHEDULER.schedule(() -> {
             builder.append("Timeout exceeded. Terminating the process.");
-            SCHEDULER.shutdownNow();
             ProcessHandle.current().destroy();
             }, timeout, TimeUnit.SECONDS);
 
         try {
             process = startProcessInDocker(code);
         } catch (IOException e){
-            SCHEDULER.shutdownNow();
             return Pair.of(STR."Server side error with code 10\n\{e.getMessage()}", 1);
         }
         try {
@@ -53,17 +50,14 @@ public class JavaRunner implements Runner {
             return Pair.of(STR."Server side error with code 11\n\{e.getMessage()}",1);
         } catch (InterruptedException e) {
             return Pair.of(STR."Server side error with code 12\n\{e.getMessage()}",1);
-        } finally {
-            SCHEDULER.shutdownNow();
         }
         builder.append("\nExited with code: ").append(exitCode);
         timer.cancel(false);
-        SCHEDULER.shutdownNow();
         return Pair.of(builder.toString(),0);
     }
     private Process startProcessInDocker(String code) throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder(
-                "docker", "run", "--rm", "-v", "$(pwd)/logs:/usr/src/app/logs", "java-runner", code);
+                "docker", "run", "--rm", "-v", "/tmp/logs:/usr/src/app/logs", "java-runner", code);
         processBuilder.redirectErrorStream(true);
         return processBuilder.start();
     }

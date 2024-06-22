@@ -117,12 +117,12 @@ public class CodeCommand extends ListenerAdapter implements Command {
 
     @Override
     public List<OptionData> getOptions() {
-        OptionData codes = new OptionData(OptionType.STRING, "language", Strings.getString("COMMAND_CODE_LANG_OPTION_DESCRIPTION"), true);
+        OptionData codeOptions = new OptionData(OptionType.STRING, "language", Strings.getString("COMMAND_CODE_LANG_OPTION_DESCRIPTION"), true);
         for (Map.Entry<String, Runner> entry : RUNNER_MAP.entrySet()) {
-            codes.addChoice(entry.getKey(), entry.getKey());
+            codeOptions.addChoice(entry.getKey(), entry.getKey());
         }
         return List.of(
-            codes,
+            codeOptions,
             new OptionData(OptionType.ATTACHMENT, "file", Strings.getString("COMMAND_CODE_FILE_OPTION_DESCRIPTION"), false)
 
         );

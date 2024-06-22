@@ -54,28 +54,28 @@ public class CodeCommand extends ListenerAdapter implements Command {
             return;
         }
         context.replyCallbackAction().setContent(STR."Processing since: <t:\{Instant.now().getEpochSecond()}:R>").setEphemeral(false).queue();
-            context.options()
-                .get(1)
-                .getAsAttachment()
-                .getProxy()
-                .downloadToFile(new File((INPUT_FILENAME)))
-                .thenAcceptAsync(file -> {
-                    String code = readFromFile(file,context.channel()).orElse(null);
-                    if (code == null){return;}
-                    Runner runner = RUNNER_MAP.get(context.options().getFirst().getAsString());
-                    Pair<String,Integer> result = runner.run(code, Config.getGuildVariable(Objects.requireNonNull(context.interaction().getGuild()).getIdLong(), "COMMAND_CODE_TIMELIMIT"));
-                    response.sendSubmittedCode(context.channel(),code,context.options().getFirst().getAsString());
-                    response.sendResult(context.channel(),result.getLeft(),result.getRight());
-                    if (file!= null && !file.delete()){
-                        Main.LOGGER.log(Level.INFO,"File not deleted");
-                    }
-                })
-                .exceptionally(t -> {
-                    response.sendMessageInChannel(context.channel(), STR."""
-                        \{Strings.getString("COMMAND_CODE_UNEXPECTED_ERROR")}
-                        The error is : \{t.getMessage()}""");
-                    return null;
-                });
+        context.options()
+            .get(1)
+            .getAsAttachment()
+            .getProxy()
+            .downloadToFile(new File((INPUT_FILENAME)))
+            .thenAcceptAsync(file -> {
+                String code = readFromFile(file,context.channel()).orElse(null);
+                if (code == null){return;}
+                Runner runner = RUNNER_MAP.get(context.options().getFirst().getAsString());
+                Pair<String,Integer> result = runner.run(code, Config.getGuildVariable(Objects.requireNonNull(context.interaction().getGuild()).getIdLong(), "COMMAND_CODE_TIMELIMIT"));
+                response.sendSubmittedCode(context.channel(),code,context.options().getFirst().getAsString());
+                response.sendResult(context.channel(),result.getLeft(),result.getRight());
+                if (file!= null && !file.delete()){
+                    Main.LOGGER.log(Level.INFO,"File not deleted");
+                }
+            })
+            .exceptionally(t -> {
+                response.sendMessageInChannel(context.channel(), STR."""
+                    \{Strings.getString("COMMAND_CODE_UNEXPECTED_ERROR")}
+                    The error is : \{t.getMessage()}""");
+                return null;
+            });
 
     }
     private Optional<String> readFromFile(File file, MessageChannel textChannel) {

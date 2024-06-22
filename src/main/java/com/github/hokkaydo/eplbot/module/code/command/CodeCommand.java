@@ -1,11 +1,11 @@
-package com.github.hokkaydo.eplbot.module.code;
+package com.github.hokkaydo.eplbot.module.code.command;
 
 import com.github.hokkaydo.eplbot.Main;
 import com.github.hokkaydo.eplbot.Strings;
 import com.github.hokkaydo.eplbot.command.Command;
 import com.github.hokkaydo.eplbot.command.CommandContext;
 import com.github.hokkaydo.eplbot.configuration.Config;
-import com.github.hokkaydo.eplbot.module.code.command.PerformResponse;
+import com.github.hokkaydo.eplbot.module.code.Runner;
 import com.github.hokkaydo.eplbot.module.code.java.JavaRunner;
 import com.github.hokkaydo.eplbot.module.code.python.PythonRunner;
 import net.dv8tion.jda.api.entities.Guild;

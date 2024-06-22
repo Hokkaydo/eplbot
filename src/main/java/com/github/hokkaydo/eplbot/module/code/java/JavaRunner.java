@@ -12,6 +12,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
+import static java.lang.StringTemplate.STR;
+
 public class JavaRunner implements Runner {
     private static final String WRAPPER_TEMPLATE = """
         import java.util.*;

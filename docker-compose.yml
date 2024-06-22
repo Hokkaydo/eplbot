@@ -4,6 +4,7 @@ services:
         restart: unless-stopped
         volumes:
             - /home/docker/data/eplbot:/home/eplbot/persistence
+            - /var/run/docker.sock:/var/run/docker.sock
         environment:
             - DISCORD_BOT_TOKEN=${EPLBOT_TOKEN}
             - GITHUB_APPLICATION_ID=${EPLBOT_GITHUBID}

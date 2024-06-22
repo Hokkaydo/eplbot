@@ -53,7 +53,7 @@ public class PerformResponse {
     }
     public void sendResult(MessageChannel textChannel, String result, int exitCode){
         if (validateMessageLength(result)){
-            textChannel.sendMessage(STR."`Exit code : \{exitCode}\n\{result}`").queue();
+            textChannel.sendMessage(STR."`\{result}`").queue();
             return;
         }
         File responseFile = createFileFromString(textChannel,result,OUT_FILE);

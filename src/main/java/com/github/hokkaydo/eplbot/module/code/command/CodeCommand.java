@@ -6,6 +6,7 @@ import com.github.hokkaydo.eplbot.command.Command;
 import com.github.hokkaydo.eplbot.command.CommandContext;
 import com.github.hokkaydo.eplbot.configuration.Config;
 import com.github.hokkaydo.eplbot.module.code.Runner;
+import com.github.hokkaydo.eplbot.module.code.c.CRunner;
 import com.github.hokkaydo.eplbot.module.code.java.JavaRunner;
 import com.github.hokkaydo.eplbot.module.code.python.PythonRunner;
 import net.dv8tion.jda.api.entities.Guild;
@@ -39,7 +40,8 @@ public class CodeCommand extends ListenerAdapter implements Command {
     static {
         RUNNER_MAP = Map.of(
                 "java", new JavaRunner(),
-                "python", new PythonRunner()
+                "python", new PythonRunner(),
+                "c", new CRunner()
         );
     }
     private final static String INPUT_FILENAME = "input.txt";

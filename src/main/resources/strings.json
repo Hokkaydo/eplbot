@@ -142,5 +142,7 @@
   "COMMAND_CODE_NO_LANGUAGE_SPECIFIED": "Uh Oh, il semble qu'un des problèmes suivants ait surgi : aucun code n'a été soumis, aucun langage n'a été spécifié, ou l'interaction a été trop longue. Pour résoudre ce problème, veuillez réessayer. Si le problème persiste, veuillez contacter un administrateur. Désolé pour le contretemps.",
   "COMMAND_CODE_EXCEEDED_FILE_SIZE":"Le fichier a atteint la taille de plus de 8mb, nous ne pouvons l'envoyer",
   "COMMAND_CODE_INACCESSIBLE_FILE": "Le fichier qui vous avez soumis n'a pas pu être récupéré, veuillez réessayer dans quelques minutes",
-  "COMMAND_CODE_UNEXPECTED_ERROR": "Aie, cette erreur n'est pas censé arriver, c'est comme attraper un pokemon rare, c'est inatendu. Blague appart, cette erreur peut apparaitre a cause d'une mauvaise connection internet"
+  "COMMAND_CODE_UNEXPECTED_ERROR": "Aie, cette erreur n'est pas censé arriver, c'est comme attraper un pokemon rare, c'est inatendu. Blague appart, cette erreur peut apparaitre a cause d'une mauvaise connection internet",
+  "COMMAND_CODE_NO_MAIN_CLASS_FOUND":"Il semble qu'il n'y ait pas de classe \"Main\", pour fonctionner il doit y avoir une classe Main avec une methode main",
+  "COMMAND_CODE_NO_MAIN_METHOD_FOUND":"Il semble qu'il n'y ait pas de methode \"main\", pour fonctionner il doit y avoir une classe Main avec une methode main"
 }

@@ -1,5 +1,6 @@
 package com.github.hokkaydo.eplbot.module.code.java;
 
+import com.github.hokkaydo.eplbot.Strings;
 import com.github.hokkaydo.eplbot.module.code.Runner;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 
@@ -27,6 +28,12 @@ public class JavaRunner implements Runner {
 
     @Override
     public Pair<String,Integer> run(String code, Integer timeout) {
+        if (!containsMainClass(code)){
+            return Pair.of(Strings.getString("COMMAND_CODE_NO_MAIN_CLASS_FOUND"),1);
+        }
+        if (!hasMainMethod(code)){
+            return Pair.of(Strings.getString("COMMAND_CODE_NO_MAIN_CLASS_FOUND"),1);
+        }
         if (requiresWrapper(code)){
             code = WRAPPER_TEMPLATE.formatted(code);
         }
@@ -69,10 +76,16 @@ public class JavaRunner implements Runner {
             }
         }
     }
-    public static boolean requiresWrapper(String javaCode) {
-        boolean hasClass = Pattern.compile("\\bpublic\\s+class\\s+[A-Z][a-zA-Z0-9]*").matcher(javaCode).find();
-        boolean hasMainMethod = Pattern.compile("\\bpublic\\s+static\\s+void\\s+main\\s*\\(\\s*String\\[]\\s+[a-zA-Z0-9]*\\s*\\)").matcher(javaCode).find();
-        return !hasMainMethod && !hasClass;
+    private static boolean requiresWrapper(String code) {
+        boolean hasClass = Pattern.compile("\\bpublic\\s+class\\s+[A-Z][a-zA-Z0-9]*").matcher(code).find();
+        return !hasClass;
+    }
+
+    public static boolean containsMainClass(String code) {
+        return Pattern.compile("(?s)\\bpublic\\s+class\\s+Main\\b.*?\\{.*?\\bpublic\\s+static\\s+void\\s+main\\s*\\(\\s*String\\s*\\[\\s*]\\s*\\w*\\s*\\)\\s*\\{.*?}.*?}").matcher(code).find();
+    }
+    public static boolean hasMainMethod(String code){
+        return Pattern.compile("\\bpublic\\s+static\\s+void\\s+main\\s*\\(\\s*String\\[]\\s+[a-zA-Z0-9]*\\s*\\)").matcher(code).find();
     }
 
 }

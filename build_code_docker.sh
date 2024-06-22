@@ -1,1 +1,2 @@
 docker build -t java-runner -f src/main/java/com/github/hokkaydo/eplbot/module/code/java/Dockerfile .
+docker build -t python-runner -f src/main/java/com/github/hokkaydo/eplbot/module/code/python/Dockerfile .

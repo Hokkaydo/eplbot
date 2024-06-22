@@ -28,14 +28,14 @@ public class JavaRunner implements Runner {
 
     @Override
     public Pair<String,Integer> run(String code, Integer timeout) {
+        if (requiresWrapper(code)){
+            code = WRAPPER_TEMPLATE.formatted(code);
+        }
         if (!containsMainClass(code)){
             return Pair.of(Strings.getString("COMMAND_CODE_NO_MAIN_CLASS_FOUND"),1);
         }
         if (!hasMainMethod(code)){
             return Pair.of(Strings.getString("COMMAND_CODE_NO_MAIN_CLASS_FOUND"),1);
-        }
-        if (requiresWrapper(code)){
-            code = WRAPPER_TEMPLATE.formatted(code);
         }
         StringBuilder builder = new StringBuilder();
         Process process;

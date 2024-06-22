@@ -30,7 +30,8 @@ public class CRunner implements Runner {
         return this.runner.run(code, timeout);
     }
     private static boolean containsMainFunction(String code) {
-        return Pattern.compile("\\bint\\s+main\\s*\\(\\s*\\)").matcher(code).find();
+
+        return Pattern.compile("\\bint\\s+main\\s*\\([^)]*\\)\\s*\\{").matcher(code).find();
     }
     private static boolean containsAnyFunction(String code){
         return Pattern.compile("\\b\\w+\\s+\\w+\\s*\\([^;{=]*\\)\\s*\\{").matcher(code).find();

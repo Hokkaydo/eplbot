@@ -16,6 +16,7 @@ public class CRunner implements Runner {
         #include <stdio.h>
         int main(int argc, char *argv[]){
             %s
+            return 0;
         }""";
 
     @Override

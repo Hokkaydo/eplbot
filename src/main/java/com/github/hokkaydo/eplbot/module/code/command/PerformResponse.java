@@ -50,7 +50,7 @@ public class PerformResponse {
         deleteFile(responseFile);
 
     }
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") //extCode is not used but could be later
     public void sendResult(MessageChannel textChannel, String result, int exitCode){
 
         if (validateMessageLength(result)){

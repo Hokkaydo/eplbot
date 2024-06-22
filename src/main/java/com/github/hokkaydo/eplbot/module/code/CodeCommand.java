@@ -6,6 +6,7 @@ import com.github.hokkaydo.eplbot.command.CommandContext;
 import com.github.hokkaydo.eplbot.configuration.Config;
 import com.github.hokkaydo.eplbot.module.code.command.PerformResponse;
 import com.github.hokkaydo.eplbot.module.code.java.JavaRunner;
+import com.github.hokkaydo.eplbot.module.code.python.PythonRunner;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -34,7 +35,10 @@ import java.util.stream.Collectors;
 public class CodeCommand extends ListenerAdapter implements Command {
     private static final Map<String, Runner> RUNNER_MAP;
     static {
-        RUNNER_MAP = Map.of("java", new JavaRunner());
+        RUNNER_MAP = Map.of(
+                "java", new JavaRunner(),
+                "python", new PythonRunner()
+        );
     }
     private final static String INPUT_FILENAME = "input.txt";
     private final PerformResponse response = new PerformResponse();
@@ -109,9 +113,12 @@ public class CodeCommand extends ListenerAdapter implements Command {
 
     @Override
     public List<OptionData> getOptions() {
+        OptionData codes = new OptionData(OptionType.STRING, "language", Strings.getString("COMMAND_CODE_LANG_OPTION_DESCRIPTION"), true);
+        for (Map.Entry<String, Runner> entry : RUNNER_MAP.entrySet()) {
+            codes.addChoice(entry.getKey(), entry.getKey());
+        }
         return List.of(
-            new OptionData(OptionType.STRING, "language", Strings.getString("COMMAND_CODE_LANG_OPTION_DESCRIPTION"), true)
-                .addChoice("java", "java"),
+            codes,
             new OptionData(OptionType.ATTACHMENT, "file", Strings.getString("COMMAND_CODE_FILE_OPTION_DESCRIPTION"), false)
 
         );

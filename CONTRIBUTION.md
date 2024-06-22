@@ -33,7 +33,7 @@ Fonctionnement:
 Pour chaque commande une classe [`Runner`](src/main/java/com/github/hokkaydo/eplbot/module/code/Runner.java) est appelée, cette classe s'occupe de formatter le code si nécéssaire
 et de faire tourner un nouveau docker temporaire dont la sortie est capturée et rendue à l'utilisateur au travers de la commande [`CodeCommand`](src/main/java/com/github/hokkaydo/eplbot/module/code/command/CodeCommand.java)
 
-Pour rajouter un nouveau language, c'est très simple, il suffit de créé un dossier dans [`src/main/java/com/github/hokkaydo/eplbot/module/code/`](src/main/java/com/github/hokkaydo/eplbot/module/code/) avec un `Dockerfile`
+Pour rajouter un nouveau language, c'est très simple, il suffit de créé un dossier dans [`src/main/java/com/github/hokkaydo/eplbot/module/code/`](src/main/java/com/github/hokkaydo/eplbot/module/code) avec un `Dockerfile`
 contenant les informations relatives au language a rajouter. Il faut égalenent rajouter un .sh pour executer le code et tout les autres fichier nécéssaire ex:[`requirements.txt`](src/main/java/com/github/hokkaydo/eplbot/module/code/python/requirements.txt)
 Pour le `Dockerfile` et le `.sh`, vous pouvez prendre exemple sur ceux déjà fait.
 

@@ -22,7 +22,7 @@ public class GlobalRunner implements Runner{
     @Override
     public Pair<String, Integer> run(String code, Integer timeout) {
         if (safeMentions(code)){
-            return Pair.of(Strings.getString("COMMAND_CODE_UNSAFE_MENTIONS"),0);
+            return Pair.of(Strings.getString("COMMAND_CODE_UNSAFE_MENTIONS_SUBMITTED"),0);
         }
         StringBuilder builder = new StringBuilder();
         Process process;
@@ -48,7 +48,7 @@ public class GlobalRunner implements Runner{
         builder.append("\nExited with code: ").append(exitCode);
         timer.cancel(false);
         if (safeMentions(builder.toString())){
-            return Pair.of(Strings.getString("COMMAND_CODE_UNSAFE_MENTIONS"),0);
+            return Pair.of(Strings.getString("COMMAND_CODE_UNSAFE_MENTIONS_RESPONSE"),0);
         }
         return Pair.of(builder.toString(),0);
     }
@@ -67,7 +67,7 @@ public class GlobalRunner implements Runner{
             }
         }
     }
-    private boolean safeMentions(String result){
+    public static boolean safeMentions(String result){
         return !result.contains("@everyone") && !result.contains("@here") && !Pattern.compile("<@&?\\d+>").matcher(result).find();
     }
 }

@@ -12,7 +12,4 @@ public class GlobalProcessIdManager {
         }
         return currentNumber;
     }
-    public synchronized void reset() {
-        currentNumber = 0;
-    }
 }

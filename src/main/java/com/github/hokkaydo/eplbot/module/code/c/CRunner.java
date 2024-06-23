@@ -18,7 +18,12 @@ public class CRunner implements Runner {
             %s
             return 0;
         }""";
-
+    /**
+     * Wraps the code if necessary and run it
+     * @param code the code to be run
+     * @param timeout a timeout to avoid permanent loops
+     * @return a Pair of the result and the exit code
+     */
     @Override
     public Pair<String, Integer> run(String code, Integer timeout) {
         if (!containsAnyFunction(code)){

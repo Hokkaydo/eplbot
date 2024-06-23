@@ -11,15 +11,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 
-/**
- *
- */
+
 public class PerformResponse {
     private static final String OUT_FILE = "result.txt";
     private static final String OUT_RESPONSE = "code.txt";
-    private static final long MAX_SENT_FILE_SIZE = 8L * 1024 * 1024;
+    private static final long MAX_SENT_FILE_SIZE = 8L * 1024 * 1024; // 8mb
     private boolean validateMessageLength(String content){
-        return content.length() < 1960; //count ``` and language name
+        return content.length() < 1960; //less than 2000 to include count ``` and language name
     }
 
     /**

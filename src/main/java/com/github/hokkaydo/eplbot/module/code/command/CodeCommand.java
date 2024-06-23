@@ -27,6 +27,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -37,19 +38,39 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class CodeCommand extends ListenerAdapter implements Command {
-    private Map<String, Runner> RUNNER_MAP;
-    static GlobalProcessIdManager IDMANAGER = new GlobalProcessIdManager();
-    // A map to convert a language option to a runner
 
+    static GlobalProcessIdManager IDMANAGER = new GlobalProcessIdManager();
     private final static String INPUT_FILENAME = "input.txt";
     private final PerformResponse response = new PerformResponse(); // The class handling the response (sending trough discord etc. )
+    private static final Map<String, Class<? extends Runner>> RUNNERMAP;
+    /* /!\
+     * This is where to put every new language added
+     * /!\
+     */
+    static {
+        RUNNERMAP = Map.of(
+                "java", JavaRunner.class,
+                "python", PythonRunner.class,
+                "c", CRunner.class
+        );
+    }
+    /**
+     * @param type the language type
+     * @return a new Runner for the code to run on
+     */
+    private Runner instantiateRunner(String type) {
+        Class<? extends Runner> runnerClass = RUNNERMAP.get(type);
+        try {
+            return runnerClass.getDeclaredConstructor(String.class).newInstance(String.valueOf(IDMANAGER.getNextNumber()));
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     @Override
     public void executeCommand(CommandContext context) {
-        RUNNER_MAP = Map.of(
-                "java", new JavaRunner(String.valueOf(IDMANAGER.getNextNumber())),
-                "python", new PythonRunner(String.valueOf(IDMANAGER.getNextNumber())),
-                "c", new CRunner(String.valueOf(IDMANAGER.getNextNumber()))
-        );
+
         if (context.options().size() <= 1) {
             // No file given
             String currentLang = context.options().getFirst().getAsString();
@@ -67,7 +88,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
             .thenAcceptAsync(file -> {
                 String code = readFromFile(file,context.channel()).orElse(null);
                 if (code == null){return;}
-                Runner runner = RUNNER_MAP.get(context.options().getFirst().getAsString());
+                Runner runner = instantiateRunner(context.options().getFirst().getAsString());
                 // Runs the code
                 Pair<String,Integer> result = runner.run(code, Config.getGuildVariable(Objects.requireNonNull(context.interaction().getGuild()).getIdLong(), "COMMAND_CODE_TIMELIMIT"));
                 // Answer the interaction
@@ -99,6 +120,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
             return Optional.empty();
         }
     }
+
     @Override
     public void onModalInteraction(ModalInteractionEvent event) {
         // Check for a valid modal
@@ -113,7 +135,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
         event.getInteraction().reply(STR."Processing since: <t:\{Instant.now().getEpochSecond()}:R>").queue();
         String languageOption = event.getModalId().split("-")[2];
         String code = Objects.requireNonNull(body.get().getAsString());
-        Runner runner = RUNNER_MAP.get(languageOption);
+        Runner runner = instantiateRunner(languageOption);
         // Runs the code
         Pair<String, Integer> result = runner.run(code, runTimeout);
         // Answer the interaction
@@ -134,7 +156,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
     @Override
     public List<OptionData> getOptions() {
         OptionData codeOptions = new OptionData(OptionType.STRING, "language", Strings.getString("COMMAND_CODE_LANG_OPTION_DESCRIPTION"), true);
-        for (Map.Entry<String, Runner> entry : RUNNER_MAP.entrySet()) {
+        for (Map.Entry<String, Class<? extends Runner>> entry : RUNNERMAP.entrySet()) {
             codeOptions.addChoice(entry.getKey(), entry.getKey());
         }
         return List.of(

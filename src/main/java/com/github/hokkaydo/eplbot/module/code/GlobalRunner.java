@@ -1,5 +1,6 @@
 package com.github.hokkaydo.eplbot.module.code;
 
+import com.github.hokkaydo.eplbot.Strings;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 import java.io.BufferedReader;
@@ -9,6 +10,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 public class GlobalRunner implements Runner{
     private final String targetDocker;
@@ -42,6 +44,9 @@ public class GlobalRunner implements Runner{
         }
         builder.append("\nExited with code: ").append(exitCode);
         timer.cancel(false);
+        if (!safeMentions(builder.toString())){
+            return Pair.of(Strings.getString("COMMAND_CODE_UNSAFE_MENTIONS"),0);
+        }
         return Pair.of(builder.toString(),0);
     }
 
@@ -58,5 +63,8 @@ public class GlobalRunner implements Runner{
                 builder.append(line).append("\n");
             }
         }
+    }
+    private boolean safeMentions(String result){
+        return result.contains("@everyone") || result.contains("@here") || Pattern.compile("<@&?\\d+>").matcher(result).find();
     }
 }

@@ -69,7 +69,7 @@ public class PerformResponse {
     /**
      * @param textChannel the channel of the interaction
      * @param code the code that has been submitted
-     * @param lang
+     * @param lang the language submitted
      */
     public void sendSubmittedCode(MessageChannel textChannel, String code, String lang){
         if (GlobalRunner.safeMentions(code)){

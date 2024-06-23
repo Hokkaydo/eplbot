@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -89,14 +90,20 @@ public class CodeCommand extends ListenerAdapter implements Command {
                 String code = readFromFile(file,context.channel()).orElse(null);
                 if (code == null){return;}
                 Runner runner = instantiateRunner(context.options().getFirst().getAsString());
-                // Runs the code
-                Pair<String,Integer> result = runner.run(code, Config.getGuildVariable(Objects.requireNonNull(context.interaction().getGuild()).getIdLong(), "COMMAND_CODE_TIMELIMIT"));
-                // Answer the interaction
-                response.sendSubmittedCode(context.channel(),code,context.options().getFirst().getAsString());
-                response.sendResult(context.channel(),result.getLeft(),result.getRight());
-                if (file!= null && !file.delete()){
-                    Main.LOGGER.log(Level.INFO,"File not deleted");
-                }
+                CompletableFuture<Pair<String, Integer>> futureResult = CompletableFuture.supplyAsync(() ->
+                    runner.run(code, Config.getGuildVariable(
+                        Objects.requireNonNull(context.interaction().getGuild()).getIdLong(),
+                        "COMMAND_CODE_TIMELIMIT"
+                    ))
+                );
+
+                futureResult.thenAccept(result -> {
+                    response.sendSubmittedCode(context.channel(), code, context.options().getFirst().getAsString());
+                    response.sendResult(context.channel(), result.getLeft(), result.getRight());
+                    if (file != null && !file.delete()) {
+                        Main.LOGGER.log(Level.INFO, "File not deleted");
+                    }
+                });
             })
             .exceptionally(t -> {
                 response.sendMessageInChannel(context.channel(), STR."""
@@ -136,11 +143,15 @@ public class CodeCommand extends ListenerAdapter implements Command {
         String languageOption = event.getModalId().split("-")[2];
         String code = Objects.requireNonNull(body.get().getAsString());
         Runner runner = instantiateRunner(languageOption);
-        // Runs the code
-        Pair<String, Integer> result = runner.run(code, runTimeout);
-        // Answer the interaction
-        response.sendSubmittedCode(event.getChannel(),code,languageOption);
-        response.sendResult(event.getChannel(), result.getLeft(),result.getRight());
+        CompletableFuture<Pair<String, Integer>> futureResult = CompletableFuture.supplyAsync(() ->
+            runner.run(code, runTimeout)
+        );
+        futureResult.thenAccept(result -> {
+            response.sendSubmittedCode(event.getChannel(),code,languageOption);
+            response.sendResult(event.getChannel(), result.getLeft(),result.getRight());
+        });
+
+
     }
 
     @Override

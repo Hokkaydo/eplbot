@@ -29,10 +29,18 @@ public class CRunner implements Runner {
         }
         return this.runner.run(code, timeout);
     }
+    /**
+     * @param code the submitted code
+     * @return true if the code contains an int main method false otherwise
+     */
     private static boolean containsMainFunction(String code) {
 
         return Pattern.compile("\\bint\\s+main\\s*\\([^)]*\\)\\s*\\{").matcher(code).find();
     }
+    /**
+     * @param code the submitted code
+     * @return true if the code contains any method false otherwise
+     */
     private static boolean containsAnyFunction(String code){
         return Pattern.compile("\\b\\w+\\s+\\w+\\s*\\([^;{=]*\\)\\s*\\{").matcher(code).find();
 

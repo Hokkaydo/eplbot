@@ -6,7 +6,7 @@ import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 
 public class PythonRunner implements Runner {
-    GlobalRunner runner = new GlobalRunner("python-runner");
+    GlobalRunner runner = new GlobalRunner("python-runner"); // python-runner is linked to /build_code_docker.sh
 
     @Override
     public Pair<String, Integer> run(String code, Integer timeout) {

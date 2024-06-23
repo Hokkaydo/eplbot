@@ -8,7 +8,7 @@ import net.dv8tion.jda.internal.utils.tuple.Pair;
 import java.util.regex.Pattern;
 
 public class CRunner implements Runner {
-    GlobalRunner runner = new GlobalRunner("c-runner");
+    GlobalRunner runner = new GlobalRunner("c-runner"); // c-runner is linked to /build_code_docker.sh
 
     private static final String WRAPPER_TEMPLATE = """
         #include <stdlib.h>

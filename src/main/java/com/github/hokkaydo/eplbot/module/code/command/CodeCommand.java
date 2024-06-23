@@ -48,6 +48,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
     private final PerformResponse response = new PerformResponse();
     @Override
     public void executeCommand(CommandContext context) {
+        context.interaction().deferReply().queue();
         if (context.options().size() <= 1) {
             String currentLang = context.options().getFirst().getAsString();
             context.interaction().replyModal(Modal.create(STR."\{context.author().getId()}-code_submission-\{currentLang}","Execute du code")

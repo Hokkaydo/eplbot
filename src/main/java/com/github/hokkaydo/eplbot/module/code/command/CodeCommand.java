@@ -5,6 +5,7 @@ import com.github.hokkaydo.eplbot.Strings;
 import com.github.hokkaydo.eplbot.command.Command;
 import com.github.hokkaydo.eplbot.command.CommandContext;
 import com.github.hokkaydo.eplbot.configuration.Config;
+import com.github.hokkaydo.eplbot.module.code.GlobalProcessIdManager;
 import com.github.hokkaydo.eplbot.module.code.Runner;
 import com.github.hokkaydo.eplbot.module.code.c.CRunner;
 import com.github.hokkaydo.eplbot.module.code.java.JavaRunner;
@@ -36,20 +37,19 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class CodeCommand extends ListenerAdapter implements Command {
-    private static final Map<String, Runner> RUNNER_MAP;
+    private Map<String, Runner> RUNNER_MAP;
+    static GlobalProcessIdManager IDMANAGER = new GlobalProcessIdManager();
     // A map to convert a language option to a runner
-    static {
-        RUNNER_MAP = Map.of(
-                "java", new JavaRunner(),
-                "python", new PythonRunner(),
-                "c", new CRunner()
-        );
-    }
+
     private final static String INPUT_FILENAME = "input.txt";
-    private final PerformResponse response = new PerformResponse(); // The class handling the response (sending trough discord etc)
+    private final PerformResponse response = new PerformResponse(); // The class handling the response (sending trough discord etc. )
     @Override
     public void executeCommand(CommandContext context) {
-        context.interaction().deferReply().queue(); // defer to avoid timeouts
+        RUNNER_MAP = Map.of(
+                "java", new JavaRunner(String.valueOf(IDMANAGER.getNextNumber())),
+                "python", new PythonRunner(String.valueOf(IDMANAGER.getNextNumber())),
+                "c", new CRunner(String.valueOf(IDMANAGER.getNextNumber()))
+        );
         if (context.options().size() <= 1) {
             // No file given
             String currentLang = context.options().getFirst().getAsString();
@@ -101,7 +101,6 @@ public class CodeCommand extends ListenerAdapter implements Command {
     }
     @Override
     public void onModalInteraction(ModalInteractionEvent event) {
-        event.getInteraction().deferReply().queue();
         // Check for a valid modal
         if(event.getInteraction().getType() != InteractionType.MODAL_SUBMIT || !event.getModalId().contains("-code_submission-")) return;
         Optional<ModalMapping> body = Optional.ofNullable(event.getInteraction().getValue("body"));

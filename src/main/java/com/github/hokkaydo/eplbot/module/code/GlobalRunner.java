@@ -1,5 +1,6 @@
 package com.github.hokkaydo.eplbot.module.code;
 
+import com.github.hokkaydo.eplbot.Main;
 import com.github.hokkaydo.eplbot.Strings;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 
@@ -10,12 +11,16 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 public class GlobalRunner implements Runner{
     private final String targetDocker;
-    public GlobalRunner(String targetDocker){
+    private final String dockerName;
+    public GlobalRunner(String targetDocker, String dockerId){
         this.targetDocker = targetDocker;
+        this.dockerName = targetDocker+'-' +dockerId;
     }
     private static final ScheduledExecutorService SCHEDULER = new ScheduledThreadPoolExecutor(1);
 
@@ -25,15 +30,21 @@ public class GlobalRunner implements Runner{
             return Pair.of(Strings.getString("COMMAND_CODE_UNSAFE_MENTIONS_SUBMITTED"),0);
         }
         StringBuilder builder = new StringBuilder();
-        Process process;
+        AtomicReference<Process> processRef = new AtomicReference<>();
         int exitCode;
+
         ScheduledFuture<?> timer =SCHEDULER.schedule(() -> {
             builder.append("Timeout exceeded. Terminating the process.");
-            ProcessHandle.current().destroy();
+            Process process = processRef.get();
+            if (process != null && process.isAlive()) {
+                process.destroyForcibly();
+            }
+            deleteDocker();
             }, timeout, TimeUnit.SECONDS);
-
+        Process process;
         try {
             process = startProcessInDocker(code);
+            processRef.set(process);
         } catch (IOException e){
             return Pair.of(STR."Server side error with code 10\n\{e.getMessage()}", 1);
         }
@@ -43,7 +54,7 @@ public class GlobalRunner implements Runner{
         } catch (IOException e) {
             return Pair.of(STR."Server side error with code 11\n\{e.getMessage()}",1);
         } catch (InterruptedException e) {
-            return Pair.of(STR."Server sidrunnere error with code 12\n\{e.getMessage()}",1);
+            return Pair.of(STR."Server side error with code 12\n\{e.getMessage()}",1);
         }
         builder.append("\nExited with code: ").append(exitCode);
         timer.cancel(false);
@@ -55,7 +66,7 @@ public class GlobalRunner implements Runner{
 
     private Process startProcessInDocker(String code) throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder(
-                "docker", "run", "--rm", "-v", "/tmp/logs:/usr/src/app/logs", targetDocker, code);
+                "docker", "run", "--rm", "-v", "/tmp/logs:/usr/src/app/logs","--name", dockerName, targetDocker, code);
         processBuilder.redirectErrorStream(true);
         return processBuilder.start();
     }
@@ -68,6 +79,18 @@ public class GlobalRunner implements Runner{
         }
     }
     public static boolean safeMentions(String result){
-        return !result.contains("@everyone") && !result.contains("@here") && !Pattern.compile("<@&?\\d+>").matcher(result).find();
+        return result.contains("@everyone") || result.contains("@here") || Pattern.compile("<@&?\\d+>").matcher(result).find();
+    }
+    public void deleteDocker(){
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder("docker", "rm","--force", dockerName);
+            Process process = processBuilder.start();
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                Main.LOGGER.log(Level.WARNING,STR."Couldn't delete the docker with name : \{dockerName}");
+            }
+        } catch (IOException | InterruptedException e) {
+            Main.LOGGER.log(Level.WARNING,STR."Exception when trying to delete the docker : \{dockerName}\n\{e}");
+        }
     }
 }

@@ -10,7 +10,13 @@ import java.util.regex.Pattern;
 
 public class JavaRunner implements Runner {
 
-    GlobalRunner runner = new GlobalRunner("java-runner"); // java-runner is linked to /build_code_docker.sh
+    String processId;
+    GlobalRunner runner;
+    public JavaRunner(String processId){
+        this.processId = processId;
+        this.runner = new GlobalRunner("java-runner",processId); // java-runner is linked to /build_code_docker.sh
+    }
+
 
     private static final String WRAPPER_TEMPLATE = """
         import java.util.*;

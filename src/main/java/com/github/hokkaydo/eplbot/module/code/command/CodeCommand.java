@@ -90,6 +90,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
     }
     @Override
     public void onModalInteraction(ModalInteractionEvent event) {
+        event.getInteraction().deferReply().queue();
         if(event.getInteraction().getType() != InteractionType.MODAL_SUBMIT || !event.getModalId().contains("-code_submission-")) return;
         Optional<ModalMapping> body = Optional.ofNullable(event.getInteraction().getValue("body"));
         Guild guild = event.getGuild();

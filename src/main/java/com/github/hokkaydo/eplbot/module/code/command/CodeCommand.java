@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 public class CodeCommand extends ListenerAdapter implements Command {
     private static final Map<String, Runner> RUNNER_MAP;
+    // A map to convert a language option to a runner
     static {
         RUNNER_MAP = Map.of(
                 "java", new JavaRunner(),
@@ -45,11 +46,12 @@ public class CodeCommand extends ListenerAdapter implements Command {
         );
     }
     private final static String INPUT_FILENAME = "input.txt";
-    private final PerformResponse response = new PerformResponse();
+    private final PerformResponse response = new PerformResponse(); // The class handling the response (sending trough discord etc)
     @Override
     public void executeCommand(CommandContext context) {
-        context.interaction().deferReply().queue();
+        context.interaction().deferReply().queue(); // defer to avoid timeouts
         if (context.options().size() <= 1) {
+            // No file given
             String currentLang = context.options().getFirst().getAsString();
             context.interaction().replyModal(Modal.create(STR."\{context.author().getId()}-code_submission-\{currentLang}","Execute du code")
                                                      .addActionRow(TextInput.create("body", "Code", TextInputStyle.PARAGRAPH).setPlaceholder("Code").setRequired(true).build())
@@ -66,7 +68,9 @@ public class CodeCommand extends ListenerAdapter implements Command {
                 String code = readFromFile(file,context.channel()).orElse(null);
                 if (code == null){return;}
                 Runner runner = RUNNER_MAP.get(context.options().getFirst().getAsString());
+                // Runs the code
                 Pair<String,Integer> result = runner.run(code, Config.getGuildVariable(Objects.requireNonNull(context.interaction().getGuild()).getIdLong(), "COMMAND_CODE_TIMELIMIT"));
+                // Answer the interaction
                 response.sendSubmittedCode(context.channel(),code,context.options().getFirst().getAsString());
                 response.sendResult(context.channel(),result.getLeft(),result.getRight());
                 if (file!= null && !file.delete()){
@@ -81,6 +85,12 @@ public class CodeCommand extends ListenerAdapter implements Command {
             });
 
     }
+
+    /**
+     * @param file the file with data to be read from
+     * @param textChannel the channel of interaction, in case of an error
+     * @return the data of the file
+     */
     private Optional<String> readFromFile(File file, MessageChannel textChannel) {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             return Optional.of(reader.lines().collect(Collectors.joining(System.lineSeparator())));
@@ -92,6 +102,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
     @Override
     public void onModalInteraction(ModalInteractionEvent event) {
         event.getInteraction().deferReply().queue();
+        // Check for a valid modal
         if(event.getInteraction().getType() != InteractionType.MODAL_SUBMIT || !event.getModalId().contains("-code_submission-")) return;
         Optional<ModalMapping> body = Optional.ofNullable(event.getInteraction().getValue("body"));
         Guild guild = event.getGuild();
@@ -104,7 +115,9 @@ public class CodeCommand extends ListenerAdapter implements Command {
         String languageOption = event.getModalId().split("-")[2];
         String code = Objects.requireNonNull(body.get().getAsString());
         Runner runner = RUNNER_MAP.get(languageOption);
+        // Runs the code
         Pair<String, Integer> result = runner.run(code, runTimeout);
+        // Answer the interaction
         response.sendSubmittedCode(event.getChannel(),code,languageOption);
         response.sendResult(event.getChannel(), result.getLeft(),result.getRight());
     }

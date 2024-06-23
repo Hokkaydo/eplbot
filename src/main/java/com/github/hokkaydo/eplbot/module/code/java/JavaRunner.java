@@ -35,14 +35,26 @@ public class JavaRunner implements Runner {
         }
         return this.runner.run(code, timeout);
     }
+
+    /**
+     * @param code the submitted code
+     * @return true if the code contains a public class {class} false otherwise
+     */
     private static boolean requiresWrapper(String code) {
         boolean hasClass = Pattern.compile("\\bpublic\\s+class\\s+[A-Z][a-zA-Z0-9]*").matcher(code).find();
         return !hasClass;
     }
-
+    /**
+     * @param code the submitted code
+     * @return true if the code contains a public class Main with a main method false otherwise
+     */
     public static boolean containsMainClass(String code) {
         return Pattern.compile("(?s)\\bpublic\\s+class\\s+Main\\b.*?\\{.*?\\bpublic\\s+static\\s+void\\s+main\\s*\\(\\s*String\\s*\\[\\s*]\\s*\\w*\\s*\\)\\s*\\{.*?}}").matcher(code).find();
     }
+    /**
+     * @param code the submitted code
+     * @return true if the code contains a public static void main() method false otherwise
+     */
     public static boolean hasMainMethod(String code){
         return Pattern.compile("\\bpublic\\s+static\\s+void\\s+main\\s*\\(\\s*String\\[]\\s+[a-zA-Z0-9]*\\s*\\)").matcher(code).find();
     }

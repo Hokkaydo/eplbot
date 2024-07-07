@@ -25,7 +25,7 @@ public class MessageUtil {
 
     private static final String HASTEBIN_API_POST_URL = "https://hastebin.com/documents/";
     private static final String HASTEBIN_SHARE_BASE_URL = "https://hastebin.com/share/%s";
-    private static final int HASTEBIN_MAX_CONTENT_LENGTH = 350_000;
+    public static final int HASTEBIN_MAX_CONTENT_LENGTH = 350_000;
 
     private static HttpRequest.Builder hastebinPostRequest = null;
 

@@ -1,60 +1,35 @@
 package com.github.hokkaydo.eplbot.module.code.command;
 
-import com.github.hokkaydo.eplbot.Main;
+import com.github.hokkaydo.eplbot.MessageUtil;
 import com.github.hokkaydo.eplbot.Strings;
 import com.github.hokkaydo.eplbot.module.code.GlobalRunner;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.utils.FileUpload;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.logging.Level;
+import java.net.http.HttpClient;
 
 
 public class PerformResponse {
-    private static final String OUT_FILE = "result.txt";
-    private static final String OUT_RESPONSE = "code.txt";
-    private static final long MAX_SENT_FILE_SIZE = 8L * 1024 * 1024; // 8mb
+
     private boolean validateMessageLength(String content){
-        return content.length() < 1960; //less than 2000 to include count ``` and language name
+        return content.length() < 1960;
+    }
+    private boolean validateHastebinLength(String content){
+        return content.length() < MessageUtil.HASTEBIN_MAX_CONTENT_LENGTH;
     }
 
-    /**
-     * Sends the serverFile in the textChannel
-     * @param textChannel the channel of the interaction
-     * @param serverFile the file to be sent trough discord
-     * @param filename the name of the serverFile
-     */
-    private void sendResponseAsFile(MessageChannel textChannel, File serverFile, String filename) {
-        FileUpload file = FileUpload.fromData(serverFile, filename);
-        textChannel.sendFiles(file)
-                .queue( _ -> deleteFile(serverFile));
-    }
-    /**
-     * @param file the file to be sent
-     * @return true if the file is longer than 8mb
-     */
-    private boolean validateFileSize(File file){
-        long fileSizeInBytes = file.length();
-        return fileSizeInBytes <= MAX_SENT_FILE_SIZE;
-    }
+
 
     /**
      * @param textChannel the channel of the interaction
      * @param input a string with the data to be written in the file
-     * @param fileName the name of the file
      * @return a File
      */
-    private File createFileFromString(MessageChannel textChannel, String input, String fileName){
-        try (FileWriter myWriter = new FileWriter((STR."\{fileName}"))){
-            myWriter.write(input);
-            return new File((STR."\{fileName}"));
-        } catch (IOException e){
-            Main.LOGGER.log(Level.INFO,"Couldn't create a temporary virtual file when trying to respond to submitted code");
-            sendMessageInChannel(textChannel,STR."Server side error with code 00\n\{e.getMessage()}");
-            return null;
+    private String createUrlFromString(MessageChannel textChannel, String input){
+        if (validateMessageLength(input)){
+            sendMessageInChannel(textChannel,Strings.getString("COMMAND_CODE_EXCEEDED_HASTEBIN_SIZE"));
         }
+        HttpClient client = HttpClient.newHttpClient();
+        return MessageUtil.hastebinPost(client, input).join();
     }
 
     /**
@@ -71,21 +46,22 @@ public class PerformResponse {
      * @param code the code that has been submitted
      * @param lang the language submitted
      */
-    public void sendSubmittedCode(MessageChannel textChannel, String code, String lang){
-        if (GlobalRunner.safeMentions(code)){
+    public void sendSubmittedCode(MessageChannel textChannel, String code, String lang) {
+        if (GlobalRunner.safeMentions(code)) {
             textChannel.sendMessage(STR."\{Strings.getString("COMMAND_CODE_UNSAFE_MENTIONS_SUBMITTED")}\n").queue();
             return;
         }
-        if (validateMessageLength(code)){
+        if (validateMessageLength(code)) {
             textChannel.sendMessage(STR."```\{lang.toLowerCase()}\n\{code}\n```").queue();
             return;
         }
-        File responseFile = createFileFromString(textChannel,code,OUT_RESPONSE);
-        sendResponseAsFile(textChannel, responseFile,OUT_RESPONSE);
-        deleteFile(responseFile);
-
+        if (validateHastebinLength(code)) {
+            String url = createUrlFromString(textChannel, code);
+            sendMessageInChannel(textChannel, STR."`The submitted code is available at : `\n<\{url}>");
+            return;
+        }
+        sendMessageInChannel(textChannel,STR."`The submitted code is too large \n:\{Strings.getString("COMMAND_CODE_EXCEEDED_HASTEBIN_SIZE")}");
     }
-
     /**
      * @param textChannel the channel of the interaction
      * @param result the string with the output of the code
@@ -97,23 +73,11 @@ public class PerformResponse {
             textChannel.sendMessage(STR."`\{result}`").queue();
             return;
         }
-        File responseFile = createFileFromString(textChannel,result,OUT_FILE);
-        if (responseFile != null && validateFileSize(responseFile)){
-            sendResponseAsFile(textChannel,responseFile,OUT_FILE);
-            deleteFile(responseFile);
+        if (validateHastebinLength(result)) {
+            String url = createUrlFromString(textChannel, result);
+            sendMessageInChannel(textChannel, STR."`The result of the code is available at : `\n<\{url}>");
             return;
         }
-        deleteFile(responseFile);
-        sendMessageInChannel(textChannel, Strings.getString("COMMAND_CODE_EXCEEDED_FILE_SIZE"));
-
-    }
-
-    /**
-     * @param file the file to be deleted
-     */
-    public void deleteFile(File file){
-        if (file!= null && !file.delete()){
-            Main.LOGGER.log(Level.INFO,"File not deleted");
-        }
+        sendMessageInChannel(textChannel,STR."`The result is too large : \n\{Strings.getString("COMMAND_CODE_EXCEEDED_HASTEBIN_SIZE")}");
     }
 }

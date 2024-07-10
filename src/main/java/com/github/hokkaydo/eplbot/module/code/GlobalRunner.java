@@ -79,7 +79,7 @@ public class GlobalRunner implements Runner{
         }
     }
     public static boolean safeMentions(String result){
-        return result.contains("@everyone") || result.contains("@here") || Pattern.compile("<@&?\\d+>").matcher(result).find();
+        return result.contains("@everyone") || result.contains("@here") || Pattern.compile("<@&?\\d+>").matcher(result).find(); // <@&__ID__> corresponds to a discord role
     }
     public void deleteDocker(){
         try {

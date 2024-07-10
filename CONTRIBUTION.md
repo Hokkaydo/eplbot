@@ -30,7 +30,7 @@ que vous êtes bien dans la guilde ciblée afin de ne pas exécuter le même cod
 - L'utilitaire [`build_code_docker.sh`](build_code_docker.sh) permet de build les dockers pour la commande [`code`](src/main/java/com/github/hokkaydo/eplbot/module/code/command/CodeCommand.java). Il n'est pas nécéssaire de l'utiliser si vous ne comptez pas travailler sur le module de [`code`](src/main/java/com/github/hokkaydo/eplbot/module/code/CodeModule.java)
 
 Fonctionnement: 
-Pour chaque commande une classe [`Runner`](src/main/java/com/github/hokkaydo/eplbot/module/code/Runner.java) est appelée, cette classe s'occupe de formatter le code si nécéssaire
+Pour chaque commande une classe [`Runner`](src/main/java/com/github/hokkaydo/eplbot/module/code/Runner.java) est appelée, cette classe s'occupe de formatter le code si nécessaire
 et de faire tourner un nouveau docker temporaire dont la sortie est capturée et rendue à l'utilisateur au travers de la commande [`CodeCommand`](src/main/java/com/github/hokkaydo/eplbot/module/code/command/CodeCommand.java)
 
 Pour rajouter un nouveau language, c'est très simple, il suffit de créé un dossier dans [`src/main/java/com/github/hokkaydo/eplbot/module/code/`](src/main/java/com/github/hokkaydo/eplbot/module/code) avec un `Dockerfile`

@@ -37,9 +37,9 @@ Pour rajouter un nouveau langage, il suffit de créer un dossier dans [`src/main
 contenant les informations relatives au langage à rajouter. Il faut également rajouter un `.sh` (pour compiler et run dans le docker) pour exécuter le code et tout les autres fichiers nécessaires ex:[`requirements.txt`](src/main/java/com/github/hokkaydo/eplbot/module/code/python/requirements.txt)
 Pour le `Dockerfile` et le `.sh`, vous pouvez prendre exemple sur ceux déjà fait. Et ensuite il faut ajouter le nom du language avec la classe Runner dans [`RUNNER_MAP`](src/main/java/com/github/hokkaydo/eplbot/module/code/command/CodeCommand.java). Pour vous aidez, une classe [`GlobalRunner.java`](src/main/java/com/github/hokkaydo/eplbot/module/code/GlobalRunner.java) avec du code pour lancer un docker existe déjà.
 Il est à noter que cette classe prend en argument le nom du docker qu'il faut executér, ce dernier doit être indiqué dans `build_code_docker.sh`
-### Commandes
-L'interface `Command` définie une série de méthodes à réimplémenter. Nous vous renvoyons vers la documentation de celles-ci.
 
+### Commandes
+L'interface `Command` définit une série de méthodes à réimplémenter. Nous vous renvoyons vers la documentation de celles-ci.
 ### Listeners
 Les *listeners* d'un module permettent de réagir aux divers évènements que le bot intercepte. Une classe *listener* doit
 étendre la classe abstraite `ListenerAdaptater`. Pour une description complète des évènements existants, nous vous renvoyons 

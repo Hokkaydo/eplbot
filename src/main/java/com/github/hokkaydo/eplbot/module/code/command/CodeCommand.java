@@ -106,9 +106,9 @@ public class CodeCommand extends ListenerAdapter implements Command {
                 });
             })
             .exceptionally(t -> {
-                response.sendMessageInChannel(context.channel(), STR."""
+                context.channel().sendMessage(STR."""
                     \{Strings.getString("COMMAND_CODE_UNEXPECTED_ERROR")}
-                    The error is : \{t.getMessage()}""");
+                    The error is : \{t.getMessage()}""").queue();
                 return null;
             });
 
@@ -123,7 +123,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             return Optional.of(reader.lines().collect(Collectors.joining(System.lineSeparator())));
         } catch (IOException e) {
-            response.sendMessageInChannel(textChannel,Strings.getString("COMMAND_CODE_INACCESSIBLE_FILE"));
+            textChannel.sendMessage(Strings.getString("COMMAND_CODE_INACCESSIBLE_FILE")).queue();
             return Optional.empty();
         }
     }
@@ -135,7 +135,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
         Optional<ModalMapping> body = Optional.ofNullable(event.getInteraction().getValue("body"));
         Guild guild = event.getGuild();
         if(body.isEmpty() || guild == null){
-            response.sendMessageInChannel(event.getMessageChannel(),Strings.getString("COMMAND_CODE_NO_LANGUAGE_SPECIFIED"));
+            event.getMessageChannel().sendMessage(Strings.getString("COMMAND_CODE_NO_LANGUAGE_SPECIFIED")).queue();
             return;
         }
         Integer runTimeout = Config.getGuildVariable(guild.getIdLong(), "COMMAND_CODE_TIMELIMIT");

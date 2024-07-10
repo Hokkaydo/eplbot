@@ -26,19 +26,10 @@ public class PerformResponse {
      */
     private String createUrlFromString(MessageChannel textChannel, String input){
         if (validateMessageLength(input)){
-            sendMessageInChannel(textChannel,Strings.getString("COMMAND_CODE_EXCEEDED_HASTEBIN_SIZE"));
+            textChannel.sendMessage(Strings.getString("COMMAND_CODE_EXCEEDED_HASTEBIN_SIZE")).queue();
         }
         HttpClient client = HttpClient.newHttpClient();
         return MessageUtil.hastebinPost(client, input).join();
-    }
-
-    /**
-     * sends the data to the textChannel
-     * @param textChannel the channel of the interaction
-     * @param data any String
-     */
-    public void sendMessageInChannel(MessageChannel textChannel, String data){
-        textChannel.sendMessage(data).queue();
     }
 
     /**
@@ -57,10 +48,10 @@ public class PerformResponse {
         }
         if (validateHastebinLength(code)) {
             String url = createUrlFromString(textChannel, code);
-            sendMessageInChannel(textChannel, STR."`The submitted code is available at : `\n<\{url}>");
+            textChannel.sendMessage(STR."`The submitted code is available at : `\n<\{url}>").queue();
             return;
         }
-        sendMessageInChannel(textChannel,STR."`The submitted code is too large \n:\{Strings.getString("COMMAND_CODE_EXCEEDED_HASTEBIN_SIZE")}");
+        textChannel.sendMessage(STR."`The submitted code is too large \n:\{Strings.getString("COMMAND_CODE_EXCEEDED_HASTEBIN_SIZE")}").queue();
     }
     /**
      * @param textChannel the channel of the interaction
@@ -75,9 +66,9 @@ public class PerformResponse {
         }
         if (validateHastebinLength(result)) {
             String url = createUrlFromString(textChannel, result);
-            sendMessageInChannel(textChannel, STR."`The result of the code is available at : `\n<\{url}>");
+            textChannel.sendMessage(STR."`The result of the code is available at : `\n<\{url}>").queue();
             return;
         }
-        sendMessageInChannel(textChannel,STR."`The result is too large : \n\{Strings.getString("COMMAND_CODE_EXCEEDED_HASTEBIN_SIZE")}");
+        textChannel.sendMessage(STR."`The result is too large : \n\{Strings.getString("COMMAND_CODE_EXCEEDED_HASTEBIN_SIZE")}").queue();
     }
 }

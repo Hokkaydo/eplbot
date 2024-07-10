@@ -61,14 +61,16 @@ public class JavaRunner implements Runner {
      * @return true if the code contains a public class Main with a main method false otherwise
      */
     public static boolean containsMainClass(String code) {
-        return Pattern.compile("(?s)\\bpublic\\s+class\\s+Main\\b.*?\\{.*?\\bpublic\\s+static\\s+void\\s+main\\s*\\(\\s*String\\s*\\[\\s*]\\s*\\w*\\s*\\)\\s*\\{.*?}}").matcher(code).find();
+        return Pattern.compile(
+                "(?s)\\bpublic\\s+class\\s+Main\\b.*?\\{.*?\\bpublic\\s+static\\s+void\\s+main\\s*\\(\\s*String\\s*\\[\\s*]\\s*\\w*\\s*\\).*?\\{.*?}\\s*}"
+        ).matcher(code).find();
     }
     /**
      * @param code the submitted code
      * @return true if the code contains a public static void main() method false otherwise
      */
     public static boolean hasMainMethod(String code){
-        return Pattern.compile("\\bpublic\\s+static\\s+void\\s+main\\s*\\(\\s*String\\[]\\s+[a-zA-Z0-9]*\\s*\\)").matcher(code).find();
-    }
-
+        return Pattern.compile(
+                "\\bpublic\\s+static\\s+void\\s+main\\s*\\(\\s*String\\s*\\[\\s*]\\s*\\w*\\s*\\)"
+        ).matcher(code).find();    }
 }

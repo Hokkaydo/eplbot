@@ -161,7 +161,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_CODE_DESCRIPTION") + String.join(", ", RUNNERMAP.keySet());
+        return () -> Strings.getString("COMMAND_CODE_DESCRIPTION");
     }
 
     @Override

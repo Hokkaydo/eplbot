@@ -27,7 +27,7 @@ public class PythonRunner implements Runner {
         boolean isInString = false;
         for (int i = 0; i < code.length(); i++){
             Character c = code.charAt(i);
-            if (c == '\'' || c == '\"'){ // checks for ..."string\n" or 'string\n'
+            if ((c == '\'' || c == '\"') && i > 0 && code.charAt(i-1) != '\\'){ // checks for ..."string" or 'string' but not "\""
                 isInString = !isInString;
             }
             if (isInString && c == '\\'){

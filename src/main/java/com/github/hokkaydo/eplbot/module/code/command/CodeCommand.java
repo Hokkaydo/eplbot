@@ -107,7 +107,8 @@ public class CodeCommand extends ListenerAdapter implements Command {
                         "COMMAND_CODE_TIMELIMIT"
                     ))
                 );
-                boolean hasSpoiler = context.options().get(1).getAsBoolean();
+                boolean hasSpoiler = false; //SPOILER : context.options().get(1).getAsBoolean();
+
                 futureResult.thenAccept(result -> {
                     response.sendSubmittedCode(context.channel(), spoilMessage(code, hasSpoiler), context.options().getFirst().getAsString());
                     response.sendResult(context.channel(), spoilMessage(result.getLeft(),hasSpoiler), result.getRight());

@@ -13,7 +13,7 @@ public class CodeModule extends Module {
     private final CodeCommand codeCommand;
     public CodeModule(@NotNull Long guildId) {
         super(guildId);
-        codeCommand = new CodeCommand();
+        codeCommand = new CodeCommand(guildId);
     }
 
     @Override

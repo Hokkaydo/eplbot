@@ -52,6 +52,11 @@ public class IssueCommand extends ListenerAdapter implements Command {
 
     private final Map<String, Object[]> labelsFileModalTempStore = new HashMap<>();
 
+    private final long guildId;
+    IssueCommand(long guildId) {
+        this.guildId = guildId;
+    }
+
     @Override
     public void executeCommand(CommandContext context) {
         Optional<OptionMapping> labels = context.options().stream().filter(o -> o.getName().equals("label")).findFirst();
@@ -72,6 +77,7 @@ public class IssueCommand extends ListenerAdapter implements Command {
 
     @Override
     public void onModalInteraction(@NotNull ModalInteractionEvent event) {
+        if(event.getGuild() == null || event.getGuild().getIdLong() != guildId) return;
         if(event.getInteraction().getType() != InteractionType.MODAL_SUBMIT || !event.getModalId().contains("-issue-modal")) return;
         if(!labelsFileModalTempStore.containsKey(event.getModalId())) return;
         String title = Objects.requireNonNull(event.getInteraction().getValue("title")).getAsString();

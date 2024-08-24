@@ -55,6 +55,12 @@ public class CodeCommand extends ListenerAdapter implements Command {
                 "c", CRunner.class
         );
     }
+
+    private final long guildId;
+    public CodeCommand(long guildId) {
+        this.guildId = guildId;
+    }
+
     /**
      * @param type the language type
      * @return a new Runner for the code to run on
@@ -108,7 +114,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
             .exceptionally(t -> {
                 context.channel().sendMessage(STR."""
                     \{Strings.getString("COMMAND_CODE_UNEXPECTED_ERROR")}
-                    The error is : \{t.getMessage()}""").queue();
+                    The error is :\{t.getMessage()}""").queue();
                 return null;
             });
 
@@ -131,6 +137,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
     @Override
     public void onModalInteraction(ModalInteractionEvent event) {
         // Check for a valid modal
+        if(event.getGuild() == null || event.getGuild().getIdLong() != guildId) return;
         if(event.getInteraction().getType() != InteractionType.MODAL_SUBMIT || !event.getModalId().contains("-code_submission-")) return;
         Optional<ModalMapping> body = Optional.ofNullable(event.getInteraction().getValue("body"));
         Guild guild = event.getGuild();

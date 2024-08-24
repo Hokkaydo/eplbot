@@ -60,11 +60,14 @@ public class NoticeCommand extends ListenerAdapter implements Command {
     private final CourseRepository courseRepository;
     private final CourseGroupRepository groupRepository;
 
-    NoticeCommand(NoticeRepository noticeRepository, CourseRepository courseRepository, CourseGroupRepository groupRepository) {
+    private final long guildId;
+
+    NoticeCommand(NoticeRepository noticeRepository, CourseRepository courseRepository, CourseGroupRepository groupRepository, long guildId) {
         this.courses = courseRepository.readAll();
         this.noticeRepository = noticeRepository;
         this.courseRepository = courseRepository;
         this.groupRepository = groupRepository;
+        this.guildId = guildId;
     }
 
     @Override
@@ -126,6 +129,7 @@ public class NoticeCommand extends ListenerAdapter implements Command {
 
     @Override
     public void onModalInteraction(@NotNull ModalInteractionEvent event) {
+        if(event.getGuild() == null || event.getGuild().getIdLong() != guildId) return;
         if(event.getInteraction().getType() != InteractionType.MODAL_SUBMIT || !event.getModalId().contains(NOTICE_MODAL_NAME_SUFFIX)) return;
         ReplyCallbackAction callbackAction = event.deferReply(true);
 
@@ -225,7 +229,7 @@ public class NoticeCommand extends ListenerAdapter implements Command {
 
     private String toString(List<String> links) {
         if(links.isEmpty()) return  "";
-        return STR." - \{links.get(0)}\{links.stream().skip(1).reduce("", (a, b) -> a + "\n - " + b)}";
+        return STR." - \{links.getFirst()}\{links.stream().skip(1).reduce("", (a, b) -> a + "\n - " + b)}";
     }
 
     private void storeNotice(String authorId, String subjectId, Date timestamp, String type, String content) {

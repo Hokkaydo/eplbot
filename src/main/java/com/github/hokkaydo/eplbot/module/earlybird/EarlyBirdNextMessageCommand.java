@@ -22,10 +22,14 @@ import java.util.function.Supplier;
 
 public class EarlyBirdNextMessageCommand extends ListenerAdapter implements Command {
 
+    private final long guildId;
+    EarlyBirdNextMessageCommand(long guildId) {
+        this.guildId = guildId;
+    }
+
     @Override
     public void executeCommand(CommandContext context) {
         if(!context.interaction().isGuildCommand() || context.interaction().getGuild() == null) return;
-        long guildId = context.interaction().getGuild().getIdLong();
         String earlyBirdRoleId = Config.getGuildVariable(guildId, "EARLY_BIRD_ROLE_ID");
         if(context.author().getRoles().stream().filter(r -> r.getId().equals(earlyBirdRoleId)).findFirst().isEmpty()) {
             context.replyCallbackAction().setContent(Strings.getString("EARLY_BIRD_NOT_EARLY_BIRD")).queue();
@@ -54,7 +58,7 @@ public class EarlyBirdNextMessageCommand extends ListenerAdapter implements Comm
 
     @Override
     public void onModalInteraction (ModalInteractionEvent event) {
-        if(event.getGuild() == null) return;
+        if(event.getGuild() == null || event.getGuild().getIdLong() != guildId) return;
         String id = event.getModalId();
         if(!id.equals("earlybird-message")) return;
         ModalMapping contentMap = event.getInteraction().getValue("message");

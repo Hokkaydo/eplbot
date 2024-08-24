@@ -22,7 +22,7 @@ public class NoticeModule extends Module {
         CourseRepository courseRepository = new CourseRepositorySQLite(DatabaseManager.getDataSource());
         CourseGroupRepository groupRepository = new CourseGroupRepositorySQLite(DatabaseManager.getDataSource(), courseRepository);
         NoticeRepository noticeRepository = new NoticeRepositorySQLite(courseRepository, groupRepository);
-        this.noticeCommand = new NoticeCommand(noticeRepository, courseRepository, groupRepository);
+        this.noticeCommand = new NoticeCommand(noticeRepository, courseRepository, groupRepository, guildId);
     }
 
     @Override

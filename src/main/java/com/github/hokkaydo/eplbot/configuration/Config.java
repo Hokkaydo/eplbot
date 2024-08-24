@@ -126,7 +126,8 @@ public class Config {
         DEFAULT_CONFIGURATION.putAll(Map.of(
                 "earlybird", MODULE_DISABLED.get(),
                 "christmas", MODULE_DISABLED.get(),
-                "bookmark", MODULE_DISABLED.get()
+                "bookmark", MODULE_DISABLED.get(),
+                "code", MODULE_DISABLED.get()
         ));
         DEFAULT_CONFIGURATION.put(
                 "code", new ConfigurationParser(() -> true, Object::toString, Boolean::valueOf, "Booléen")

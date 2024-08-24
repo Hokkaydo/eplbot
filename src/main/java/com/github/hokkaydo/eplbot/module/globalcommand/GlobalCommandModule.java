@@ -36,7 +36,7 @@ public class GlobalCommandModule extends Module {
         pingCommand = new PingCommand();
         helpCommand = new HelpCommand(guildId);
         contributeCommand = new ContributeCommand();
-        issueCommand = new IssueCommand();
+        issueCommand = new IssueCommand(guildId);
         lmgtCommand = new LMGTCommand();
         wikiCommand = new WikiCommand();
         sayCommand = new SayCommand();

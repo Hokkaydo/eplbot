@@ -15,7 +15,7 @@ public class EarlyBirdModule extends Module {
     public EarlyBirdModule(@NotNull Long guildId) {
         super(guildId);
         this.earlyBirdListener = new EarlyBirdListener(guildId);
-        this.earlyBirdNextMessageCommand = new EarlyBirdNextMessageCommand();
+        this.earlyBirdNextMessageCommand = new EarlyBirdNextMessageCommand(guildId);
         this.restartEarlyBirdCommand = new RestartEarlyBirdCommand(earlyBirdListener);
     }
 

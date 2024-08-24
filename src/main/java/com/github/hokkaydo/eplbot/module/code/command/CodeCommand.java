@@ -93,7 +93,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
         }
         long current = Instant.now().toEpochMilli();
         context.replyCallbackAction().setContent(STR."Processing since: <t:\{current/ 1000}:R>").setEphemeral(false).queue( reply -> context.options()
-            .get(2)
+            .get(1)
             .getAsAttachment()
             .getProxy()
             .downloadToFile(new File((INPUT_FILENAME)))
@@ -141,6 +141,19 @@ public class CodeCommand extends ListenerAdapter implements Command {
         }
     }
 
+    /**
+     * @param text the string to be formatted to spoiler
+     * @param isSpoiler a boolean descibing the need for format
+     * @return the text + || twice
+     */
+    private String spoilMessage(String text, boolean isSpoiler) {
+        if (isSpoiler) {
+            return STR."||\{text}||";
+        } else {
+            return text;
+        }
+    }
+
     @Override
     public void onModalInteraction(ModalInteractionEvent event) {
         // Check for a valid modal
@@ -171,13 +184,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
             });
         });
     }
-    private String spoilMessage(String text, boolean isSpoiler) {
-        if (isSpoiler) {
-            return STR."||\{text}||";
-        } else {
-            return text;
-        }
-    }
+
 
     @Override
     public String getName() {
@@ -197,9 +204,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
         }
         return List.of(
             codeOptions,
-            new OptionData(OptionType.BOOLEAN, "spoiler", Strings.getString("COMMAND_CODE_SPOILER_OPTION_DESCRIPTION")),
             new OptionData(OptionType.ATTACHMENT, "file", Strings.getString("COMMAND_CODE_FILE_OPTION_DESCRIPTION"), false)
-
         );
     }
 

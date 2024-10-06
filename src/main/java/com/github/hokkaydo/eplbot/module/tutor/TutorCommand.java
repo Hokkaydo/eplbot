@@ -7,6 +7,8 @@ import com.github.hokkaydo.eplbot.command.CommandContext;
 import com.github.hokkaydo.eplbot.configuration.Config;
 import com.github.hokkaydo.eplbot.module.tutor.model.CourseTutor;
 import com.github.hokkaydo.eplbot.module.tutor.repository.CourseTutorRepository;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -215,12 +217,26 @@ public class TutorCommand extends ListenerAdapter implements Command {
     @Override
     public void onStringSelectInteraction(StringSelectInteractionEvent event) {
         if(event.getComponentId().startsWith("courses")) {
-
+            Guild guild = Main.getJDA().getGuildById(guildId);
+            if (guild == null) {
+                event.reply(Strings.getString("ERROR_OCCURRED")).queue();
+                return;
+            }
+            TextChannel channel = Main.getJDA().getTextChannelById(event.getChannel().getIdLong());
+            if (channel == null) {
+                event.reply(Strings.getString("ERROR_OCCURRED")).queue();
+                return;
+            }
             // Clear non-selected courses
             event.getSelectMenu().getOptions()
                     .stream()
                     .filter(o -> !event.getSelectedOptions().contains(o))
-                    .forEach(o -> courseTutorRepository.delete(new CourseTutor(Long.parseLong(o.getValue()), event.getUser().getIdLong(), false)));
+                    .forEach(o -> {
+                        guild.loadMembers(ignored -> channel.getMemberPermissionOverrides().stream()
+                                                             .filter(p -> p.getMember() != null && p.getMember().getIdLong() == event.getUser().getIdLong())
+                                                             .forEach(p -> p.delete().queue()));
+                        courseTutorRepository.delete(new CourseTutor(Long.parseLong(o.getValue()), event.getUser().getIdLong(), false));
+                    });
 
             // Avoid already selected courses
             List<String> oldIds = courseTutorRepository.readByTutorId(event.getUser().getIdLong())
@@ -232,7 +248,13 @@ public class TutorCommand extends ListenerAdapter implements Command {
             event.getSelectedOptions()
                     .stream()
                     .filter(o -> !oldIds.contains(o.getValue()))
-                    .forEach(o -> courseTutorRepository.create(new CourseTutor(Long.parseLong(o.getValue()), event.getUser().getIdLong(), false)));
+                    .forEach(o -> {
+                        guild.loadMembers(ignored -> channel.upsertPermissionOverride(guild.getMember(event.getUser()))
+                                                             .grant(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND)
+                                                             .queue()
+                        );
+                        courseTutorRepository.create(new CourseTutor(Long.parseLong(o.getValue()), event.getUser().getIdLong(), false));
+                    });
             event.reply(Strings.getString("TUTOR_COMMAND_MANAGE_SUCCESS")).queue();
         }
 

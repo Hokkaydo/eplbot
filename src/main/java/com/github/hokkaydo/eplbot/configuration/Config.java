@@ -20,6 +20,7 @@ import java.util.function.IntFunction;
 import java.util.function.LongFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Config {
 
@@ -90,8 +91,8 @@ public class Config {
         DEFAULT_CONFIGURATION.putAll(Map.of(
                 "RSS_FEEDS", new ConfigurationParser(
                         () -> new ArrayList<>(List.of("https://www.developpez.com/index/rss")),
-                        Object::toString,
-                        s -> List.of(s.split(";")),
+                        l -> ((List<String>)l).stream().reduce("", (a, b) -> STR."\{a};\{b}"),
+                        s -> Stream.of(s.split(";")).filter(str -> !str.isBlank()).toList(),
                         "Liste de liens séparés par `;`"
                 ),
                 "RSS_FEEDS_CHANNEL_ID", STRING_CONFIGURATION_VALUE.get(),
@@ -107,7 +108,13 @@ public class Config {
         DEFAULT_CONFIGURATION.putAll(Map.of(
                 "EARLY_BIRD_MESSAGE_PROBABILITY", INTEGER_CONFIGURATION_VALUE.apply(33),
                 "ASSISTANT_ROLE_ID", STRING_CONFIGURATION_VALUE.get(),
-                "MODERATOR_ROLE_ID", STRING_CONFIGURATION_VALUE.get()
+                "MODERATOR_ROLE_ID", STRING_CONFIGURATION_VALUE.get(),
+                "TUTOR_CATEGORY_IDS", new ConfigurationParser(
+                        List::of,
+                        l -> ((List<String>)l).stream().reduce("", (a, b) -> STR."\{a};\{b}"),
+                        s -> Stream.of(s.split(";")).filter(str -> !str.isBlank()).toList(),
+                        "Liste d'identifiants de catégories séparés par `;`"
+                )
         ));
 
         // Modules
@@ -127,7 +134,8 @@ public class Config {
                 "earlybird", MODULE_DISABLED.get(),
                 "christmas", MODULE_DISABLED.get(),
                 "bookmark", MODULE_DISABLED.get(),
-                "code", MODULE_DISABLED.get()
+                "code", MODULE_DISABLED.get(),
+                "tutor", MODULE_DISABLED.get()
         ));
     }
     private static final Map<Long, Map<String, Object>> GUILD_CONFIGURATION = new HashMap<>();

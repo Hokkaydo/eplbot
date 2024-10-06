@@ -12,7 +12,7 @@ import java.util.Optional;
 public class MirrorLinkRepositorySQLite implements MirrorLinkRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private static final RowMapper<MirrorLink> mapper = (ResultSet rs, int _) -> new MirrorLink(rs.getLong("first_id"), rs.getLong("second_id"));
+    private static final RowMapper<MirrorLink> mapper = (ResultSet rs, int ignored) -> new MirrorLink(rs.getLong("first_id"), rs.getLong("second_id"));
 
     public MirrorLinkRepositorySQLite(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -37,7 +37,7 @@ public class MirrorLinkRepositorySQLite implements MirrorLinkRepository {
     }
 
     @Override
-    public List<MirrorLink> readyById(Long channelId) {
+    public List<MirrorLink> readById(Long channelId) {
         return jdbcTemplate.queryForStream(
                 "SELECT * FROM mirrors WHERE first_id = ? OR second_id = ?",
                 mapper,

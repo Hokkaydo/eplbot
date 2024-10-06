@@ -30,7 +30,8 @@ public class DatabaseManager {
             new TableModel("exams_thread", Map.of("message_id", INTEGER, "path", TEXT)),
             new TableModel("mirrors", Map.of("first_id", INTEGER, "second_id", INTEGER)),
             new TableModel("notices", Map.of("author_id", TEXT, "subject_id", TEXT, "content", TEXT, "timestamp", "timestamp", "type", TEXT)),
-            new TableModel("bookmarks", Map.of("user_id", INTEGER, "message_id", INTEGER, "description", TEXT, "message_link", TEXT))
+            new TableModel("bookmarks", Map.of("user_id", INTEGER, "message_id", INTEGER, "description", TEXT, "message_link", TEXT)),
+            new TableModel("course_tutors", Map.of("channel_id", INTEGER, "tutor_id", INTEGER, "allows_ping", INTEGER))
     );
 
 
@@ -43,13 +44,47 @@ public class DatabaseManager {
         if (drop)
             template.update(TABLES.stream().map(TableModel::name).map("DROP TABLE %s;"::formatted).reduce("", (a, b) -> a+b));
 
-        TABLES.stream().map(model ->
-            "CREATE TABLE IF NOT EXISTS %s ( id INTEGER PRIMARY KEY AUTOINCREMENT %s ); %s".formatted(
-                    model.name(), 
-                    model.parameters().entrySet().stream().map(e -> STR."\{e.getKey()} \{e.getValue()}").reduce("", "%s,%s"::formatted),
-                    drop ? "delete from sqlite_sequence where name='%s';".formatted(model.name()) : ""
-            )
-        ).forEach(template::execute);
+        for (TableModel model : TABLES) {
+
+            // Create table if not exists
+            template.execute(
+                    "CREATE TABLE IF NOT EXISTS %s ( id INTEGER PRIMARY KEY AUTOINCREMENT %s ); %s".formatted(
+                            model.name(),
+                            model.parameters().entrySet().stream().map(e -> STR."\{e.getKey()} \{e.getValue()}").reduce("", "%s,%s"::formatted),
+                            drop ? "delete from sqlite_sequence where name='%s';".formatted(model.name()) : ""
+                    )
+            );
+
+            // Remove columns that are not in the model
+            template.queryForList(STR."PRAGMA table_info(\{model.name()});")
+                    .stream()
+                    .map(row -> row.get("name"))
+                    .filter(col -> !model.parameters().containsKey((String)col))
+                    .filter(col -> !col.equals("id"))
+                    .forEach(col -> template.update(STR."ALTER TABLE \{model.name()} DROP COLUMN \{col};"));
+
+            // Add columns that are in the model but not in the table
+            List<String> columns = template.queryForList(STR."PRAGMA table_info(\{model.name()});")
+                                           .stream()
+                                           .map(row -> row.get("name"))
+                                           .map(Object::toString)
+                                           .toList();
+
+            model.parameters()
+                    .entrySet()
+                    .stream()
+                    .filter(e -> !columns.contains(e.getKey()))
+                    .forEach(e -> template.update(STR."ALTER TABLE \{model.name()} ADD COLUMN \{e.getKey()} \{e.getValue()};"));
+        }
+
+        // Delete old tables that are still in the database and not in the TABLES list
+        template.queryForList("SELECT name FROM sqlite_master WHERE type='table' AND NAME NOT LIKE 'sqlite_%';")
+                .stream()
+                .map(row -> row.get("name"))
+                .filter(name -> !TABLES.stream().map(TableModel::name).toList().contains((String)name))
+                .map(Object::toString)
+                .forEach(name -> template.update(STR."DROP TABLE \{name};"));
+
         if(drop) {
             CourseGroupRepository repository = new CourseGroupRepositorySQLite(dataSource, new CourseRepositorySQLite(dataSource));
             repository.create(loadCourses().toArray(new CourseGroup[]{}));

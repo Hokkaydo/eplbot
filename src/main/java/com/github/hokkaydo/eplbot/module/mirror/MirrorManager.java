@@ -53,7 +53,7 @@ public class MirrorManager extends ListenerAdapter {
     }
 
     List<MirrorLink> getLinks(GuildMessageChannel channel) {
-        return mirrorLinkRepository.readyById(channel.getIdLong());
+        return mirrorLinkRepository.readById(channel.getIdLong());
     }
 
 
@@ -184,7 +184,7 @@ public class MirrorManager extends ListenerAdapter {
 
     @Override
     public void onChannelDelete(@NotNull ChannelDeleteEvent event) {
-        mirrorLinkRepository.readyById(event.getChannel().getIdLong()).forEach(mirrorLinkRepository::delete);
+        mirrorLinkRepository.readById(event.getChannel().getIdLong()).forEach(mirrorLinkRepository::delete);
     }
 
     @Override

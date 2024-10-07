@@ -1,6 +1,7 @@
 package com.github.hokkaydo.eplbot.module.tutor;
 
 import com.github.hokkaydo.eplbot.Main;
+import com.github.hokkaydo.eplbot.MessageUtil;
 import com.github.hokkaydo.eplbot.Strings;
 import com.github.hokkaydo.eplbot.command.Command;
 import com.github.hokkaydo.eplbot.command.CommandContext;
@@ -15,7 +16,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.Command.Choice;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -42,58 +42,37 @@ public class TutorCommand extends ListenerAdapter implements Command {
     public void executeCommand(CommandContext context) {
         String action = context.getOption("action").map(OptionMapping::getAsString).orElseThrow(() -> new IllegalStateException("Should not arise"));
         switch (action) {
-            case "manage" -> checkCategoryParameter(context).ifPresent(s -> manage(context, s));
+            case "manage" -> manage(context);
             case "list" -> list(context);
-            case "categories" -> categories(context);
             case "ping" -> ping(context);
             default -> throw new IllegalStateException(STR."Unexpected value: \{action}");
         }
     }
 
-    private Optional<String> checkCategoryParameter(CommandContext context) {
-        Optional<String> category = context.getOption("category").map(OptionMapping::getAsString);
-        if (category.isEmpty()) {
-            context.replyCallbackAction().setContent(Strings.getString("TUTOR_COMMAND_CATEGORY_OPTION_EMPTY")).queue();
-            return Optional.empty();
-        }
-        String categoryString = category.get();
+    private void manage(CommandContext context) {
+        StringSelectMenu.Builder menu = StringSelectMenu.create("category");
+        List<String> toRemove = new ArrayList<>();
+        List<SelectOption> options = Config.<List<String>>getGuildVariable(guildId, "TUTOR_CATEGORY_IDS")
+                                             .stream()
+                                             .map(c -> {
+                                                 Category cat = Main.getJDA().getCategoryById(c);
+                                                 if (cat == null) {
+                                                     toRemove.add(c);
+                                                     return null;
+                                                 }
+                                                 return SelectOption.of(cat.getName(), cat.getId());
+                                             })
+                                             .filter(Objects::nonNull)
+                                             .toList();
 
-        if(!Config.<List<String>>getGuildVariable(guildId, "TUTOR_CATEGORY_IDS").contains(categoryString)) {
-            context.replyCallbackAction().setContent(Strings.getString("TUTOR_COMMAND_CATEGORY_OPTION_INVALID")).queue();
-            return Optional.empty();
-        }
-        return category;
-    }
-
-    private void manage(CommandContext context, String categoryString) {
-
-        StringSelectMenu.Builder menu = StringSelectMenu.create("courses");
-
-        List<TextChannel> selectedCourses = courseTutorRepository.readByTutorId(context.user().getIdLong())
-                                                    .stream()
-                                                    .map(c -> Optional.ofNullable(Main.getJDA().getGuildChannelById(c.channelId()))
-                                                                      .map(TextChannel.class::cast)
-                                                                      .orElseGet(() -> {
-                                                                          courseTutorRepository.deleteByChannelId(c.channelId());
-                                                                          return null;
-                                                                      }))
-                                                    .toList();
-
-        List<TextChannel> availableCourses = new ArrayList<>(Optional.ofNullable(Main.getJDA().getCategoryById(Long.parseLong(categoryString)))
-                                                                     .orElseThrow(() -> new IllegalStateException("Category doesn't exist !"))
-                                                                     .getChannels()
-                                                                     .stream()
-                                                                     .map(TextChannel.class::cast)
-                                                                     .toList());
-
-        availableCourses.removeAll(selectedCourses);
-
-        menu.setRequiredRange(0, selectedCourses.size() + availableCourses.size());
-        menu.setDefaultOptions(selectedCourses.stream().map(s -> SelectOption.of(s.getName(), s.getId())).toList());
-        menu.addOptions(availableCourses.stream().map(s -> SelectOption.of(s.getName(), s.getId())).toList());
-
-
+        menu.addOptions(options);
+        menu.setRequiredRange(1, 1);
         context.replyCallbackAction().setActionRow(menu.build()).queue();
+        if (toRemove.isEmpty()) return;
+        List<String> newIds = new ArrayList<>(Config.getGuildState(guildId, "TUTOR_CATEGORY_IDS"));
+        newIds.removeAll(toRemove);
+        Config.updateValue(guildId, "TUTOR_CATEGORY_IDS", newIds);
+
     }
 
     private void list(CommandContext context) {
@@ -117,32 +96,6 @@ public class TutorCommand extends ListenerAdapter implements Command {
                                         .reduce("__Liste des tuteurs :__\n", (s0, s) -> STR."\{s0}\n\{s}")
                 )
                 .queue();
-    }
-
-    private void categories(CommandContext context) {
-        List<String> categories = Config.getGuildVariable(guildId, "TUTOR_CATEGORY_IDS");
-        List<String> toRemove = new ArrayList<>();
-        context.replyCallbackAction()
-                .setContent(categories.isEmpty() ?
-                                    Strings.getString("TUTOR_COMMAND_CATEGORIES_NO_CATEGORIES") :
-                                    categories.stream()
-                                            .map(c -> {
-                                                Category cat = Main.getJDA().getCategoryById(c);
-                                                if (cat == null) {
-                                                    toRemove.add(c);
-                                                    return null;
-                                                }
-                                                return cat;
-                                            })
-                                            .filter(Objects::nonNull)
-                                            .map(c -> STR."`\{c.getName()}` - `\{c.getId()}`")
-                                            .reduce("__Liste des catégories :__\n", (s0, s) -> STR."\{s0}\n- \{s}")
-                )
-                
-                .queue();
-        categories = new ArrayList<>(categories);
-        categories.removeAll(toRemove);
-        Config.updateValue(guildId, "TUTOR_CATEGORY_IDS", categories);
     }
 
     private void ping(CommandContext context) {
@@ -172,6 +125,98 @@ public class TutorCommand extends ListenerAdapter implements Command {
     }
 
     @Override
+    public List<OptionData> getOptions() {
+        return List.of(
+                new OptionData(OptionType.STRING,"action", Strings.getString("TUTOR_COMMAND_ACTION_OPTION_DESCRIPTION"),true)
+                        .addChoice("manage", "manage")
+                        .addChoice("list", "list")
+                        .addChoice("ping", "ping")
+        );
+    }
+
+    @Override
+    public void onStringSelectInteraction(StringSelectInteractionEvent event) {
+        if(event.getGuild() == null || event.getGuild().getIdLong() != guildId) return;
+        switch (event.getComponentId().split("-")[0]) {
+            case "category" -> handleCategoryMenu(event);
+            case "courses" -> handleCourseMenu(event);
+            case "ping" -> handlePingMenu(event);
+            default -> {}
+        }
+    }
+
+    private void handleCategoryMenu(StringSelectInteractionEvent event) {
+        if(event.getSelectedOptions().isEmpty()) {
+            event.reply(Strings.getString("ERROR_OCCURRED")).setEphemeral(true).queue();
+            return;
+        }
+        String category = event.getSelectedOptions().getFirst().getValue();
+        StringSelectMenu.Builder menu = StringSelectMenu.create("courses");
+
+        List<Long> selectedCourses = courseTutorRepository.readByTutorId(event.getUser().getIdLong()).stream().map(CourseTutor::channelId).toList();
+
+        List<SelectOption> availableCourses = new ArrayList<>(Optional.ofNullable(Main.getJDA().getCategoryById(Long.parseLong(category)))
+                                                                      .orElseThrow(() -> new IllegalStateException("Category doesn't exist !"))
+                                                                      .getChannels()
+                                                                      .stream()
+                                                                      .map(TextChannel.class::cast)
+                                                                      .map(s -> SelectOption.of(s.getName(), s.getId()).withDefault(selectedCourses.contains(s.getIdLong())))
+                                                                      .toList());
+
+        if(availableCourses.isEmpty()) {
+            MessageUtil.sendAdminMessage(Strings.getString("CATEGORY_WITHOUT_COURSES").formatted(category), guildId);
+            event.getInteraction().reply(Strings.getString("ERROR_OCCURRED")).setEphemeral(true).queue();
+            return;
+        }
+        menu.setRequiredRange(0, availableCourses.size());
+        menu.addOptions(availableCourses);
+
+        event.getInteraction().editSelectMenu(menu.build()).queue();
+    }
+
+    private void handleCourseMenu(StringSelectInteractionEvent event) {
+        Guild guild = Main.getJDA().getGuildById(guildId);
+        if (guild == null) {
+            event.reply(Strings.getString("ERROR_OCCURRED")).queue();
+            return;
+        }
+        TextChannel channel = Main.getJDA().getTextChannelById(event.getChannel().getIdLong());
+        if (channel == null) {
+            event.reply(Strings.getString("ERROR_OCCURRED")).queue();
+            return;
+        }
+        // Clear non-selected courses
+        event.getSelectMenu().getOptions()
+                .stream()
+                .filter(o -> !event.getSelectedOptions().contains(o))
+                .forEach(o -> {
+                    guild.loadMembers(ignored -> channel.getMemberPermissionOverrides().stream()
+                                                         .filter(p -> p.getMember() != null && p.getMember().getIdLong() == event.getUser().getIdLong())
+                                                         .forEach(p -> p.delete().queue()));
+                    courseTutorRepository.delete(new CourseTutor(Long.parseLong(o.getValue()), event.getUser().getIdLong(), false));
+                });
+
+        // Avoid already selected courses
+        List<String> oldIds = courseTutorRepository.readByTutorId(event.getUser().getIdLong())
+                                      .stream()
+                                      .map(c -> String.valueOf(c.channelId()))
+                                      .toList();
+
+        // Add new courses
+        event.getSelectedOptions()
+                .stream()
+                .filter(o -> !oldIds.contains(o.getValue()))
+                .forEach(o -> {
+                    guild.loadMembers(ignored -> channel.upsertPermissionOverride(guild.getMember(event.getUser()))
+                                                         .grant(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND)
+                                                         .queue()
+                    );
+                    courseTutorRepository.create(new CourseTutor(Long.parseLong(o.getValue()), event.getUser().getIdLong(), false));
+                });
+        event.reply(Strings.getString("TUTOR_COMMAND_MANAGE_SUCCESS")).setEphemeral(true).queue();
+    }
+
+    @Override
     public String getName() {
         return "tutor";
     }
@@ -181,17 +226,14 @@ public class TutorCommand extends ListenerAdapter implements Command {
         return () -> Strings.getString("TUTOR_COMMAND_DESCRIPTION");
     }
 
-    @Override
-    public List<OptionData> getOptions() {
-        return List.of(
-                new OptionData(OptionType.STRING,"action", Strings.getString("TUTOR_COMMAND_ACTION_OPTION_DESCRIPTION"),true)
-                        .addChoice("manage", "manage")
-                        .addChoice("list", "list")
-                        .addChoice("categories", "categories")
-                        .addChoice("ping", "ping"),
-                new OptionData(OptionType.STRING,"category", Strings.getString("TUTOR_COMMAND_CATEGORY_OPTION_DESCRIPTION"),false)
-                        .addChoices(Config.<List<String>>getGuildVariable(guildId, "TUTOR_CATEGORY_IDS").stream().map(c -> new Choice(c, c)).toList())
-        );
+    private void handlePingMenu(StringSelectInteractionEvent event) {
+        event.getSelectedOptions().forEach(o -> courseTutorRepository.updatePing(Long.parseLong(o.getValue()), event.getUser().getIdLong(), true));
+
+        event.getSelectMenu().getOptions()
+                .stream()
+                .filter(o -> !event.getSelectedOptions().contains(o))
+                .forEach(o -> courseTutorRepository.updatePing(Long.parseLong(o.getValue()), event.getUser().getIdLong(), false));
+        event.reply(Strings.getString("TUTOR_COMMAND_MANAGE_SUCCESS")).setEphemeral(true).queue();
     }
 
     @Override
@@ -213,63 +255,6 @@ public class TutorCommand extends ListenerAdapter implements Command {
     public Supplier<String> help() {
         return () -> Strings.getString("TUTOR_COMMAND_HELP");
     }
-
-    @Override
-    public void onStringSelectInteraction(StringSelectInteractionEvent event) {
-        if(event.getComponentId().startsWith("courses")) {
-            Guild guild = Main.getJDA().getGuildById(guildId);
-            if (guild == null) {
-                event.reply(Strings.getString("ERROR_OCCURRED")).queue();
-                return;
-            }
-            TextChannel channel = Main.getJDA().getTextChannelById(event.getChannel().getIdLong());
-            if (channel == null) {
-                event.reply(Strings.getString("ERROR_OCCURRED")).queue();
-                return;
-            }
-            // Clear non-selected courses
-            event.getSelectMenu().getOptions()
-                    .stream()
-                    .filter(o -> !event.getSelectedOptions().contains(o))
-                    .forEach(o -> {
-                        guild.loadMembers(ignored -> channel.getMemberPermissionOverrides().stream()
-                                                             .filter(p -> p.getMember() != null && p.getMember().getIdLong() == event.getUser().getIdLong())
-                                                             .forEach(p -> p.delete().queue()));
-                        courseTutorRepository.delete(new CourseTutor(Long.parseLong(o.getValue()), event.getUser().getIdLong(), false));
-                    });
-
-            // Avoid already selected courses
-            List<String> oldIds = courseTutorRepository.readByTutorId(event.getUser().getIdLong())
-                                          .stream()
-                                          .map(c -> String.valueOf(c.channelId()))
-                                          .toList();
-
-            // Add new courses
-            event.getSelectedOptions()
-                    .stream()
-                    .filter(o -> !oldIds.contains(o.getValue()))
-                    .forEach(o -> {
-                        guild.loadMembers(ignored -> channel.upsertPermissionOverride(guild.getMember(event.getUser()))
-                                                             .grant(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND)
-                                                             .queue()
-                        );
-                        courseTutorRepository.create(new CourseTutor(Long.parseLong(o.getValue()), event.getUser().getIdLong(), false));
-                    });
-            event.reply(Strings.getString("TUTOR_COMMAND_MANAGE_SUCCESS")).queue();
-        }
-
-        if (event.getComponentId().startsWith("ping")) {
-            event.getSelectedOptions().forEach(o -> courseTutorRepository.updatePing(Long.parseLong(o.getValue()), event.getUser().getIdLong(), true));
-
-            event.getSelectMenu().getOptions()
-                    .stream()
-                    .filter(o -> !event.getSelectedOptions().contains(o))
-                    .forEach(o -> courseTutorRepository.updatePing(Long.parseLong(o.getValue()), event.getUser().getIdLong(), false));
-            event.reply(Strings.getString("TUTOR_COMMAND_MANAGE_SUCCESS")).queue();
-        }
-
-    }
-
 
     private record TutorPing(User user, boolean allowsPing) {}
 

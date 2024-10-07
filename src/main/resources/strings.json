@@ -149,15 +149,11 @@
   "COMMAND_CODE_UNSAFE_MENTIONS_RESPONSE": "Le résultat contient des mentions de rôles ou utilisateurs, ce n'est pas autorisé.",
   "COMMAND_CODE_UNSAFE_MENTIONS_SUBMITTED": "Le code soumis contient des mentions de rôles ou utilisateurs, ce n'est pas autorisé.",
   "COMMAND_CODE_ASYNCHRONOUS_ERROR": "Nous n'avons pas réussi à lancer le code de manière asynchrone, veuillez réessayer dans quelques minutes. Si le problème persiste, contactez un admin.",
-  "TUTOR_COMMAND_CATEGORY_OPTION_EMPTY": "Vous devez spécifier l'identifiant d'une catégorie de cours (`/tutor categories` pour voir les catégories disponibles)",
-  "TUTOR_COMMAND_CATEGORY_OPTION_INVALID": "La catégorie spécifiée n'est pas référencée comme catégorie pour tuteurs.",
   "TUTOR_COMMAND_COURSES_COURSES_MODAL_TITLE": "Cours disponibles",
   "TUTOR_COMMAND_LIST_NO_TUTOR": "Aucun tuteur disponible pour ce cours",
   "TUTOR_COMMAND_DESCRIPTION": "Permet de consulter/gérer les tuteurs disponibles pour un cours",
   "TUTOR_COMMAND_ACTION_OPTION_DESCRIPTION": "Action à effectuer",
-  "TUTOR_COMMAND_CATEGORY_OPTION_DESCRIPTION": "Identifiant de catégorie de cours (/tutor categories pour connaître la liste)",
-  "TUTOR_COMMAND_HELP": "Permet de consulter/gérer les tuteurs disponibles pour un cours\n- `/tutor list` permet de connaître la liste des tuteurs pour un cours\n- `/tutor manage` permet de gérer ses propres inscriptions de tuteurs pour les cours\n- `/tutor categories` permet de connaître les catégories de cours disponibles",
-  "TUTOR_COMMAND_CATEGORIES_NO_CATEGORIES": "Aucune catégorie de cours n'est disponible.",
-  "TUTOR_COMMAND_COURSES_BUTTON_LABEL": "Sélectionner les cours",
-  "TUTOR_COMMAND_MANAGE_SUCCESS": "Modifications effectuées !"
+  "TUTOR_COMMAND_HELP": "Permet de consulter/gérer les tuteurs disponibles pour un cours\n- `/tutor list` permet de connaître la liste des tuteurs pour un cours\n- `/tutor manage` permet de gérer ses propres inscriptions de tuteurs pour les cours\n- `/tutor ping` permet gérer l'acceptation des mentions pour un cours",
+  "TUTOR_COMMAND_MANAGE_SUCCESS": "Modifications effectuées !",
+  "CATEGORY_WITHOUT_COURSES": "Une catégorie de cours à tuteurs n'a pas de cours (id: `%s`)"
 }

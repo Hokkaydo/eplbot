@@ -53,13 +53,13 @@ public class TutorCommand extends ListenerAdapter implements Command {
     private Optional<String> checkCategoryParameter(CommandContext context) {
         Optional<String> category = context.getOption("category").map(OptionMapping::getAsString);
         if (category.isEmpty()) {
-            context.replyCallbackAction().setContent(Strings.getString("TUTOR_COMMAND_CATEGORY_OPTION_EMPTY")).setEphemeral(true).queue();
+            context.replyCallbackAction().setContent(Strings.getString("TUTOR_COMMAND_CATEGORY_OPTION_EMPTY")).queue();
             return Optional.empty();
         }
         String categoryString = category.get();
 
         if(!Config.<List<String>>getGuildVariable(guildId, "TUTOR_CATEGORY_IDS").contains(categoryString)) {
-            context.replyCallbackAction().setContent(Strings.getString("TUTOR_COMMAND_CATEGORY_OPTION_INVALID")).setEphemeral(true).queue();
+            context.replyCallbackAction().setContent(Strings.getString("TUTOR_COMMAND_CATEGORY_OPTION_INVALID")).queue();
             return Optional.empty();
         }
         return category;
@@ -92,6 +92,7 @@ public class TutorCommand extends ListenerAdapter implements Command {
         menu.setDefaultOptions(selectedCourses.stream().map(s -> SelectOption.of(s.getName(), s.getId())).toList());
         menu.addOptions(availableCourses.stream().map(s -> SelectOption.of(s.getName(), s.getId())).toList());
 
+
         context.replyCallbackAction().setActionRow(menu.build()).queue();
     }
 
@@ -115,7 +116,6 @@ public class TutorCommand extends ListenerAdapter implements Command {
                                         .map(r -> STR."\{r.user.getAsMention()} \{r.allowsPing ? ":loudspeaker:" : ""}")
                                         .reduce("__Liste des tuteurs :__\n", (s0, s) -> STR."\{s0}\n\{s}")
                 )
-                .setSuppressedNotifications(true)
                 .queue();
     }
 
@@ -138,7 +138,7 @@ public class TutorCommand extends ListenerAdapter implements Command {
                                             .map(c -> STR."`\{c.getName()}` - `\{c.getId()}`")
                                             .reduce("__Liste des catégories :__\n", (s0, s) -> STR."\{s0}\n- \{s}")
                 )
-                .setEphemeral(true)
+                
                 .queue();
         categories = new ArrayList<>(categories);
         categories.removeAll(toRemove);
@@ -196,7 +196,7 @@ public class TutorCommand extends ListenerAdapter implements Command {
 
     @Override
     public boolean ephemeralReply() {
-        return false;
+        return true;
     }
 
     @Override

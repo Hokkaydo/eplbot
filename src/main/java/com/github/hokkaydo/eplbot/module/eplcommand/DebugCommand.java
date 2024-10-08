@@ -6,12 +6,14 @@ import com.github.hokkaydo.eplbot.command.CommandContext;
 import com.github.hokkaydo.eplbot.configuration.repository.ConfigurationRepositorySQLite;
 import com.github.hokkaydo.eplbot.database.CRUDRepository;
 import com.github.hokkaydo.eplbot.database.DatabaseManager;
+import com.github.hokkaydo.eplbot.module.bookmark.repository.BookMarkRepositorySQLite;
 import com.github.hokkaydo.eplbot.module.confession.repository.WarnedConfessionRepositorySQLite;
 import com.github.hokkaydo.eplbot.module.graderetrieve.repository.CourseGroupRepositorySQLite;
 import com.github.hokkaydo.eplbot.module.graderetrieve.repository.CourseRepositorySQLite;
 import com.github.hokkaydo.eplbot.module.graderetrieve.repository.ExamRetrieveThreadRepositorySQLite;
 import com.github.hokkaydo.eplbot.module.mirror.repository.MirrorLinkRepositorySQLite;
 import com.github.hokkaydo.eplbot.module.notice.repository.NoticeRepositorySQLite;
+import com.github.hokkaydo.eplbot.module.tutor.repository.CourseTutorRepositorySQLite;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -47,7 +49,9 @@ public class DebugCommand implements Command {
             new ConfigurationRepositorySQLite(DatabaseManager.getDataSource()),
             new MirrorLinkRepositorySQLite(DatabaseManager.getDataSource()),
             new ExamRetrieveThreadRepositorySQLite(DatabaseManager.getDataSource()),
-            new NoticeRepositorySQLite(courseRepo, groupRepo)
+            new NoticeRepositorySQLite(courseRepo, groupRepo),
+            new BookMarkRepositorySQLite(DatabaseManager.getDataSource()),
+            new CourseTutorRepositorySQLite(DatabaseManager.getDataSource())
     );
 
     private static void dumpDB(PrivateChannel channel) {

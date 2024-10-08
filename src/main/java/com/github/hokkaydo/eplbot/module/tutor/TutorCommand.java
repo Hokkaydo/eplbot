@@ -78,14 +78,14 @@ public class TutorCommand extends ListenerAdapter implements Command {
     private void list(CommandContext context) {
         List<TutorPing> tutors = courseTutorRepository.readByChannelId(context.channel().getIdLong())
                                          .stream()
-                                         .map(c -> Optional.ofNullable(Main.getJDA().getUserById(c.tutorId()))
+                                         .peek(System.out::println)
+                                         .map(c -> Main.getJDA()
+                                                           .retrieveUserById(c.tutorId())
                                                            .map(u -> new TutorPing(u, c.allowsPing()))
-                                                           .orElseGet(() -> {
-                                                               courseTutorRepository.delete(c);
-                                                               return null;
-                                                           }))
+                                                           .complete())
                                          .filter(Objects::nonNull)
                                          .sorted((t1, t2) -> t1.allowsPing ? t2.allowsPing ? 0 : 1 : -1)
+                                         .peek(c -> System.out.println(STR."after sort \{c}"))
                                          .toList();
         context.replyCallbackAction()
                 .setContent(

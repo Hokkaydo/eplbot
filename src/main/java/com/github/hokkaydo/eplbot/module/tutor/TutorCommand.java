@@ -180,20 +180,16 @@ public class TutorCommand extends ListenerAdapter implements Command {
             event.reply(Strings.getString("ERROR_OCCURRED")).queue();
             return;
         }
-        TextChannel channel = Main.getJDA().getTextChannelById(event.getChannel().getIdLong());
-        if (channel == null) {
-            event.reply(Strings.getString("ERROR_OCCURRED")).queue();
-            return;
-        }
+
         // Clear non-selected courses
         event.getSelectMenu().getOptions()
                 .stream()
                 .filter(o -> !event.getSelectedOptions().contains(o))
-                .forEach(o -> {
-                    guild.loadMembers(ignored -> channel.getMemberPermissionOverrides().stream()
-                                                         .filter(p -> p.getMember() != null && p.getMember().getIdLong() == event.getUser().getIdLong())
-                                                         .forEach(p -> p.delete().queue()));
-                    courseTutorRepository.delete(new CourseTutor(Long.parseLong(o.getValue()), event.getUser().getIdLong(), false));
+                .map(o -> Main.getJDA().getTextChannelById(o.getValue()))
+                .filter(Objects::nonNull)
+                .forEach(channel -> {
+                    channel.getManager().removePermissionOverride(event.getUser().getIdLong()).reason("Tutor deletion").queue();
+                    courseTutorRepository.delete(new CourseTutor(channel.getIdLong(), event.getUser().getIdLong(), false));
                 });
 
         // Avoid already selected courses
@@ -206,12 +202,17 @@ public class TutorCommand extends ListenerAdapter implements Command {
         event.getSelectedOptions()
                 .stream()
                 .filter(o -> !oldIds.contains(o.getValue()))
-                .forEach(o -> {
-                    guild.loadMembers(ignored -> channel.upsertPermissionOverride(guild.getMember(event.getUser()))
-                                                         .grant(Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND)
-                                                         .queue()
-                    );
-                    courseTutorRepository.create(new CourseTutor(Long.parseLong(o.getValue()), event.getUser().getIdLong(), false));
+                .map(o -> Main.getJDA().getTextChannelById(o.getValue()))
+                .filter(Objects::nonNull)
+                .forEach(channel -> {
+                    channel.getManager().putMemberPermissionOverride(
+                                    event.getUser().getIdLong(),
+                                    Permission.VIEW_CHANNEL.getRawValue() | Permission.MESSAGE_SEND.getRawValue(),
+                                    0
+                            )
+                            .reason("Tutor permission")
+                            .queue();
+                    courseTutorRepository.create(new CourseTutor(channel.getIdLong(), event.getUser().getIdLong(), false));
                 });
         event.reply(Strings.getString("TUTOR_COMMAND_MANAGE_SUCCESS")).setEphemeral(true).queue();
     }

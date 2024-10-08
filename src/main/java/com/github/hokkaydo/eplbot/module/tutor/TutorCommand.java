@@ -125,16 +125,6 @@ public class TutorCommand extends ListenerAdapter implements Command {
     }
 
     @Override
-    public List<OptionData> getOptions() {
-        return List.of(
-                new OptionData(OptionType.STRING,"action", Strings.getString("TUTOR_COMMAND_ACTION_OPTION_DESCRIPTION"),true)
-                        .addChoice("manage", "manage")
-                        .addChoice("list", "list")
-                        .addChoice("ping", "ping")
-        );
-    }
-
-    @Override
     public void onStringSelectInteraction(StringSelectInteractionEvent event) {
         if(event.getGuild() == null || event.getGuild().getIdLong() != guildId) return;
         switch (event.getComponentId().split("-")[0]) {
@@ -215,6 +205,16 @@ public class TutorCommand extends ListenerAdapter implements Command {
                     courseTutorRepository.create(new CourseTutor(channel.getIdLong(), event.getUser().getIdLong(), false));
                 });
         event.reply(Strings.getString("TUTOR_COMMAND_MANAGE_SUCCESS")).setEphemeral(true).queue();
+    }
+
+    @Override
+    public List<OptionData> getOptions() {
+        return List.of(
+                new OptionData(OptionType.STRING,"action", Strings.getString("TUTOR_COMMAND_ACTION_OPTION_DESCRIPTION"),true)
+                        .addChoice("manage", "manage")
+                        .addChoice("list", "list")
+                        .addChoice("ping", "ping")
+        );
     }
 
     @Override

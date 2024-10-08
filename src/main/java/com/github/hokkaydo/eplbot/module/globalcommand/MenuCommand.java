@@ -30,7 +30,7 @@ public class MenuCommand implements Command {
                     .ifPresentOrElse(element -> {
                         String imageUrl = element.attr("src");
                         context.replyCallbackAction().setContent(STR."https://\{imageUrl.replace("//", "")}").queue();
-                    }, () -> context.replyCallbackAction().setContent(Strings.getString("MENU_NOT_FOUND")).queue());
+                    }, () -> context.replyCallbackAction().setContent(Strings.getString("MENU_COMMAND_NOT_FOUND")).queue());
         } catch (IOException e) {
             context.replyCallbackAction().setContent(Strings.getString("ERROR_OCCURRED")).queue();
             Main.LOGGER.log(Level.WARNING, "[MenuCommand] An error occurred while trying to parse the URL", e);

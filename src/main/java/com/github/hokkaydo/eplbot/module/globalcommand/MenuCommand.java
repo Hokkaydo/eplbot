@@ -25,7 +25,7 @@ public class MenuCommand implements Command {
             URL url = URI.create(MENU_URL).toURL();
             Jsoup.parse(url, 10000).select("img")
                     .stream()
-                    .filter(element -> element.attr("src").contains("menu"))
+                    .filter(element -> element.attr("src").contains("cms-editors-resto-u/"))
                     .findFirst()
                     .ifPresentOrElse(element -> {
                         String imageUrl = element.attr("src");

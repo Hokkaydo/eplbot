@@ -155,5 +155,6 @@
   "TUTOR_COMMAND_ACTION_OPTION_DESCRIPTION": "Action à effectuer",
   "TUTOR_COMMAND_HELP": "Permet de consulter/gérer les tuteurs disponibles pour un cours\n- `/tutor list` permet de connaître la liste des tuteurs pour un cours\n- `/tutor manage` permet de gérer ses propres inscriptions de tuteurs pour les cours\n- `/tutor ping` permet gérer l'acceptation des mentions pour un cours",
   "TUTOR_COMMAND_MANAGE_SUCCESS": "Modifications effectuées !",
-  "CATEGORY_WITHOUT_COURSES": "Une catégorie de cours à tuteurs n'a pas de cours (id: `%s`)"
+  "CATEGORY_WITHOUT_COURSES": "Une catégorie de cours à tuteurs n'a pas de cours (id: `%s`)",
+  "TUTOR_COMMAND_PING_NO_COURSE": "Vous n'avez aucun cours"
 }

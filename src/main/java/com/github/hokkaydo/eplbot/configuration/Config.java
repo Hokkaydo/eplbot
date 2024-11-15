@@ -114,7 +114,8 @@ public class Config {
                         l -> ((List<String>)l).stream().reduce("", (a, b) -> STR."\{a};\{b}"),
                         s -> Stream.of(s.split(";")).filter(str -> !str.isBlank()).toList(),
                         "Liste d'identifiants de catégories séparés par `;`"
-                )
+                ),
+                "MENU_CHANNEL_ID", STRING_CONFIGURATION_VALUE.get()
         ));
 
         // Modules
@@ -135,7 +136,8 @@ public class Config {
                 "christmas", MODULE_DISABLED.get(),
                 "bookmark", MODULE_DISABLED.get(),
                 "code", MODULE_DISABLED.get(),
-                "tutor", MODULE_DISABLED.get()
+                "tutor", MODULE_DISABLED.get(),
+                "menu", MODULE_DISABLED.get()
         ));
     }
     private static final Map<Long, Map<String, Object>> GUILD_CONFIGURATION = new HashMap<>();

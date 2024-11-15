@@ -24,7 +24,6 @@ public class GlobalCommandModule extends Module {
     private final LMGTCommand lmgtCommand;
     private final WikiCommand wikiCommand;
     private final SayCommand sayCommand;
-    private final MenuCommand menuCommand;
     public GlobalCommandModule(@NotNull Long guildId) {
         super(guildId);
         enableCommand = new EnableCommand(getGuildId());
@@ -40,7 +39,6 @@ public class GlobalCommandModule extends Module {
         lmgtCommand = new LMGTCommand();
         wikiCommand = new WikiCommand();
         sayCommand = new SayCommand();
-        menuCommand = new MenuCommand();
     }
 
     @Override
@@ -63,8 +61,7 @@ public class GlobalCommandModule extends Module {
                 issueCommand,
                 lmgtCommand,
                 wikiCommand,
-                sayCommand,
-                menuCommand
+                sayCommand
         );
     }
 

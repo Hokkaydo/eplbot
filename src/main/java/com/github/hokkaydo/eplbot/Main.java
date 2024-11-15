@@ -15,6 +15,7 @@ import com.github.hokkaydo.eplbot.module.earlybird.EarlyBirdModule;
 import com.github.hokkaydo.eplbot.module.eplcommand.EPLCommandModule;
 import com.github.hokkaydo.eplbot.module.globalcommand.GlobalCommandModule;
 import com.github.hokkaydo.eplbot.module.graderetrieve.ExamsRetrieveModule;
+import com.github.hokkaydo.eplbot.module.menu.MenuModule;
 import com.github.hokkaydo.eplbot.module.mirror.MirrorModule;
 import com.github.hokkaydo.eplbot.module.notice.NoticeModule;
 import com.github.hokkaydo.eplbot.module.quote.QuoteModule;
@@ -152,7 +153,8 @@ public class Main {
                 RssModule.class,
                 NoticeModule.class,
                 BookMarkModule.class,
-                TutorModule.class
+                TutorModule.class,
+                MenuModule.class
         );
         List<Class<? extends Module>> eplModules = Arrays.asList(
                 EPLCommandModule.class,

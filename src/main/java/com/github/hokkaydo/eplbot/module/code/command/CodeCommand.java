@@ -78,11 +78,12 @@ public class CodeCommand extends ListenerAdapter implements Command {
 
     @Override
     public void executeCommand(CommandContext context) {
-        if (context.options().size() <= 1 || (context.options().size() == 2 && context.options().get(1).getType() != OptionType.ATTACHMENT)) {
+        System.out.println(context.options().size());
+        if (context.options().size() <= 2) {
             // No file given
             String currentLang = context.options().getFirst().getAsString();
             String modalName = STR."\{context.author().getId()}-code_submission-\{currentLang}";
-            if (context.options().size() == 2){
+            if (context.options().get(1).getAsBoolean()){
                 modalName += "-spoiler";
             }
             context.interaction().replyModal(Modal.create(modalName,"Execute du code")
@@ -109,8 +110,8 @@ public class CodeCommand extends ListenerAdapter implements Command {
                 boolean hasSpoiler = context.options().get(1).getAsBoolean();
 
                 futureResult.thenAccept(result -> {
-                    response.sendSubmittedCode(context.channel(), spoilMessage(code, hasSpoiler), context.options().getFirst().getAsString());
-                    response.sendResult(context.channel(), spoilMessage(result.getLeft(),hasSpoiler), result.getRight());
+                    response.sendSubmittedCode(context.channel(), code, context.options().getFirst().getAsString(), hasSpoiler);
+                    response.sendResult(context.channel(), result.getLeft(), result.getRight(), hasSpoiler);
                     if (file != null && !file.delete()) {
                         Main.LOGGER.log(Level.INFO, "File not deleted");
                     }
@@ -141,18 +142,6 @@ public class CodeCommand extends ListenerAdapter implements Command {
         }
     }
 
-    /**
-     * @param text the string to be formatted to spoiler
-     * @param isSpoiler a boolean descibing the need for format
-     * @return the text + || twice
-     */
-    private String spoilMessage(String text, boolean isSpoiler) {
-        if (isSpoiler) {
-            return STR."||\{text}||";
-        } else {
-            return text;
-        }
-    }
 
     @Override
     public void onModalInteraction(ModalInteractionEvent event) {
@@ -177,8 +166,8 @@ public class CodeCommand extends ListenerAdapter implements Command {
             );
             futureResult.thenAccept(result -> {
                 boolean hasSpoiler = event.getModalId().contains("spoiler");
-                response.sendSubmittedCode(event.getChannel(),spoilMessage(code, hasSpoiler),languageOption);
-                response.sendResult(event.getChannel(), spoilMessage(result.getLeft(),hasSpoiler),result.getRight());
+                response.sendSubmittedCode(event.getChannel(),code,languageOption, hasSpoiler);
+                response.sendResult(event.getChannel(), result.getLeft(),result.getRight(), hasSpoiler);
                 long sent = Instant.now().toEpochMilli();
                 reply.editOriginal(STR."Processing time: `\{(sent-current)} ms`").queue();
             });

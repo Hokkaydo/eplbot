@@ -37,38 +37,51 @@ public class PerformResponse {
      * @param code the code that has been submitted
      * @param lang the language submitted
      */
-    public void sendSubmittedCode(MessageChannel textChannel, String code, String lang) {
+    public void sendSubmittedCode(MessageChannel textChannel, String code, String lang, boolean spoiler) {
         if (GlobalRunner.safeMentions(code)) {
-            textChannel.sendMessage(STR."\{Strings.getString("COMMAND_CODE_UNSAFE_MENTIONS_SUBMITTED")}\n").queue();
+            textChannel.sendMessage(spoilMessage(STR."\{Strings.getString("COMMAND_CODE_UNSAFE_MENTIONS_SUBMITTED")}\n", spoiler)).queue();
             return;
         }
         if (validateMessageLength(code)) {
-            textChannel.sendMessage(STR."```\{lang.toLowerCase()}\n\{code}\n```").queue();
+            textChannel.sendMessage(spoilMessage(STR."```\{lang.toLowerCase()}\n\{code}\n```",spoiler)).queue();
             return;
         }
         if (validateHastebinLength(code)) {
             String url = createUrlFromString(textChannel, code);
-            textChannel.sendMessage(STR."`The submitted code is available at : `\n<\{url}>").queue();
+            textChannel.sendMessage(spoilMessage(STR."`The submitted code is available at : `\n<\{url}>", spoiler)).queue();
             return;
         }
-        textChannel.sendMessage(STR."`The submitted code is too large \n:\{Strings.getString("COMMAND_CODE_EXCEEDED_HASTEBIN_SIZE")}").queue();
+        textChannel.sendMessage(spoilMessage(STR."`The submitted code is too large \n:\{Strings.getString("COMMAND_CODE_EXCEEDED_HASTEBIN_SIZE")}", spoiler)).queue();
     }
+
     /**
      * @param textChannel the channel of the interaction
      * @param result the string with the output of the code
      * @param exitCode an int with the exit code of the submitted code
      */
     @SuppressWarnings("unused") //exitCode is not used but could be later
-    public void sendResult(MessageChannel textChannel, String result, int exitCode){
+    public void sendResult(MessageChannel textChannel, String result, int exitCode, boolean spoiler){
         if (validateMessageLength(result)){
-            textChannel.sendMessage(STR."`\{result}`").queue();
+            textChannel.sendMessage(spoilMessage(STR."`\{result}`", spoiler)).queue();
             return;
         }
         if (validateHastebinLength(result)) {
             String url = createUrlFromString(textChannel, result);
-            textChannel.sendMessage(STR."`The result of the code is available at : `\n<\{url}>").queue();
+            textChannel.sendMessage(spoilMessage(STR."`The result of the code is available at : `\n<\{url}>", spoiler)).queue();
             return;
         }
-        textChannel.sendMessage(STR."`The result is too large : \n\{Strings.getString("COMMAND_CODE_EXCEEDED_HASTEBIN_SIZE")}").queue();
+        textChannel.sendMessage(spoilMessage(STR."`The result is too large : \n\{Strings.getString("COMMAND_CODE_EXCEEDED_HASTEBIN_SIZE")}", spoiler)).queue();
+    }
+    /**
+     * @param text the string to be formatted to spoiler
+     * @param isSpoiler a boolean descibing the need for format
+     * @return the text + || twice
+     */
+    private String spoilMessage(String text, boolean isSpoiler) {
+        if (isSpoiler) {
+            return STR."||\{text}||";
+        } else {
+            return text;
+        }
     }
 }

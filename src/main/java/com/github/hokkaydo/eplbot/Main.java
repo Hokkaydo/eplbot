@@ -53,6 +53,7 @@ public class Main {
     private static ModuleManager moduleManager;
     private static CommandManager commandManager;
     public static final Long EPL_DISCORD_ID = 517720163223601153L;
+    private static Long bossId = 0L;
     private static Long prodDiscordId = 0L;
     public static final String PERSISTENCE_DIR_PATH = "./persistence";
     private static final Random RANDOM = new Random();
@@ -94,6 +95,8 @@ public class Main {
         Long testDiscordId = testDiscordIdStr == null ? 1108141461498777722L : Long.parseLong(testDiscordIdStr);
         prodDiscordId = testDiscordIdStr == null ? EPL_DISCORD_ID : testDiscordId;
         specialDiscordIds = List.of(prodDiscordId, testDiscordId);
+        String bossIdStr = System.getenv("BOSS_ID");
+        if (bossIdStr != null) bossId = Long.parseLong(bossIdStr);
 
         if (token == null && args.length > 0) token = args[0];
         if (token == null) throw new IllegalStateException("No token specified !");
@@ -232,6 +235,10 @@ public class Main {
 
     public static CommandManager getCommandManager() {
         return Main.commandManager;
+    }
+
+    public static Long getBossId() {
+        return bossId;
     }
 
 }

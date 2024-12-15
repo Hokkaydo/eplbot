@@ -39,6 +39,7 @@ public class GlobalCommandModule extends Module {
         lmgtCommand = new LMGTCommand();
         wikiCommand = new WikiCommand();
         sayCommand = new SayCommand();
+        sayCommand.periodicCleanup();
     }
 
     @Override

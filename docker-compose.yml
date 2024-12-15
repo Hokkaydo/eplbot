@@ -10,5 +10,6 @@ services:
             - GITHUB_APPLICATION_ID=${EPLBOT_GITHUBID}
             - GITHUB_APPLICATION_INSTALLATION_ID=${EPLBOT_INSTALLID}
             - TEST_DISCORD_ID=${EPLBOT_DISCORDID}
+            - BOSS_ID=${EPLBOT_BOSSID}
             - TZ=Europe/Brussels
         

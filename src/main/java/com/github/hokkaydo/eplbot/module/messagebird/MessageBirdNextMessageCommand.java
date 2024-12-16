@@ -5,6 +5,7 @@ import com.github.hokkaydo.eplbot.Strings;
 import com.github.hokkaydo.eplbot.command.Command;
 import com.github.hokkaydo.eplbot.command.CommandContext;
 import com.github.hokkaydo.eplbot.configuration.Config;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -23,8 +24,6 @@ import java.util.function.Supplier;
 public class MessageBirdNextMessageCommand extends ListenerAdapter implements Command {
 
     private final long guildId;
-    // Should be using Message.MAX_CONTENT_LENGTH, but somehow it doesn't accept more than 1024 chars ¯\_(ツ)_/¯
-    private static final int MAX_LENGTH = 1024;
     private final List<String> types;
 
     MessageBirdNextMessageCommand(long guildId, List<String> types) {
@@ -95,8 +94,8 @@ public class MessageBirdNextMessageCommand extends ListenerAdapter implements Co
         ModalMapping contentMap = event.getInteraction().getValue("message");
         if (contentMap == null) return;
         String content = contentMap.getAsString();
-        if (content.length() > MAX_LENGTH) {
-            event.reply(Strings.getString("MESSAGE_BIRD_NEXT_MESSAGE_TOO_LONG").formatted(MAX_LENGTH)).queue();
+        if (content.length() > Message.MAX_CONTENT_LENGTH) {
+            event.reply(Strings.getString("MESSAGE_BIRD_NEXT_MESSAGE_TOO_LONG").formatted(Message.MAX_CONTENT_LENGTH)).queue();
             return;
         }
         Config.updateValue(event.getGuild().getIdLong(), STR."\{type}_BIRD_NEXT_MESSAGE", content);

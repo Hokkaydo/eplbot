@@ -11,11 +11,11 @@ import com.github.hokkaydo.eplbot.module.bookmark.BookMarkModule;
 import com.github.hokkaydo.eplbot.module.christmas.ChristmasModule;
 import com.github.hokkaydo.eplbot.module.code.CodeModule;
 import com.github.hokkaydo.eplbot.module.confession.ConfessionModule;
-import com.github.hokkaydo.eplbot.module.earlybird.EarlyBirdModule;
 import com.github.hokkaydo.eplbot.module.eplcommand.EPLCommandModule;
 import com.github.hokkaydo.eplbot.module.globalcommand.GlobalCommandModule;
 import com.github.hokkaydo.eplbot.module.graderetrieve.ExamsRetrieveModule;
 import com.github.hokkaydo.eplbot.module.menu.MenuModule;
+import com.github.hokkaydo.eplbot.module.messagebird.MessageBirdModule;
 import com.github.hokkaydo.eplbot.module.mirror.MirrorModule;
 import com.github.hokkaydo.eplbot.module.notice.NoticeModule;
 import com.github.hokkaydo.eplbot.module.quote.QuoteModule;
@@ -164,7 +164,7 @@ public class Main {
                 ConfessionModule.class,
                 ExamsRetrieveModule.class,
                 RatioModule.class,
-                EarlyBirdModule.class,
+                MessageBirdModule.class,
                 ChristmasModule.class,
                 CodeModule.class
         );

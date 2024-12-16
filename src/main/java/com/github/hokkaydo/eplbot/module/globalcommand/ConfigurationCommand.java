@@ -26,7 +26,10 @@ public class ConfigurationCommand implements Command {
         Optional<OptionMapping> valueOption = context.options().stream().filter(s -> s.getName().equals("value")).findFirst();
         if(keyOption.isEmpty()) {
             context.replyCallbackAction().setContent(
-                    Config.getDefaultConfiguration().keySet().stream()
+                    Config.getDefaultConfiguration()
+                            .keySet()
+                            .stream()
+                            .sorted()
                             .map(k -> STR."`\{k}`: \{Config.getGuildVariable(guildId, k)}")
                             .reduce((s1, s2) -> STR."\{s1}\n\{s2}")
                             .orElse("")

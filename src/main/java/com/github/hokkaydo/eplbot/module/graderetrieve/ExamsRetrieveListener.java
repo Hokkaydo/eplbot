@@ -38,7 +38,7 @@ import java.util.zip.ZipOutputStream;
 
 public class ExamsRetrieveListener extends ListenerAdapter {
 
-    static final Path ZIP_PATH = Path.of(Main.PERSISTENCE_DIR_PATH + "/exams.zip");
+    static final Path ZIP_PATH = Path.of(STR."\{Main.PERSISTENCE_DIR_PATH}/exams.zip");
     private static final String THREAD_MESSAGE_FORMAT = "%s - %s (BAC%d - %s)";
     private static final String EXAMEN_STORING_PATH_FORMAT = "%s/Q%d/%s";
     private final Long guildId;

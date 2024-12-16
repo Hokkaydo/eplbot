@@ -47,6 +47,13 @@ public class Config {
             s -> s,
             STRING_FORMAT
     );
+    private static final Function<String, ConfigurationParser> STRING_CONFIGURATION_VALUE_DEFAULT = str -> new ConfigurationParser(
+            () -> str,
+            Object::toString,
+            s -> s,
+            STRING_FORMAT
+    );
+
     private static final Function<Color, ConfigurationParser> COLOR_CONFIGURATION_VALUE = init -> new ConfigurationParser(
             () -> init,
             c -> STR."#\{Integer.toHexString(((Color) c).getRGB()).substring(2)}",
@@ -84,7 +91,8 @@ public class Config {
             ),
             "EXAM_RETRIEVE_CHANNEL_ID", STRING_CONFIGURATION_VALUE.get(),
             "EXAM_ZIP_MESSAGE_ID", STRING_CONFIGURATION_VALUE.get(),
-            "EARLY_BIRD_NEXT_MESSAGE", STRING_CONFIGURATION_VALUE.get()
+            "EARLY_BIRD_NEXT_MESSAGE", STRING_CONFIGURATION_VALUE.get(),
+            "NIGHT_BIRD_NEXT_MESSAGE", STRING_CONFIGURATION_VALUE.get()
     );
     static {
         // Configuration keys
@@ -106,7 +114,12 @@ public class Config {
                 "EARLY_BIRD_RANGE_END_DAY_SECONDS", LONG_CONFIGURATION_VALUE.apply(9*60*60L)
         ));
         DEFAULT_CONFIGURATION.putAll(Map.of(
+                "NIGHT_BIRD_ROLE_ID", STRING_CONFIGURATION_VALUE.get(),
+                "NIGHT_BIRD_CHANNEL_ID", STRING_CONFIGURATION_VALUE.get(),
+                "NIGHT_BIRD_RANGE_START_DAY_SECONDS", LONG_CONFIGURATION_VALUE.apply(2*60*60L),
+                "NIGHT_BIRD_RANGE_END_DAY_SECONDS", LONG_CONFIGURATION_VALUE.apply(5*60*60L),
                 "EARLY_BIRD_MESSAGE_PROBABILITY", INTEGER_CONFIGURATION_VALUE.apply(33),
+                "NIGHT_BIRD_MESSAGE_PROBABILITY", INTEGER_CONFIGURATION_VALUE.apply(33),
                 "ASSISTANT_ROLE_ID", STRING_CONFIGURATION_VALUE.get(),
                 "MODERATOR_ROLE_ID", STRING_CONFIGURATION_VALUE.get(),
                 "TUTOR_CATEGORY_IDS", new ConfigurationParser(
@@ -116,6 +129,11 @@ public class Config {
                         "Liste d'identifiants de catégories séparés par `;`"
                 ),
                 "MENU_CHANNEL_ID", STRING_CONFIGURATION_VALUE.get()
+        ));
+
+        DEFAULT_CONFIGURATION.putAll(Map.of(
+                "NIGHT_BIRD_UNICODE_REACT_EMOJI", STRING_CONFIGURATION_VALUE_DEFAULT.apply("🌙"),
+                "EARLY_BIRD_UNICODE_REACT_EMOJI", STRING_CONFIGURATION_VALUE_DEFAULT.apply("❤")
         ));
 
         // Modules
@@ -132,7 +150,7 @@ public class Config {
                 "notice", MODULE_DISABLED.get()
         ));
         DEFAULT_CONFIGURATION.putAll(Map.of(
-                "earlybird", MODULE_DISABLED.get(),
+                "messagebird", MODULE_DISABLED.get(),
                 "christmas", MODULE_DISABLED.get(),
                 "bookmark", MODULE_DISABLED.get(),
                 "code", MODULE_DISABLED.get(),

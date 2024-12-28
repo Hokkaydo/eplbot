@@ -11,7 +11,6 @@ FROM base AS profiler
 RUN apt-get update && apt-get install -y unzip && apt-get clean && \
     wget https://www.yourkit.com/download/docker/YourKit-JavaProfiler-2024.9-docker.zip -P /tmp && \
     unzip /tmp/YourKit-JavaProfiler-2024.9-docker.zip -d /usr/local && \
-    ls /usr/local/YourKit-JavaProfiler-2024.9/bin/linux-x86-64 &&\
     rm /tmp/YourKit-JavaProfiler-2024.9-docker.zip
 EXPOSE 10001
 WORKDIR /home/eplbot

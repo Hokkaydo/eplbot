@@ -1,5 +1,8 @@
 services:
     eplbot:
+        build:
+            context: .
+            target: eplbot
         image: hokkaydo/eplbot
         restart: unless-stopped
         volumes:
@@ -12,4 +15,22 @@ services:
             - TEST_DISCORD_ID=${EPLBOT_DISCORDID}
             - BOSS_ID=${EPLBOT_BOSSID}
             - TZ=Europe/Brussels
+    eplbot-profiler:
+        build:
+            context: .
+            target: eplbot-profiler
+        image: hokkaydo/eplbot-profiler
+        restart: unless-stopped
+        volumes:
+            - /home/docker/data/eplbot:/home/eplbot/persistence
+            - /var/run/docker.sock:/var/run/docker.sock
+        environment:
+            - DISCORD_BOT_TOKEN=${EPLBOT_TOKEN}
+            - GITHUB_APPLICATION_ID=${EPLBOT_GITHUBID}
+            - GITHUB_APPLICATION_INSTALLATION_ID=${EPLBOT_INSTALLID}
+            - TEST_DISCORD_ID=${EPLBOT_DISCORDID}
+            - BOSS_ID=${EPLBOT_BOSSID}
+            - TZ=Europe/Brussels
+        ports:
+            - "10001:10001"
         

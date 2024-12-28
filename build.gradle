@@ -28,6 +28,8 @@ dependencies {
     // https://mvnrepository.com/artifact/org.kohsuke/github-api
     implementation group: 'org.kohsuke', name: 'github-api', version: '1.315'
     implementation 'org.jsoup:jsoup:1.17.2'
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 }
 
 tasks.register('run', JavaExec) {

@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -43,10 +44,21 @@ public class MessageUtil {
         message.getAttachments().stream()
                 .map(m -> new Tuple3<>(m.getFileName(), m.getProxy().download(), m.isSpoiler()))
                 .map(tuple3 -> tuple3.b()
-                                       .thenApply(i -> FileUpload.fromData(i, tuple3.a()))
-                                       .thenApply(f -> Boolean.TRUE.equals(tuple3.c()) ? f.asSpoiler() : f)
+                                       .thenApply(i -> {
+                                           try {
+                                               byte[] bytes = i.readAllBytes();
+                                               int length = bytes.length;
+                                               if (length > Main.getJDA().getSelfUser().getAllowedFileSize())
+                                                   return null;
+                                               return new Tuple3<>(tuple3.a(), i.readAllBytes(), null);
+                                           } catch (IOException e) {
+                                               return null;
+                                           }
+                                       })
+                                       .thenApply(t -> t != null ? FileUpload.fromData(t.b(), tuple3.a()) : null)
+                                       .thenApply(f -> f != null ? (Boolean.TRUE.equals(tuple3.c()) ? f.asSpoiler() : f) : null)
                 )
-                .map(c -> c.thenAccept(action::addFiles))
+                .map(c -> c != null ? c.thenAccept(action::addFiles) : CompletableFuture.completedFuture(null))
                 .reduce((a,b) -> {a.join(); return b;})
                 .ifPresentOrElse(
                         c -> {

@@ -5,6 +5,7 @@ import com.github.hokkaydo.eplbot.module.Module;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,7 @@ public class MessageBirdModule extends Module {
 
     private final MessageBirdNextMessageCommand messageBirdNextMessageCommand;
     private final ManageMessageBirdCommand manageMessageBirdCommand;
-    private final List<ListenerAdapter> registeredListeners = new java.util.ArrayList<>();
+    private final List<ListenerAdapter> registeredListeners = new ArrayList<>();
 
     public MessageBirdModule(@NotNull Long guildId) {
         super(guildId);
@@ -39,6 +40,24 @@ public class MessageBirdModule extends Module {
     @Override
     public List<ListenerAdapter> getListeners() {
         return registeredListeners;
+    }
+
+    @Override
+    public void enable() {
+        registeredListeners.forEach(l -> {
+            if (l instanceof MessageBirdListener mbl) {
+                mbl.start();
+            }
+        });
+    }
+
+    @Override
+    public void disable() {
+        registeredListeners.forEach(l -> {
+            if (l instanceof MessageBirdListener mbl) {
+                mbl.stop();
+            }
+        });
     }
 
 }

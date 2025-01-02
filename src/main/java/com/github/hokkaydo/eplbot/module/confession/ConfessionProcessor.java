@@ -79,13 +79,21 @@ public class ConfessionProcessor extends ListenerAdapter {
         }
         Optional<OptionMapping> confessionOption = context.options().stream().filter(o -> o.getName().equals(CONFESSION)).findFirst();
         if(confessionOption.isEmpty()) return;
+        String confession = confessionOption.get().getAsString();
+
+        if(confession.length() > MessageEmbed.DESCRIPTION_MAX_LENGTH) {
+            context.replyCallbackAction().applyData(MessageCreateData.fromContent(Strings.getString("COMMAND_CONFESSION_TOO_LONG").formatted(MessageEmbed.DESCRIPTION_MAX_LENGTH))).queue();
+            return;
+        }
+
         UUID confessUUID = UUID.randomUUID();
         context.replyCallbackAction().applyData(MessageCreateData.fromContent(Strings.getString("COMMAND_CONFESSION_SUBMITTED"))).queue();
 
         MessageCreateBuilder embedBuilder = MessageCreateBuilder.from(MessageCreateData.fromEmbeds(
                 new EmbedBuilder()
                         .setColor(Config.getGuildVariable(guildId, "CONFESSION_EMBED_COLOR"))
-                        .addField("Confession", confessionOption.get().getAsString(), true)
+                        .setDescription(confession)
+                        .setTitle("Confession")
                         .setTimestamp(Instant.now())
                         .build()
         ));

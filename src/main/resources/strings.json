@@ -4,6 +4,7 @@
   "COMMAND_CLEAR_FROM_OPTION_FROM_DESCRIPTION": "Identifiant du premier message à supprimer",
   "COMMAND_CONFESSION_DESCRIPTION": "Permet d'effectuer une confession de manière anonyme",
   "COMMAND_CONFESSION_OPTION_DESCRIPTION": "La confession à partager",
+  "COMMAND_CONFESSION_TOO_LONG": "Veuillez vous limiter à %d caractères. N'hésitez pas à faire une seconde confession si besoin ;)",
   "COMMAND_MOVE_MESSAGES_DESCRIPTION": "Permet de déplacer les messages entre A et B inclus vers un autre canal",
   "COMMAND_MOVE_MESSAGES_OPTION_ID_A_DESCRIPTION": "Identifiant du premier message à déplacer",
   "COMMAND_MOVE_MESSAGES_OPTION_ID_B_DESCRIPTION": "Identifiant du dernier message à déplacer",

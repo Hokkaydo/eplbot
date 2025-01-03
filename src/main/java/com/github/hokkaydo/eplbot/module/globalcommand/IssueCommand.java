@@ -83,6 +83,7 @@ public class IssueCommand extends ListenerAdapter implements Command {
         String title = Objects.requireNonNull(event.getInteraction().getValue("title")).getAsString();
         String body = Objects.requireNonNull(event.getInteraction().getValue("body")).getAsString();
 
+        event.deferReply().queue();
         if(nextJwtRefresh == null || nextJwtRefresh.isBefore(Instant.now())) {
             refreshJwt();
             if(github == null) {
@@ -105,9 +106,9 @@ public class IssueCommand extends ListenerAdapter implements Command {
 
         try {
             GHIssue issue = github.getRepository("Hokkaydo/EPLBot").createIssue(title).body(STR."\{body}\n\{image}").label(label).create();
-            event.reply(Strings.getString("COMMAND_ISSUE_SUCCESSFUL").formatted(issue.getNumber())).queue();
+            event.getHook().editOriginal(Strings.getString("COMMAND_ISSUE_SUCCESSFUL").formatted(issue.getNumber())).queue();
         } catch (IOException e) {
-            event.reply(Strings.getString(ERROR_OCCURRED)).queue();
+            event.getHook().editOriginal(Strings.getString(ERROR_OCCURRED)).queue();
         }
     }
 

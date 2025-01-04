@@ -14,10 +14,10 @@ import java.util.function.Supplier;
 
 public class ManageMessageBirdCommand implements Command {
 
-    private final Map<String, MessageBirdListener> listeners;
+    private final Map<String, MessageBirdTask> tasks;
 
-    ManageMessageBirdCommand(Map<String, MessageBirdListener> listeners) {
-        this.listeners = listeners;
+    ManageMessageBirdCommand(Map<String, MessageBirdTask> tasks) {
+        this.tasks = tasks;
     }
 
     @Override
@@ -29,11 +29,10 @@ public class ManageMessageBirdCommand implements Command {
             context.replyCallbackAction().setContent("Invalid subcommand or type").queue();
             return;
         }
-        MessageBirdListener l = listeners.get(type);
+        MessageBirdTask l = tasks.get(type);
         switch (subcommand) {
-            case "restart" -> l.restart();
+            case "start" -> l.restart();
             case "stop" -> l.stop();
-            case "start" -> l.start();
             case "reload_messages" -> l.reloadMessages();
             default -> {
                 context.replyCallbackAction().setContent("Invalid subcommand").queue();
@@ -59,10 +58,9 @@ public class ManageMessageBirdCommand implements Command {
                 new OptionData(OptionType.STRING, "subcommand", "Subcommand", true)
                         .addChoice("restart", "restart")
                         .addChoice("stop", "stop")
-                        .addChoice("start", "start")
                         .addChoice("reload_messages", "reload_messages"),
                 new OptionData(OptionType.STRING, "type", "Type", true)
-                        .addChoices(this.listeners.keySet().stream().map(s -> new net.dv8tion.jda.api.interactions.commands.Command.Choice(s, s)).toList())
+                        .addChoices(this.tasks.keySet().stream().map(s -> new net.dv8tion.jda.api.interactions.commands.Command.Choice(s, s)).toList())
         );
     }
 

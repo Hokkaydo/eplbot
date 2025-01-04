@@ -5,7 +5,6 @@ import com.github.hokkaydo.eplbot.module.Module;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,17 +13,14 @@ public class MessageBirdModule extends Module {
 
     private final MessageBirdNextMessageCommand messageBirdNextMessageCommand;
     private final ManageMessageBirdCommand manageMessageBirdCommand;
-    private final List<ListenerAdapter> registeredListeners = new ArrayList<>();
 
     public MessageBirdModule(@NotNull Long guildId) {
         super(guildId);
-        Map<String, MessageBirdListener> listeners = new HashMap<>();
-        listeners.put("EARLY", new MessageBirdListener(guildId, "EARLY"));
-        listeners.put("NIGHT", new MessageBirdListener(guildId, "NIGHT"));
-        this.messageBirdNextMessageCommand = new MessageBirdNextMessageCommand(guildId, List.copyOf(listeners.keySet()));
-        this.manageMessageBirdCommand = new ManageMessageBirdCommand(listeners);
-        this.registeredListeners.addAll(listeners.values());
-        this.registeredListeners.add(messageBirdNextMessageCommand);
+        Map<String, MessageBirdTask> tasks = new HashMap<>();
+        tasks.put("EARLY", new MessageBirdTask(guildId, "EARLY"));
+        tasks.put("NIGHT", new MessageBirdTask(guildId, "NIGHT"));
+        this.messageBirdNextMessageCommand = new MessageBirdNextMessageCommand(guildId, List.copyOf(tasks.keySet()));
+        this.manageMessageBirdCommand = new ManageMessageBirdCommand(tasks);
     }
 
     @Override
@@ -39,25 +35,7 @@ public class MessageBirdModule extends Module {
 
     @Override
     public List<ListenerAdapter> getListeners() {
-        return registeredListeners;
-    }
-
-    @Override
-    public void enable() {
-        registeredListeners.forEach(l -> {
-            if (l instanceof MessageBirdListener mbl) {
-                mbl.start();
-            }
-        });
-    }
-
-    @Override
-    public void disable() {
-        registeredListeners.forEach(l -> {
-            if (l instanceof MessageBirdListener mbl) {
-                mbl.stop();
-            }
-        });
+        return List.of(messageBirdNextMessageCommand);
     }
 
 }

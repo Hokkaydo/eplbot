@@ -3,12 +3,11 @@ package com.github.hokkaydo.eplbot.module.messagebird;
 import com.github.hokkaydo.eplbot.Main;
 import com.github.hokkaydo.eplbot.MessageUtil;
 import com.github.hokkaydo.eplbot.configuration.Config;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.RestAction;
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONTokener;
@@ -28,7 +27,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-public class MessageBirdListener extends ListenerAdapter {
+public class MessageBirdTask {
 
     private static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(4);
     private static final Random RANDOM = new Random();
@@ -40,14 +39,17 @@ public class MessageBirdListener extends ListenerAdapter {
     private final Long guildId;
     private final List<ScheduledFuture<?>> dayLoops = new ArrayList<>();
     private final List<ScheduledFuture<?>> perfectTimeLoops = new ArrayList<>();
-    private boolean waitingForAnswer;
     private final String type;
+    private final String prefix;
     private final Path messagesPath;
     private final List<String> messages = new ArrayList<>();
+    private final String guildName;
 
-    public MessageBirdListener(Long guildId, String type) {
+    public MessageBirdTask(Long guildId, String type) {
         this.guildId = guildId;
+        this.prefix = type.charAt(0) + type.substring(1).toLowerCase();
         this.type = type;
+        this.guildName = Optional.ofNullable(Main.getJDA().getGuildById(guildId)).map(Guild::getName).orElse("");
         this.messagesPath = Path.of(STR."\{Main.PERSISTENCE_DIR_PATH}/\{type.toLowerCase()}_messages.json");
     }
 
@@ -61,12 +63,12 @@ public class MessageBirdListener extends ListenerAdapter {
         if (deltaStart <= 0) {
             deltaStart += 24 * 60 * 60;
         }
-        Main.LOGGER.log(Level.INFO, "[{0}Bird] Trying to send in {1} seconds", new Object[]{type, deltaStart});
+        Main.LOGGER.log(Level.INFO, "[%sBird][%s] Trying to send in %d seconds".formatted(prefix, guildName, deltaStart));
         dayLoops.add(EXECUTOR.schedule(() -> {
             int rnd = RANDOM.nextInt(100);
             int proba = Config.<Integer>getGuildVariable(guildId, STR."\{type}_BIRD_MESSAGE_PROBABILITY");
             String[] logs = LOG_MESSAGES[rnd > proba ? 0 : 1];
-            Main.LOGGER.log(Level.INFO, "[%sBird] %s (%d %s %d)".formatted(type, logs[0], proba, logs[1], rnd));
+            Main.LOGGER.log(Level.INFO, "[%sBird][%s] %s (%d %s %d)".formatted(prefix, guildName, logs[0], proba, logs[1], rnd));
             if (rnd > proba) {
                 perfectTimeLoops.removeIf(f -> f.isDone() || f.isCancelled());
                 dayLoops.removeIf(f -> f.isDone() || f.isCancelled());
@@ -74,7 +76,7 @@ public class MessageBirdListener extends ListenerAdapter {
                 return;
             }
             long waitTime = RANDOM.nextLong(endSeconds - startSeconds);
-            Main.LOGGER.log(Level.INFO, "[%sBird] Wait %d seconds before sending".formatted(type, waitTime));
+            Main.LOGGER.log(Level.INFO, "[%sBird][%s] Wait %d seconds before sending".formatted(prefix, guildName, waitTime));
             perfectTimeLoops.add(EXECUTOR.schedule(
                     () -> Optional.ofNullable(Main.getJDA().getGuildById(guildId))
                                   .map(guild -> guild.getTextChannelById(Config.getGuildVariable(guildId, STR."\{type}_BIRD_CHANNEL_ID")))
@@ -93,14 +95,21 @@ public class MessageBirdListener extends ListenerAdapter {
         if (nextMessage != null && !nextMessage.isBlank()) {
             channel.sendMessage(nextMessage).setAllowedMentions(null).queue();
             Config.updateValue(guildId, STR."\{type}_BIRD_NEXT_MESSAGE", "");
-            this.waitingForAnswer = true;
             perfectTimeLoops.removeIf(f -> f.isDone() || f.isCancelled());
             dayLoops.removeIf(f -> f.isDone() || f.isCancelled());
             start();
             return;
         }
         int randomMessageIndex = RANDOM.nextInt(messages.size());
-        channel.sendMessage(messages.get(randomMessageIndex)).queue(ignored -> this.waitingForAnswer = true);
+        channel.sendMessage(messages.get(randomMessageIndex)).queue();
+
+        Main.getJDA().listenOnce(MessageReceivedEvent.class)
+                .filter(e -> e.getChannel().getId().equals(channel.getId()))
+                .filter(e -> !e.isWebhookMessage())
+                .filter(e -> !e.getAuthor().isBot())
+                .filter(e -> !e.getAuthor().isSystem())
+                .subscribe(this::processFirstAnswer);
+
         perfectTimeLoops.removeIf(f -> f.isDone() || f.isCancelled());
         dayLoops.removeIf(f -> f.isDone() || f.isCancelled());
         start();
@@ -134,13 +143,7 @@ public class MessageBirdListener extends ListenerAdapter {
         }
     }
 
-    @Override
-    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-        if (!waitingForAnswer) return;
-        String channelId = Config.getGuildVariable(guildId, STR."\{type}_BIRD_CHANNEL_ID");
-        if (!event.getChannel().getId().equals(channelId) || event.isWebhookMessage() || event.getAuthor().isBot() || event.getAuthor().isSystem())
-            return;
-        this.waitingForAnswer = false;
+    public void processFirstAnswer(MessageReceivedEvent event) {
         String messageBirdRoleId = Config.getGuildVariable(guildId, STR."\{type}_BIRD_ROLE_ID");
         String unicodeEmoji = Config.getGuildVariable(guildId, STR."\{type}_BIRD_UNICODE_REACT_EMOJI");
         Optional.ofNullable(Main.getJDA().getGuildById(guildId)).map(guild -> guild.getRoleById(messageBirdRoleId)).ifPresent(role -> {

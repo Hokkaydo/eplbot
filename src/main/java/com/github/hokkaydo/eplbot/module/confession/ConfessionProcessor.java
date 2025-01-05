@@ -18,9 +18,9 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
@@ -163,17 +163,17 @@ public class ConfessionProcessor extends ListenerAdapter {
         String id = event.getButton().getId();
         if(id == null || !id.contains(CONFESSION)) return;
         if(event.getGuild() == null || event.getGuild().getIdLong() != guildId) return;
+        event.getMessage().editMessageComponents(Collections.emptyList()).queue();
         UUID uuid = UUID.fromString(id.split(";")[1]);
         if(id.startsWith("validate")) {
-            updateValidationEmbedColor(VALID, event.getInteraction(), event.getMessage());
+            updateValidationEmbedColor(VALID, event.getHook(), event.getMessage());
             sendConfession(uuid, event.getGuild().getIdLong());
         } else if(id.startsWith("refuse")){
-            updateValidationEmbedColor(REFUSED, event.getInteraction(), event.getMessage());
+            updateValidationEmbedColor(REFUSED, event.getHook(), event.getMessage());
         } else {
-            updateValidationEmbedColor(WARNED, event.getInteraction(), event.getMessage());
+            updateValidationEmbedColor(WARNED, event.getHook(), event.getMessage());
             warn(event.getUser().getIdLong(), uuid);
         }
-        event.getMessage().editMessageComponents(Collections.emptyList()).queue();
     }
 
     private void warn(Long moderatorId, UUID uuid) {
@@ -220,11 +220,11 @@ public class ConfessionProcessor extends ListenerAdapter {
             }
         });
     }
-    private void updateValidationEmbedColor(int state, ButtonInteraction interaction, Message message) {
+    private void updateValidationEmbedColor(int state, InteractionHook hook, Message message) {
         if(message.getEmbeds().isEmpty() || message.getEmbeds().getFirst().getFields().isEmpty()) return;
         MessageEmbed embed = message.getEmbeds().getFirst();
         EmbedBuilder builder = new EmbedBuilder(embed).setColor(VALIDATION_EMBED_COLORS[state]).clearFields().addField(VALIDATION_EMBED_TITLES[state], Objects.requireNonNull(embed.getFields().getFirst().getValue()), true);
-        interaction.editMessageEmbeds(builder.build()).queue();
+        hook.editOriginalEmbeds(builder.build()).queue();
     }
 
     public void clearWarnings(long authorId) {

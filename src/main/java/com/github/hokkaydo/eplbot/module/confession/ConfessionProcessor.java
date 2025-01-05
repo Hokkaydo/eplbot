@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -163,7 +162,8 @@ public class ConfessionProcessor extends ListenerAdapter {
         String id = event.getButton().getId();
         if(id == null || !id.contains(CONFESSION)) return;
         if(event.getGuild() == null || event.getGuild().getIdLong() != guildId) return;
-        event.getMessage().editMessageComponents(Collections.emptyList()).queue();
+        event.getInteraction().deferEdit().queue();
+        event.getHook().editOriginalComponents(Collections.emptyList()).queue();
         UUID uuid = UUID.fromString(id.split(";")[1]);
         if(id.startsWith("validate")) {
             updateValidationEmbedColor(VALID, event.getHook(), event.getMessage());
@@ -221,9 +221,8 @@ public class ConfessionProcessor extends ListenerAdapter {
         });
     }
     private void updateValidationEmbedColor(int state, InteractionHook hook, Message message) {
-        if(message.getEmbeds().isEmpty() || message.getEmbeds().getFirst().getFields().isEmpty()) return;
         MessageEmbed embed = message.getEmbeds().getFirst();
-        EmbedBuilder builder = new EmbedBuilder(embed).setColor(VALIDATION_EMBED_COLORS[state]).clearFields().addField(VALIDATION_EMBED_TITLES[state], Objects.requireNonNull(embed.getFields().getFirst().getValue()), true);
+        EmbedBuilder builder = EmbedBuilder.fromData(embed.toData()).setColor(VALIDATION_EMBED_COLORS[state]).setTitle(VALIDATION_EMBED_TITLES[state]);
         hook.editOriginalEmbeds(builder.build()).queue();
     }
 

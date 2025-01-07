@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jre AS base
+FROM eclipse-temurin:23-jre AS base
 
 LABEL authors="hokkaydo"
 

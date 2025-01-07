@@ -50,7 +50,7 @@ public class MessageUtil {
                                                int length = bytes.length;
                                                if (length > Main.getJDA().getSelfUser().getAllowedFileSize())
                                                    return null;
-                                               return new Tuple3<>(tuple3.a(), i.readAllBytes(), null);
+                                               return new Tuple3<>(tuple3.a(), bytes, null);
                                            } catch (IOException e) {
                                                return null;
                                            }

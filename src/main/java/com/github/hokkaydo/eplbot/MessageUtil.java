@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -31,33 +32,11 @@ public class MessageUtil {
     private static HttpRequest.Builder hastebinPostRequest = null;
 
 
-    public static EmbedBuilder toEmbed(Message message) {
-        return new EmbedBuilder()
-                       .setAuthor(message.getAuthor().getName(), message.getJumpUrl(), message.getAuthor().getAvatarUrl())
-                       .appendDescription(message.getContentRaw())
-                       .setTimestamp(message.getTimeCreated())
-                       .setFooter(STR."\{message.getGuild().getName()} - #\{message.getChannel().getName()}", message.getGuild().getIconUrl());
-    }
-
     public static void toEmbedWithAttachements(Message message, Function<EmbedBuilder, MessageCreateAction> send, Consumer<Message> processSentMessage) {
         MessageCreateAction action = send.apply(toEmbed(message)).addFiles();
         message.getAttachments().stream()
                 .map(m -> new Tuple3<>(m.getFileName(), m.getProxy().download(), m.isSpoiler()))
-                .map(tuple3 -> tuple3.b()
-                                       .thenApply(i -> {
-                                           try {
-                                               byte[] bytes = i.readAllBytes();
-                                               int length = bytes.length;
-                                               if (length > Main.getJDA().getSelfUser().getAllowedFileSize())
-                                                   return null;
-                                               return new Tuple3<>(tuple3.a(), bytes, null);
-                                           } catch (IOException e) {
-                                               return null;
-                                           }
-                                       })
-                                       .thenApply(t -> t != null ? FileUpload.fromData(t.b(), tuple3.a()) : null)
-                                       .thenApply(f -> f != null ? (Boolean.TRUE.equals(tuple3.c()) ? f.asSpoiler() : f) : null)
-                )
+                .map(MessageUtil::mapToFileUpload)
                 .map(c -> c != null ? c.thenAccept(action::addFiles) : CompletableFuture.completedFuture(null))
                 .reduce((a,b) -> {a.join(); return b;})
                 .ifPresentOrElse(
@@ -69,13 +48,44 @@ public class MessageUtil {
                 );
     }
 
+    public static EmbedBuilder toEmbed(Message message) {
+        return new EmbedBuilder()
+                       .setAuthor(message.getAuthor().getName(), message.getJumpUrl(), message.getAuthor().getAvatarUrl())
+                       .appendDescription(message.getContentRaw())
+                       .setTimestamp(message.getTimeCreated())
+                       .setFooter(message.getGuild().getName() + " - #" + message.getChannel().getName(), message.getGuild().getIconUrl());
+    }
+
+    private static CompletableFuture<FileUpload> mapToFileUpload(Tuple3<String, CompletableFuture<InputStream>, Boolean> tuple3) {
+        return tuple3.b()
+                       .thenApply(MessageUtil::readInputStream)
+                       .thenApply(bytes -> bytes.length > 0 ? FileUpload.fromData(bytes, tuple3.a()) : null)
+                       .thenApply(upload -> {
+                           if(upload == null) return null;
+                           if (Boolean.TRUE.equals(tuple3.c())) return upload.asSpoiler();
+                           return upload;
+                       });
+    }
+
+    private static byte[] readInputStream(InputStream i) {
+        try {
+            byte[] bytes = i.readAllBytes();
+            int length = bytes.length;
+            if (length > Main.getJDA().getSelfUser().getAllowedFileSize())
+                return new byte[0];
+            return bytes;
+        } catch (IOException e) {
+            return new byte[0];
+        }
+    }
+
     private MessageUtil() {}
 
     public static void sendAdminMessage(String message, Long guildId) {
         String adminChannelId = Config.getGuildVariable(guildId, "ADMIN_CHANNEL_ID");
         TextChannel adminChannel;
         if(adminChannelId.isBlank() || (adminChannel = Main.getJDA().getChannelById(TextChannel.class, adminChannelId)) == null) {
-            Main.LOGGER.log(Level.WARNING, STR."Invalid admin channel : \{Objects.requireNonNull(Main.getJDA().getGuildById(guildId)).getName()}");
+            Main.LOGGER.log(Level.WARNING, () -> "Invalid admin channel : %s".formatted(Objects.requireNonNull(Main.getJDA().getGuildById(guildId)).getName()));
             return;
         }
         adminChannel.sendMessage(message).queue();
@@ -83,7 +93,7 @@ public class MessageUtil {
 
     public static String nameAndNickname(@Nullable Member member, User user) {
         boolean hasNickname = member != null && member.getNickname() != null;
-        return (hasNickname  ? STR."\{member.getNickname()} (" : "") + user.getEffectiveName() + (hasNickname ? ")" : "");
+        return (hasNickname  ? member.getNickname() + " (" : "") + user.getEffectiveName() + (hasNickname ? ")" : "");
     }
 
     /**
@@ -97,7 +107,7 @@ public class MessageUtil {
         if (hastebinPostRequest == null)
             hastebinPostRequest = HttpRequest.newBuilder()
                                           .header("Content-Type", "text/plain")
-                                          .header("Authorization", STR."Bearer \{System.getenv("HASTEBIN_API_TOKEN")}")
+                                          .header("Authorization", "Bearer %s".formatted(System.getenv("HASTEBIN_API_TOKEN")))
                                           .uri(URI.create(HASTEBIN_API_POST_URL));
 
         return client.sendAsync(hastebinPostRequest.POST(HttpRequest.BodyPublishers.ofString(data)).build(), HttpResponse.BodyHandlers.ofString())
@@ -110,6 +120,7 @@ public class MessageUtil {
                            return HASTEBIN_SHARE_BASE_URL.formatted(response.get("key"));
                        });
     }
+    private record Tuple2<A, B> (A a, B b) {}
     private record Tuple3<A, B, C>(A a, B b, C c) {}
 
 

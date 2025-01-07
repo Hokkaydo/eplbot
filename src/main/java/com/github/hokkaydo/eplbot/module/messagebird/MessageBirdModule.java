@@ -26,11 +26,13 @@ public class MessageBirdModule extends Module {
 
     @Override
     public void enable() {
+        super.enable();
         tasks.values().forEach(MessageBirdTask::start);
     }
 
     @Override
     public void disable() {
+        super.disable();
         tasks.values().forEach(MessageBirdTask::stop);
     }
 

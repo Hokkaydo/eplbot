@@ -157,16 +157,16 @@ public class Main {
                 NoticeModule.class,
                 BookMarkModule.class,
                 TutorModule.class,
-                MenuModule.class
+                MenuModule.class,
+                CodeModule.class,
+                MessageBirdModule.class
         );
         List<Class<? extends Module>> eplModules = Arrays.asList(
                 EPLCommandModule.class,
                 ConfessionModule.class,
                 ExamsRetrieveModule.class,
                 RatioModule.class,
-                MessageBirdModule.class,
-                ChristmasModule.class,
-                CodeModule.class
+                ChristmasModule.class
         );
         Map<Long, List<Command>> guildCommands = new HashMap<>();
         for (Long guildId : specialDiscordIds) {
@@ -225,16 +225,16 @@ public class Main {
         service.scheduleAtFixedRate(() -> jda.getPresence().setActivity(status.get(RANDOM.nextInt(status.size()))), 10L, 26 * 6L, TimeUnit.SECONDS); // 2min30
     }
 
-    public static JDA getJDA() {
-        return Main.jda;
+    public static CommandManager getCommandManager() {
+        return commandManager;
     }
 
     public static ModuleManager getModuleManager() {
-        return Main.moduleManager;
+        return moduleManager;
     }
 
-    public static CommandManager getCommandManager() {
-        return Main.commandManager;
+    public static JDA getJDA() {
+        return jda;
     }
 
     public static Long getBossId() {

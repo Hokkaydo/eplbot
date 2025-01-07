@@ -35,6 +35,7 @@ public class SetupRetrieveChannelCommand implements Command {
             zip.delete();
         examsRetrieveListener.setGradeRetrieveChannelId(context.channel().getIdLong(), quarterOpt.get().getAsInt());
         Config.updateValue(guildId, "EXAM_RETRIEVE_CHANNEL_ID", context.channel().getId());
+        context.replyCallbackAction().setContent("Processing!").queue();
     }
 
     @Override

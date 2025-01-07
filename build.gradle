@@ -35,9 +35,9 @@ tasks.register('run', JavaExec) {
     classpath = files('build/libs/EPLBot-1.0-SNAPSHOT-all.jar')
 }
 
-tasks.withType(JavaCompile).each {
-    it.options.compilerArgs.add('--enable-preview')
-}
+//tasks.withType(JavaCompile).each {
+//    it.options.compilerArgs.add('--enable-preview')
+//}
 
 test {
     useJUnitPlatform()

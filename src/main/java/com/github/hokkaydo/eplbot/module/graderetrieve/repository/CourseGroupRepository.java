@@ -12,4 +12,6 @@ public interface CourseGroupRepository extends CRUDRepository<CourseGroup> {
 
     Optional<CourseGroup> readByGroupCode(String groupCode);
 
+    void loadCourses();
+
 }

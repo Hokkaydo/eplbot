@@ -1,11 +1,17 @@
 package com.github.hokkaydo.eplbot.module.graderetrieve.repository;
 
+import com.github.hokkaydo.eplbot.Strings;
 import com.github.hokkaydo.eplbot.module.graderetrieve.model.Course;
 import com.github.hokkaydo.eplbot.module.graderetrieve.model.CourseGroup;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
 import javax.sql.DataSource;
+import java.io.InputStream;
 import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +76,21 @@ public class CourseGroupRepositorySQLite implements CourseGroupRepository{
                                                                                  courseRepository.readByGroupId(numRow + 1)
                                                                          )
         );
+    }
+
+    public void loadCourses() throws JSONException {
+        readAll().forEach(courseGroup -> {
+            courseGroup.courses().stream().flatMap(List::stream).forEach(courseRepository::delete);
+            delete(courseGroup);
+        });
+        InputStream stream = Strings.class.getClassLoader().getResourceAsStream("courses.json");
+        assert stream != null;
+        JSONObject object = new JSONObject(new JSONTokener(stream));
+        if(object.isEmpty()) return;
+        JSONArray names = object.names();
+        for (int i = 0; i < names.length(); i++) {
+            create(CourseGroup.of(names.getString(i), object.getJSONObject(names.getString(i))));
+        }
     }
 
 }

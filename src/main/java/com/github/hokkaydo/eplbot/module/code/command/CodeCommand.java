@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -181,6 +182,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
         return () -> Strings.getString("COMMAND_CODE_DESCRIPTION");
     }
 
+    @NotNull
     @Override
     public List<OptionData> getOptions() {
         OptionData codeOptions = new OptionData(OptionType.STRING, "language", Strings.getString("COMMAND_CODE_LANG_OPTION_DESCRIPTION"), true);

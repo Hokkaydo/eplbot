@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -47,6 +48,7 @@ public class ClearLastCommand implements Command {
         return () -> Strings.getString("COMMAND_CLEAR_LAST_DESCRIPTION");
     }
 
+    @NotNull
     @Override
     public List<OptionData> getOptions() {
         return Collections.singletonList(new OptionData(OptionType.STRING, "amount", Strings.getString("COMMAND_CLEAR_LAST_OPTION_AMOUNT_DESCRIPTION"), true));

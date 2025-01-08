@@ -9,6 +9,13 @@ import javax.sql.DataSource;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class is responsible for managing the database.
+ * It registers the existing tables and creates them if they do not exist.
+ * <br>
+ * When a module needs a table, it should be registered here.
+ * Each table is represented by a {@link TableModel} object.
+ * */
 public class DatabaseManager {
 
     private static final String INTEGER = "INTEGER";
@@ -32,6 +39,10 @@ public class DatabaseManager {
     private DatabaseManager() {}
 
 
+    /**
+     * Regenerates the database.
+     * @param drop if true, the tables are dropped before being recreated
+     * */
     public static void regenerateDatabase(boolean drop) {
         JdbcTemplate template = new JdbcTemplate(DatabaseManager.getDataSource());
         if (drop)
@@ -86,11 +97,17 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * @return the data source needed for preparing statements
+     * */
     public static DataSource getDataSource() {
         return dataSource;
     }
 
-
+    /**
+     * Initializes the database manager.
+     * @param persistenceDirPath the path to the persistence directory
+     * */
     public static void initialize(String persistenceDirPath) {
         dataSource = SQLiteDatasourceFactory.create(persistenceDirPath + "/database.sqlite");
     }

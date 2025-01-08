@@ -7,6 +7,7 @@ import com.github.hokkaydo.eplbot.command.CommandContext;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -64,6 +65,7 @@ public class ContributeCommand implements Command {
         return () -> Strings.getString("COMMAND_CONTRIBUTE_DESCRIPTION");
     }
 
+    @NotNull
     @Override
     public List<OptionData> getOptions() {
         return Collections.emptyList();

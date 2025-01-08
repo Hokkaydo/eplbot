@@ -151,6 +151,7 @@ public class IssueCommand extends ListenerAdapter implements Command {
         return () -> Strings.getString("COMMAND_ISSUE_DESCRIPTION");
     }
 
+    @NotNull
     @Override
     public List<OptionData> getOptions() {
         return List.of(

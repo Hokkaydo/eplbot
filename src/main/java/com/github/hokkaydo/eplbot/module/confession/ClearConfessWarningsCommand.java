@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +40,7 @@ public class ClearConfessWarningsCommand implements Command {
         return () -> Strings.getString("COMMAND_CLEARCONFESSWARNINGS_DESCRIPTION");
     }
 
+    @NotNull
     @Override
     public List<OptionData> getOptions() {
         return Collections.singletonList(new OptionData(OptionType.USER, "user", Strings.getString("COMMAND_CLEARCONFESSWARNINGS_OPTION_USER_DESCRIPTION"), true));

@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -41,6 +42,7 @@ public class ClearFromCommand implements Command {
         return () -> Strings.getString("COMMAND_CLEAR_FROM_DESCRIPTION");
     }
 
+    @NotNull
     @Override
     public List<OptionData> getOptions() {
         return Collections.singletonList(new OptionData(OptionType.STRING, "from", Strings.getString("COMMAND_CLEAR_FROM_OPTION_FROM_DESCRIPTION"), true));

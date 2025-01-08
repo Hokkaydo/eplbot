@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -74,6 +75,7 @@ public class MirrorListCommand implements Command {
         return () -> Strings.getString("COMMAND_MIRRORLIST_DESCRIPTION");
     }
 
+    @NotNull
     @Override
     public List<OptionData> getOptions() {
         return Collections.singletonList(new OptionData(OptionType.STRING, "channel_a", Strings.getString("COMMAND_MIRRORLINK_OPTION_CHANNEL_A_DESCRIPTION"), false));

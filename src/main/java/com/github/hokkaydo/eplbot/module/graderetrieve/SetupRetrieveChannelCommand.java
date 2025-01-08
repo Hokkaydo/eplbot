@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Collections;
@@ -48,6 +49,7 @@ public class SetupRetrieveChannelCommand implements Command {
         return () -> Strings.getString("COMMAND_SETUPGRADECHANNEL_DESCRIPTION");
     }
 
+    @NotNull
     @Override
     public List<OptionData> getOptions() {
         return Collections.singletonList(new OptionData(OptionType.INTEGER,"quarter", "Quadrimestre", true).addChoice("1", 1).addChoice("2", 2));

@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +52,7 @@ public class StateCommand implements Command {
         return () -> Strings.getString("COMMAND_STATE_DESCRIPTION");
     }
 
+    @NotNull
     @Override
     public List<OptionData> getOptions() {
         return List.of(new OptionData(OptionType.STRING, "subcommand", Strings.getString("COMMAND_STATE_SUBCOMMAND_OPTION_DESCRIPTION"), false)

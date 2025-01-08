@@ -6,6 +6,7 @@ import com.github.hokkaydo.eplbot.command.CommandContext;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +41,7 @@ public class ConfessionFollowCommand implements Command {
         return () -> Strings.getString("COMMAND_CONFESSIONCONTINUE_DESCRIPTION");
     }
 
+    @NotNull
     @Override
     public List<OptionData> getOptions() {
         return Collections.singletonList(new OptionData(OptionType.STRING, "confession", Strings.getString("COMMAND_CONFESSION_OPTION_DESCRIPTION"), true));

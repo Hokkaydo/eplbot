@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -205,6 +206,7 @@ public class TutorCommand extends ListenerAdapter implements Command {
         event.reply(Strings.getString("TUTOR_COMMAND_MANAGE_SUCCESS")).setEphemeral(true).queue();
     }
 
+    @NotNull
     @Override
     public List<OptionData> getOptions() {
         return List.of(

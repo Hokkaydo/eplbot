@@ -113,6 +113,7 @@ public class NoticeCommand extends ListenerAdapter implements Command {
         return () -> Strings.getString("COMMAND_NOTICE_DESCRIPTION");
     }
 
+    @NotNull
     @Override
     public List<OptionData> getOptions() {
         return List.of(

@@ -22,6 +22,26 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * This class represents the configuration of the bot.
+ * It mainly contains 2 types of configuration:
+ * <ul>
+ *     <li>Configuration: Configuration entries that can be modified by the user</li>
+ *     <li>State: Configuration entries that are used to store the state of the bot on a guild</li>
+ * </ul>
+ * This distinction has been made to be able to store small information about the state of the bot in a guild
+ * without having to create a dedicated table for a simple string.
+ * Typically used for storing the last Early/Night bird message.
+ * <br>
+ *
+ * The class contains 2 final {@link Map}: {@link #DEFAULT_CONFIGURATION}
+ * and {@link #DEFAULT_STATE} associating a key to a {@link ConfigurationParser}.
+ * Those {@link ConfigurationParser} are used
+ * to parse the configuration value from a {@link String} to the desired type and vice versa.
+ *
+ * <br>
+ * Aside those {@link Map}s, the class also registers the current configuration and state of a guild
+ * */
 public class Config {
 
     private static final String STRING_FORMAT = "Chaîne de caractères";
@@ -164,30 +184,85 @@ public class Config {
     private static final Supplier<Map<String, Object>> DEFAULT_CONFIGURATION_VALUES = () -> new HashMap<>(DEFAULT_CONFIGURATION.entrySet().stream().map(e -> Map.entry(e.getKey(),e.getValue().defaultValue.get())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     private static final Supplier<Map<String, Object>> DEFAULT_STATE_VALUES = () -> new HashMap<>(DEFAULT_STATE.entrySet().stream().map(e -> Map.entry(e.getKey(),e.getValue().defaultValue.get())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
-
+    /**
+     * Retrieves the value of a configuration entry for a guild.
+     * @param guildId the id of the guild
+     * @param key the key of the configuration entry
+     * @param <T> the type of the configuration entry
+     * @return the value of the configuration entry if found,
+     * default value if the guild has no entry for this key, null if the key is not allowed
+     * */
     public static <T> T getGuildVariable(Long guildId, String key) {
         return getGuildValue(guildId, key, GUILD_CONFIGURATION, DEFAULT_CONFIGURATION);
     }
 
+    /**
+     * Retrieves the value of a configuration entry for a guild.
+     * @param guildId the id of the guild
+     * @param key the key of the configuration entry
+     * @param <T> the type of the configuration entry
+     * @param map the map containing the configuration entries
+     *            (either {@link #GUILD_CONFIGURATION} or {@link #GUILD_STATE})
+     * @param defaultMap the map containing the default configuration entries
+     *                   (either {@link #DEFAULT_CONFIGURATION} or {@link #DEFAULT_STATE})
+     * @return the value of the configuration entry if found,
+     * default value if the guild has no entry for this key, null if the key is not allowed
+     * */
+    @SuppressWarnings("unchecked")
+    private static <T> T getGuildValue(Long guildId, String key, Map<Long, Map<String, Object>> map, Map<String, ConfigurationParser> defaultMap) {
+        return (T)map.getOrDefault(guildId, new HashMap<>())
+                          .getOrDefault(
+                                  key,
+                                  Optional.ofNullable(defaultMap.get(key))
+                                          .map(ConfigurationParser::defaultValue)
+                                          .map(Supplier::get)
+                                          .orElse(null)
+                          );
+    }
+
+    /**
+     * Retrieves the value of a state entry for a guild.
+     * @param guildId the id of the guild
+     * @param key the key of the state entry
+     * @param <T> the type of the state entry
+     * @return the value of the state entry if found,
+     * default value if the guild has no entry for this key, null if the key is not allowed
+     * */
     public static <T> T getGuildState(Long guildId, String key) {
         return getGuildValue(guildId, key, GUILD_STATE, DEFAULT_STATE);
     }
 
-    private static <T> T getGuildValue(Long guildId, String key, Map<Long, Map<String, Object>> map, Map<String, ConfigurationParser> defaultMap) {
-        return (T)map.getOrDefault(guildId, new HashMap<>()).getOrDefault(key, defaultMap.get(key).defaultValue.get());
-    }
-
+    /**
+     * Retrieves the value format of a configuration entry.
+     * @param key the key of the configuration entry
+     * @return the format of the configuration entry
+     * @throws IllegalStateException if the key is not allowed
+     * */
     public static String getValueFormat(String key) {
-        if(!DEFAULT_CONFIGURATION.containsKey(key)) return "KEY_ERROR";
+        if(!DEFAULT_CONFIGURATION.containsKey(key)) throw new IllegalStateException("KEY_ERROR");
         return DEFAULT_CONFIGURATION.get(key).format;
     }
 
+    /**
+     * Parses a configuration entry through its {@link ConfigurationParser} and updates its value.
+     * @param guildId the id of the guild
+     * @param key the key of the configuration entry
+     * @param value the value of the configuration entry
+     * @return true if the key is allowed, false otherwise
+     * */
     public static boolean parseAndUpdate(Long guildId, String key, String value) {
         if(!DEFAULT_CONFIGURATION.containsKey(key)) return false;
         updateValue(guildId, key, DEFAULT_CONFIGURATION.get(key).fromConfig.apply(value));
         return true;
     }
 
+    /**
+     * Updates the value of a configuration entry.
+     * @param guildId the id of the guild
+     * @param key the key of the configuration entry
+     * @param value the value of the configuration entry
+     * @throws IllegalStateException if the key is not allowed
+     * */
     public static void updateValue(Long guildId, String key, Object value) {
         if(!DEFAULT_CONFIGURATION.containsKey(key)) {
             if(!DEFAULT_STATE.containsKey(key)) throw new IllegalStateException("Configuration key isn't allowed");
@@ -200,22 +275,45 @@ public class Config {
         saveValue(guildId, key, value);
     }
 
+    /**
+     * Disables a module for a guild in the configuration.
+     * @param guildId the id of the guild
+     * @param key the key of the module
+     * */
     public static void disableModule(Long guildId, String key) {
         updateValue(guildId, key, false);
     }
 
+    /**
+     * Enables a module for a guild in the configuration.
+     * @param guildId the id of the guild
+     * @param key the key of the module
+     * */
     public static void enableModule(Long guildId, String key) {
         updateValue(guildId, key, true);
     }
 
-    public static boolean getModuleStatus(Long guildId, String moduleName) {
-        return (boolean)GUILD_CONFIGURATION.getOrDefault(guildId, new HashMap<>()).getOrDefault(moduleName, Optional.ofNullable(DEFAULT_CONFIGURATION.get(moduleName)).map(ConfigurationParser::defaultValue).map(Supplier::get).orElse(false));
-    }
-
+    /**
+     * Retrieves the statuses of multiple modules for a guild.
+     * @param guildId the id of the guild
+     * @param moduleNames the names of the modules
+     * @return a {@link Map} containing the status of each module
+     * @see #getModuleStatus(Long, String)
+     * */
     public static Map<String, Boolean> getModulesStatuses(Long guildId, List<String> moduleNames) {
         return moduleNames.stream()
                        .map(name -> Map.entry(name, getModuleStatus(guildId, name)))
                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    /**
+     * Retrieves the status of a module for a guild.
+     * @param guildId the id of the guild
+     * @param moduleName the name of the module
+     * @return true if enabled, false if disabled
+     * */
+    public static boolean getModuleStatus(Long guildId, String moduleName) {
+        return (boolean)GUILD_CONFIGURATION.getOrDefault(guildId, new HashMap<>()).getOrDefault(moduleName, Optional.ofNullable(DEFAULT_CONFIGURATION.get(moduleName)).map(ConfigurationParser::defaultValue).map(Supplier::get).orElse(false));
     }
 
     private static void saveValue(Long guildId, String key, Object value) {
@@ -233,6 +331,9 @@ public class Config {
         }
     }
 
+    /**
+     * Loads the configuration from the database.
+     * */
     public static void load() {
         repository = new ConfigurationRepositorySQLite(DatabaseManager.getDataSource());
 
@@ -246,22 +347,42 @@ public class Config {
                 .forEach(m -> load(DEFAULT_CONFIGURATION, GUILD_CONFIGURATION, m));
     }
 
+    /**
+     * Loads a configuration entry from the database.
+     * @param defaultValues the default values of the configuration entries
+     * @param current the current configuration entries
+     * @param m the {@link ConfigurationModel} to load a value from
+     * */
     private static void load(Map<String, Config.ConfigurationParser> defaultValues, Map<Long, Map<String, Object>> current, ConfigurationModel m) {
         if(!current.containsKey(m.guildId()))
             current.put(m.guildId(), new HashMap<>(defaultValues.entrySet().stream().map(e -> Map.entry(e.getKey(),e.getValue().defaultValue.get())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))));
         current.get(m.guildId()).put(m.key(), defaultValues.get(m.key()).fromConfig.apply(m.value()));
     }
 
+    /**
+     * @return the default state of the configuration
+     * */
     public static Map<String, ConfigurationParser> getDefaultState() {
         return DEFAULT_STATE;
     }
 
+    /**
+     * Resets the default state of the configuration for a guild.
+     * @param guildId the id of the guild
+     * */
     public static void resetDefaultState(Long guildId) {
         for (Map.Entry<String, ConfigurationParser> entry : DEFAULT_STATE.entrySet()) {
             updateValue(guildId, entry.getKey(), entry.getValue().defaultValue.get());
         }
     }
 
+    /**
+     * Resets the default configuration of the configuration for a guild.
+     * @param defaultValue the default value of the configuration entry
+     * @param toConfig the {@link Function} to convert the value to a {@link String}
+     * @param fromConfig the {@link Function} to convert the value from a {@link String}
+     * @param format the format of the configuration entry, explains the expected value's format
+     * */
     public record ConfigurationParser(Supplier<Object> defaultValue,
                                       Function<Object, String> toConfig,
                                       Function<String, Object> fromConfig,

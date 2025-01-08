@@ -19,14 +19,14 @@ public class NoticeRepositorySQLite implements NoticeRepository {
 
     public NoticeRepositorySQLite(CourseRepository courseRepository, CourseGroupRepository courseGroupRepository) {
         this.jdbcTemplate = new JdbcTemplate(DatabaseManager.getDataSource());
-        this.courseMapper = (rs, _) -> new Notice(
+        this.courseMapper = (rs, ignored) -> new Notice(
                 rs.getString("content"),
                 rs.getString("author_id"),
                 courseRepository.getByCourseCode(rs.getString("subject_id")).orElse(null),
                 null,
                 rs.getTimestamp("timestamp")
         );
-        this.groupMapper = (rs, _) -> new Notice(
+        this.groupMapper = (rs, ignored) -> new Notice(
                 rs.getString("content"),
                 rs.getString("author_id"),
                 null,

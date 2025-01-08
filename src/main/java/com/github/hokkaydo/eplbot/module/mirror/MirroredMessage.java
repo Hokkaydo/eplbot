@@ -283,7 +283,7 @@ public class MirroredMessage {
                     .setAttachments(attachments)
                     .queue(
                             m -> this.lastUpdated = m.getTimeEdited() == null ? m.getTimeCreated() : m.getTimeEdited(),
-                            _ -> {}
+                            ignored -> {}
                     );
         });
     }
@@ -348,7 +348,7 @@ public class MirroredMessage {
 
         @Override
         public String toString() {
-            return STR."Tuple2{a=\{a}, b=\{b}, c=\{c}\{'}'}";
+            return "Tuple2{a=%s, b=%s, c=%s}".formatted(a, b, c);
         }
 
     }

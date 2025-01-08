@@ -59,6 +59,21 @@ Il vous est possible de créer une table dédiée à votre module. Pour cela, il
   - Une interface `MyRepository` qui étend l'interface [`CRUDRepository<MyModel>`](src/main/java/com/github/hokkaydo/eplbot/database/CRUDRepository.java) et définit les éventuelles méthodes supplémentaires nécessaires
   - Une classe `MyRepositorySQLite` qui implémente l'interface `MyRepository`. Nous vous renvoyons vers la documentation de `CRUDRepository` pour plus d'informations.
 
+Le package d'un module doit donc suivre la structure suivante :
+```
+module/
+    ...
+    example/
+        repository/
+            MyRepository.java
+            MyRepositorySQLite.java
+        model/
+            MyModel.java
+      ExampleModule.java
+      Listener1.java
+      Command1.java
+```
+
 ## Messages
 ### Strings
 Ce projet utilise propose une centralisation des messages dans [`resources/strings.json`](src/main/resources/strings.json). 

@@ -2,15 +2,18 @@
 
 Ce dépôt contient les sources du bot EPLBot présent sur le discord de l'École Polytechnique de Louvain-la-Neuve (EPL).
 ___
+
+# Installation
 ## Prérequis
 
 Avant de commencer, assurez-vous d'avoir les éléments suivants :
 
-- Java Development Kit (JDK) 21 installé sur votre machine.
-- Un compte Discord pour créer un bot et obtenir un jeton d'authentification.
-- Gradle installé (ou vous pouvez utiliser la version fournie avec le projet).
+- Java Development Kit (JDK) 23
+- Docker
+- Un compte Discord pour créer un bot et obtenir un jeton d'authentification
+- Gradle si vous souhaitez compiler le projet localement
 
-## Installation
+## Procédure
 
 1. Clonez ce dépôt sur votre machine :
 
@@ -21,57 +24,38 @@ Avant de commencer, assurez-vous d'avoir les éléments suivants :
 2. Accédez au répertoire du projet :
 
     ```shell
-    cd eplbot
+    cd EPLbot/
     ```
 3. Créez un répertoire pour la persistence:
 
     ```shell
-    mkdir persistence
+    mkdir data/
     ```
 
-4. Compilez le projet en exécutant la commande :
+4. Renommez le fichier `variables.env.example` en `variables.env` et renseignez-y vos variables d'environnement suivant :
+    - `DISCORD_BOT_TOKEN`: Jeton d'identification de votre bot Discord
+    - `TEST_DISCORD_ID`: Identifiant du discord sur lequel vous souhaitez tester le bot
+    - `GITHUB_APPLICATION_ID`: Identifiant de l'application Github liée (permet de gérer les issues) *(Optionnel)*
+    - `GITHUB_APPLICATION_INSTALLATION_ID`: Identifiant d'installation de l'application Github liée (permet de gérer les issues) *(Optionnel)*
+    - `HASTEBIN_TOKEN`: Jeton d'identification auprès de l'API de Hastebin
 
+5. Lancez le projet avec Docker :
     ```shell
-    ./gradlew shadowJar
+    docker-compose up
     ```
-
-5. Renommez le fichier `variables.env.example` en `variables.env` et renseignez-y vos variables d'environnement suivant :
-   - `DISCORD_BOT_TOKEN`: Jeton d'identification de votre bot Discord
-   - `TEST_DISCORD_ID`: Identifiant du discord sur lequel vous souhaitez tester le bot
-   - `GITHUB_APPLICATION_ID`: Identifiant de l'application Github liée (permet de gérer les issues) *(Optionnel)* 
-   - `GITHUB_APPLICATION_INSTALLATION_ID`: Identifiant d'installation de l'application Github liée (permet de gérer les issues) *(Optionnel)*
-   - `HASTEBIN_TOKEN`: Jeton d'identification auprès de l'API de Hastebin
-   
-6. Lancez le bot :
- ```shell
-      ./gradlew run
-   ```
-
-# Docker
-
-Pour exécuter le bot dans un conteneur Docker, voici la marche à suivre.
-
-1. Build l'image Docker
-
-    ```shell
-    docker build . -t eplbot
-    ```
-2. Lancer le docker
-
-    ```shell
-        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -e DISCORD_BOT_TOKEN=token -e TEST_DISCORD_ID=id-de-votre-discord-de-test -t eplbot
-    ```
-
-## Configuration du bot Discord
+---
+# Configuration du bot Discord
 
 Le bot propose un système modulaire permettant d'activer et désactiver les modules via les commandes Discord `/enable <module>` et `/disable <module>`.
-## Contribution
+
+La commande `/config` permet de configurer les paramètres des modules.
+# Contribution
 
 Les contributions à ce projet sont les bienvenues. Si vous souhaitez apporter des améliorations, veuillez créer une branche à partir de la branche `master`, effectuer vos modifications et soumettre une Pull Request (PR).
 
 Pensez à consulter [CONTRIBUTION.md](CONTRIBUTION.md) afin de comprendre la structure du projet
 
-## Ressources
+# Ressources
 
 - Documentation JDA : [https://github.com/DV8FromTheWorld/JDA](https://github.com/DV8FromTheWorld/JDA)
 - Tutoriels Discord API : [https://discord.com/developers/docs/intro](https://discord.com/developers/docs/intro)

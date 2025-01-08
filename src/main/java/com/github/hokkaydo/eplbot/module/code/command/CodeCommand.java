@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -41,8 +40,8 @@ import java.util.stream.Collectors;
 
 public class CodeCommand extends ListenerAdapter implements Command {
 
-    static GlobalProcessIdManager IDMANAGER = new GlobalProcessIdManager();
-    private final static String INPUT_FILENAME = "input.txt";
+    private static final GlobalProcessIdManager ID_MANAGER = new GlobalProcessIdManager();
+    private static final String INPUT_FILENAME = "input.txt";
     private final PerformResponse response = new PerformResponse(); // The class handling the response (sending trough discord etc. )
     private static final Map<String, Class<? extends Runner>> RUNNERMAP;
     /* /!\
@@ -62,27 +61,12 @@ public class CodeCommand extends ListenerAdapter implements Command {
         this.guildId = guildId;
     }
 
-    /**
-     * @param type the language type
-     * @return a new Runner for the code to run on
-     */
-    private Runner instantiateRunner(String type) {
-        Class<? extends Runner> runnerClass = RUNNERMAP.get(type);
-        try {
-            return runnerClass.getDeclaredConstructor(String.class).newInstance(String.valueOf(IDMANAGER.getNextNumber()));
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
     @Override
     public void executeCommand(CommandContext context) {
-        System.out.println(context.options().size());
         if (context.options().size() <= 2) {
             // No file given
             String currentLang = context.options().getFirst().getAsString();
-            String modalName = STR."\{context.author().getId()}-code_submission-\{currentLang}";
+            String modalName = "%s-code_submission-%s".formatted(context.author().getId(), currentLang);
             if (context.options().get(1).getAsBoolean()){
                 modalName += "-spoiler";
             }
@@ -92,7 +76,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
             return;
         }
         long current = Instant.now().toEpochMilli();
-        context.replyCallbackAction().setContent(STR."Processing since: <t:\{current/ 1000}:R>").setEphemeral(false).queue( reply -> context.options()
+        context.replyCallbackAction().setContent("Processing since: <t:%d:R>".formatted(current/ 1000)).setEphemeral(false).queue( reply -> context.options()
             .get(2)
             .getAsAttachment()
             .getProxy()
@@ -116,16 +100,29 @@ public class CodeCommand extends ListenerAdapter implements Command {
                         Main.LOGGER.log(Level.INFO, "File not deleted");
                     }
                     long sent = Instant.now().toEpochMilli();
-                    reply.editOriginal(STR."Processing time: `\{(sent-current)} ms`").queue();
+                    reply.editOriginal("Processing time: `%d ms`".formatted(sent-current)).queue();
                 });
             })
             .exceptionally(t -> {
-                context.channel().sendMessage(STR."""
-                    \{Strings.getString("COMMAND_CODE_UNEXPECTED_ERROR")}
-                    The error is :\{t.getMessage()}""").queue();
+                context.channel().sendMessage("""
+                    %s
+                    The error is: %s""".formatted(Strings.getString("COMMAND_CODE_UNEXPECTED_ERROR"), t.getMessage())).queue();
                 return null;
             })
         );
+    }
+
+    /**
+     * @param type the language type
+     * @return a new Runner for the code to run on
+     */
+    private Runner instantiateRunner(String type) {
+        Class<? extends Runner> runnerClass = RUNNERMAP.get(type);
+        try {
+            return runnerClass.getDeclaredConstructor(String.class).newInstance(String.valueOf(ID_MANAGER.getNextNumber()));
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -142,7 +139,6 @@ public class CodeCommand extends ListenerAdapter implements Command {
         }
     }
 
-
     @Override
     public void onModalInteraction(ModalInteractionEvent event) {
         // Check for a valid modal
@@ -156,7 +152,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
         }
         Integer runTimeout = Config.getGuildVariable(guild.getIdLong(), "COMMAND_CODE_TIMELIMIT");
         long current = Instant.now().toEpochMilli();
-        event.getInteraction().reply(STR."Processing since: <t:\{current/ 1000}:R>").queue(reply -> {
+        event.getInteraction().reply("Processing since: <t:%d:R>".formatted(current/1000)).queue(reply -> {
             String languageOption = event.getModalId().split("-")[2];
 
             String code = Objects.requireNonNull(body.get().getAsString());
@@ -169,7 +165,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
                 response.sendSubmittedCode(event.getChannel(),code,languageOption, hasSpoiler);
                 response.sendResult(event.getChannel(), result.getLeft(),result.getRight(), hasSpoiler);
                 long sent = Instant.now().toEpochMilli();
-                reply.editOriginal(STR."Processing time: `\{(sent-current)} ms`").queue();
+                reply.editOriginal("Processing time: `%d ms`".formatted(sent-current)).queue();
             });
         });
     }

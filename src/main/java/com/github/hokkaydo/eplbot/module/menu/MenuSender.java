@@ -35,7 +35,7 @@ public class MenuSender implements MenuRetriever{
 
     public void start() {
         long delay = calculateDelayUntilNextMonday();
-        scheduler.scheduleAtFixedRate(this::sendMenu, delay, 7 * 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(this::sendMenu, delay, 7 * 24 * 60 * 60 * 1000L, TimeUnit.MILLISECONDS);
     }
 
     private long calculateDelayUntilNextMonday() {
@@ -70,7 +70,7 @@ public class MenuSender implements MenuRetriever{
                     .findFirst()
                     .map(element -> {
                         String imageUrl = element.attr("src");
-                        return STR."https://\{imageUrl.replace("//", "")}";
+                        return "https://" + imageUrl.replace("//", "");
                     });
         } catch (IOException e) {
             Main.LOGGER.log(Level.WARNING, "[MenuCommand] An error occurred while trying to parse the URL", e);

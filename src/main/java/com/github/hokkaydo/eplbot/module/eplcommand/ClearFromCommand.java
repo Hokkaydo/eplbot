@@ -26,8 +26,8 @@ public class ClearFromCommand implements Command {
                 .map(MessageHistory::getRetrievedHistory)
                 .queue(l -> l.stream().map(Message::delete).forEach(AuditableRestAction::queue));
         context.channel().deleteMessageById(fromIdOption.get().getAsString()).queue(
-                _ -> context.replyCallbackAction().setContent(Strings.getString("COMMAND_CLEAR_PROCESSING")).queue(),
-                _ -> context.replyCallbackAction().setContent(Strings.getString("COMMAND_CLEAR_MESSAGE_TOO_OLD")).queue()
+                ignored -> context.replyCallbackAction().setContent(Strings.getString("COMMAND_CLEAR_PROCESSING")).queue(),
+                ignored -> context.replyCallbackAction().setContent(Strings.getString("COMMAND_CLEAR_MESSAGE_TOO_OLD")).queue()
         );
     }
 

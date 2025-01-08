@@ -33,7 +33,7 @@ public class BookMarkListener extends ListenerAdapter {
         event.retrieveMessage().queue(message -> {
             String content = message.getContentDisplay();
             if(content.length() > 100) {
-                content = STR."\{content.substring(0, 100)}...";
+                content = content.substring(0, 100) + "...";
             }
             repository.create(new BookMark(event.getUserIdLong(), event.getMessageIdLong(), content, message.getJumpUrl()));
         });

@@ -37,8 +37,8 @@ public class ClearBetween implements Command {
                     }
                 });
         context.channel().deleteMessageById(idAOption.get().getAsString()).queue(
-                _ -> context.replyCallbackAction().setContent(Strings.getString("COMMAND_CLEAR_PROCESSING")).queue(),
-                _ -> context.replyCallbackAction().setContent(Strings.getString("COMMAND_CLEAR_MESSAGE_TOO_OLD")).queue()
+                ignored -> context.replyCallbackAction().setContent(Strings.getString("COMMAND_CLEAR_PROCESSING")).queue(),
+                ignored -> context.replyCallbackAction().setContent(Strings.getString("COMMAND_CLEAR_MESSAGE_TOO_OLD")).queue()
         );
 
     }

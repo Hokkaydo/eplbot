@@ -192,7 +192,7 @@ public class NoticeCommand extends ListenerAdapter implements Command {
                                                 .setPlaceholder("Entrez votre avis");
         getOldValue(authorId, selectedValue, courses.stream().anyMatch(c -> c.code().equals(selectedValue))).map(Notice::content).ifPresent(textBuilder::setValue);
         String name = courses.stream().anyMatch(c -> c.code().equals(subjectId)) ?
-                              STR."\{selectedValue} \{courseRepository.getByCourseCode(selectedValue).map(Course::name).orElse("")}" :
+                              selectedValue + " " + courseRepository.getByCourseCode(selectedValue).map(Course::name).orElse(""):
                               selectedValue;
         return Modal.create(modalKey, String.format("Avis - %s", name))
                        .addActionRow(textBuilder.build())
@@ -229,7 +229,7 @@ public class NoticeCommand extends ListenerAdapter implements Command {
 
     private String toString(List<String> links) {
         if(links.isEmpty()) return  "";
-        return STR." - \{links.getFirst()}\{links.stream().skip(1).reduce("", (a, b) -> a + "\n - " + b)}";
+        return " - " + links.getFirst() + links.stream().skip(1).reduce("", (a, b) -> a + "\n - " + b);
     }
 
     private void storeNotice(String authorId, String subjectId, Date timestamp, String type, String content) {

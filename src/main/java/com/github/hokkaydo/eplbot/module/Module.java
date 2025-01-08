@@ -56,7 +56,7 @@ public abstract class Module {
 
     @Override
     public String toString() {
-        return STR."\{getName()};\{getGuild().getName()}";
+        return "%s;%s".formatted(getName(), getGuild().getName());
     }
 
 }

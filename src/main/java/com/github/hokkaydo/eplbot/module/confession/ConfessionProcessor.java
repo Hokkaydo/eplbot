@@ -101,9 +101,9 @@ public class ConfessionProcessor extends ListenerAdapter {
         confessionAuthor.put(confessUUID, context.user().getIdLong());
         MessageCreateBuilder data = MessageCreateBuilder.from(embedBuilder.build())
                                             .addActionRow(
-                                                    Button.primary(STR."validate-confession;\{confessUUID}", Emoji.fromUnicode("✅")),
-                                                    Button.primary(STR."warn-confession;\{confessUUID}", Emoji.fromUnicode("⚠")),
-                                                    Button.primary(STR."refuse-confession;\{confessUUID}", Emoji.fromUnicode("❌"))
+                                                    Button.primary("validate-confession;" + confessUUID, Emoji.fromUnicode("✅")),
+                                                    Button.primary("warn-confession;" + confessUUID, Emoji.fromUnicode("⚠")),
+                                                    Button.primary("refuse-confession;" + confessUUID, Emoji.fromUnicode("❌"))
                                             );
         if(following) {
             confessFollowing.add(confessUUID);
@@ -196,14 +196,14 @@ public class ConfessionProcessor extends ListenerAdapter {
             return;
         }
         Member member = guild.getMemberById(confessionAuthorId);
-        String username = Optional.ofNullable(Main.getJDA().getUserById(confessionAuthorId)).map(User::getName).orElse(STR."USER NOT ON SERVER : \{confessionAuthorId}");
+        String username = Optional.ofNullable(Main.getJDA().getUserById(confessionAuthorId)).map(User::getName).orElse("USER NOT ON SERVER: " + confessionAuthorId);
         EmbedBuilder builder = new EmbedBuilder()
                                        .setDescription(Strings.getString("CONFESSION_TOO_MUCH_WARNS")
                                                                .formatted(
                                                                        member == null ? username : member.getAsMention(),
                                                                        threshold,
                                                                        threshold,
-                                                                       member == null ? STR."@\{username}" : STR."@\{member.getEffectiveName()}"
+                                                                       member == null ? "@" + username : "@" + member.getEffectiveName()
                                                                )
                                        )
                                        .setColor(Color.ORANGE);

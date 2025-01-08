@@ -20,7 +20,7 @@ public class GlobalRunner implements Runner{
     private final String dockerName;
     public GlobalRunner(String targetDocker, String dockerId){
         this.targetDocker = targetDocker;
-        this.dockerName = targetDocker+'-' +dockerId;
+        this.dockerName = targetDocker + '-' +dockerId;
     }
     private static final ScheduledExecutorService SCHEDULER = new ScheduledThreadPoolExecutor(1);
 
@@ -46,15 +46,16 @@ public class GlobalRunner implements Runner{
             process = startProcessInDocker(code);
             processRef.set(process);
         } catch (IOException e){
-            return Pair.of(STR."Server side error with code 10\n\{e.getMessage()}", 1);
+            return Pair.of("Server side error with code 10%n%s".formatted(e.getMessage()), 1);
         }
         try {
             captureProcessOutput(process,builder); // raises IOException
             exitCode = process.waitFor(); // raise InterruptedException
         } catch (IOException e) {
-            return Pair.of(STR."Server side error with code 11\n\{e.getMessage()}",1);
+            return Pair.of("Server side error with code 11%n%s".formatted(e.getMessage()), 1);
         } catch (InterruptedException e) {
-            return Pair.of(STR."Server side error with code 12\n\{e.getMessage()}",1);
+            Thread.currentThread().interrupt();
+            return Pair.of("Server side error with code 12%n%s".formatted(e.getMessage()), 1);
         }
         builder.append("\nExited with code: ").append(exitCode);
         timer.cancel(false);
@@ -97,10 +98,13 @@ public class GlobalRunner implements Runner{
             Process process = processBuilder.start();
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                Main.LOGGER.log(Level.WARNING,STR."Couldn't delete the docker with name : \{dockerName}");
+                Main.LOGGER.log(Level.WARNING, () -> "Couldn't delete the docker with name: %s".formatted(dockerName));
             }
         } catch (IOException | InterruptedException e) {
-            Main.LOGGER.log(Level.WARNING,STR."Exception when trying to delete the docker : \{dockerName}\n\{e}");
+            Main.LOGGER.log(Level.WARNING, "Exception when trying to delete the docker: %s%n%s".formatted(dockerName, e));
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 }

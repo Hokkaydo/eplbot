@@ -22,8 +22,8 @@ public class ListFeaturesCommand implements Command {
         context.replyCallbackAction().setContent(
                 Main.getModuleManager().getModules(guildId)
                         .stream()
-                        .map(feature -> STR."`\{feature.getName()}`: \{feature.isEnabled() ? ":white_check_mark:" : ":x:"}")
-                        .reduce((s1, s2) -> STR."\{s1}\n\{s2}")
+                        .map(feature -> "`%s`: %s".formatted(feature.getCommands(), feature.isEnabled() ? ":white_check_mark:" : ":x:"))
+                        .reduce("%s%n%s"::formatted)
                         .orElse("")
         ).queue();
     }

@@ -61,7 +61,7 @@ public class DebugCommand implements Command {
         List<CompletableFuture<Void>> requests = new ArrayList<>();
 
         for (CRUDRepository<?> repository : repositories) {
-            output.computeIfAbsent(repository.getClass().getSimpleName(), _ -> new ArrayList<>());
+            output.computeIfAbsent(repository.getClass().getSimpleName(), ignored -> new ArrayList<>());
             StringBuilder s = new StringBuilder();
 
             for (Object o : repository.readAll()) {
@@ -100,7 +100,7 @@ public class DebugCommand implements Command {
         if(list.isEmpty()) return "Empty repository";
         String first = list.getFirst();
         list.removeFirst();
-        return first + list.stream().reduce("", (a,b) -> STR."\{a} - \{b}");
+        return first + list.stream().reduce("", "%s - %s"::formatted);
     }
 
     @Override
@@ -116,7 +116,7 @@ public class DebugCommand implements Command {
     }
 
     private static void dumpErrors(PrivateChannel channel) {
-        // TODO when implementing better slogging
+        // TODO when implementing better logging
     }
 
     private static void dump(PrivateChannel channel) {

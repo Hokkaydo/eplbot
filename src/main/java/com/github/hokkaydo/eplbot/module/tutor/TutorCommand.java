@@ -45,7 +45,7 @@ public class TutorCommand extends ListenerAdapter implements Command {
             case "manage" -> manage(context);
             case "list" -> list(context);
             case "ping" -> ping(context);
-            default -> throw new IllegalStateException(STR."Unexpected value: \{action}");
+            default -> throw new IllegalStateException("Unexpected value: " + action);
         }
     }
 
@@ -90,8 +90,8 @@ public class TutorCommand extends ListenerAdapter implements Command {
                         tutors.isEmpty() ?
                                 Strings.getString("TUTOR_COMMAND_LIST_NO_TUTOR") :
                                 tutors.stream()
-                                        .map(r -> STR."\{r.user.getAsMention()} \{r.allowsPing ? ":loudspeaker:" : ""}")
-                                        .reduce("__Liste des tuteurs :__\n", (s0, s) -> STR."\{s0}\n\{s}")
+                                        .map(r -> r.user.getAsMention() + (r.allowsPing ? ":loudspeaker:" : ""))
+                                        .reduce("__Liste des tuteurs :__\n", "%s%n%s"::formatted)
                 )
                 .queue();
     }
@@ -129,7 +129,7 @@ public class TutorCommand extends ListenerAdapter implements Command {
             case "category" -> handleCategoryMenu(event);
             case "courses" -> handleCourseMenu(event);
             case "ping" -> handlePingMenu(event);
-            default -> {}
+            default -> event.reply(Strings.getString("ERROR_OCCURRED")).setEphemeral(true).queue();
         }
     }
 

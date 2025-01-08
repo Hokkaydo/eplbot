@@ -15,12 +15,12 @@ import java.util.function.Supplier;
 
 public class LMGTCommand implements Command {
 
-    private static final String LMGT_link = "https://letmegooglethat.com/?q=";
+    private static final String lmgtLink = "https://letmegooglethat.com/?q=";
     @Override
     public void executeCommand(CommandContext context) {
         if(context.options().isEmpty()) throw new IllegalStateException("Should not arise");
         String subject = context.options().getFirst().getAsString();
-        context.replyCallbackAction().setContent(STR."\{LMGT_link}\{URLEncoder.encode(subject, Charset.defaultCharset())}").queue();
+        context.replyCallbackAction().setContent(lmgtLink + URLEncoder.encode(subject, Charset.defaultCharset())).queue();
     }
 
     @Override

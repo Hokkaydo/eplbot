@@ -9,7 +9,7 @@ import java.util.List;
 
 public class BookMarkRepositorySQLite implements BookMarkRepository {
 
-    private static final RowMapper<BookMark> MAPPER = (rs, _) -> new BookMark(
+    private static final RowMapper<BookMark> MAPPER = (rs, ignored) -> new BookMark(
             rs.getLong("user_id"),
             rs.getLong("message_id"),
             rs.getString("description"),

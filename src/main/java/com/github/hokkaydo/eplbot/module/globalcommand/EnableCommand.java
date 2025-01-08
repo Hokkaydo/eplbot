@@ -24,7 +24,7 @@ public class EnableCommand implements Command {
         OptionMapping featureOption = context.options().getFirst();
         if(featureOption == null) return;
         Main.getModuleManager().enableModule(featureOption.getAsString(), guildId);
-        context.replyCallbackAction().setContent(STR."Enabled `\{featureOption.getAsString()}` :white_check_mark:").queue();
+        context.replyCallbackAction().setContent("Enabled `%s` :white_check_mark:".formatted(featureOption.getAsString())).queue();
     }
 
     @Override

@@ -35,12 +35,12 @@ public class MessageBirdNextMessageCommand extends ListenerAdapter implements Co
     public void executeCommand(CommandContext context) {
         if (!context.interaction().isGuildCommand() || context.interaction().getGuild() == null) return;
         String type = context.getOption("type").map(OptionMapping::getAsString).orElse(null);
-        String roleId = Config.getGuildVariable(guildId, STR."\{type}_BIRD_ROLE_ID");
+        String roleId = Config.getGuildVariable(guildId, type + "_BIRD_ROLE_ID");
         if (context.author().getRoles().stream().filter(r -> r.getId().equals(roleId)).findFirst().isEmpty()) {
             context.replyCallbackAction().setContent(Strings.getString("MESSAGE_BIRD_NOT_VALID_BIRD")).queue();
             return;
         }
-        Modal modal = Modal.create(STR."messagebird-\{type}", "Message")
+        Modal modal = Modal.create("messagebird-" + type, "Message")
                               .addActionRow(TextInput.create("message", "Message", TextInputStyle.PARAGRAPH).build())
                               .build();
         context.interaction().replyModal(modal).queue();
@@ -98,8 +98,8 @@ public class MessageBirdNextMessageCommand extends ListenerAdapter implements Co
             event.reply(Strings.getString("MESSAGE_BIRD_NEXT_MESSAGE_TOO_LONG").formatted(Message.MAX_CONTENT_LENGTH)).queue();
             return;
         }
-        Config.updateValue(event.getGuild().getIdLong(), STR."\{type}_BIRD_NEXT_MESSAGE", content);
-        MessageUtil.sendAdminMessage(STR."Prochain message \{type} enregistré par %s :%n >>> %s".formatted(event.getUser().getAsMention(), content), event.getGuild().getIdLong());
+        Config.updateValue(event.getGuild().getIdLong(), type + "_BIRD_NEXT_MESSAGE", content);
+        MessageUtil.sendAdminMessage("Prochain message %s enregistré par %s :%n >>> %s".formatted(type, event.getUser().getAsMention(), content), event.getGuild().getIdLong());
         event.reply(Strings.getString("MESSAGE_BIRD_NEXT_MESSAGE_REGISTERED")).queue();
         event.getUser().openPrivateChannel().queue(dm -> dm.sendMessage(Strings.getString("MESSAGE_BIRD_NEXT_MESSAGE_REGISTERED_DM").formatted(content)).queue());
     }

@@ -41,19 +41,19 @@ public class WikiCommand implements Command {
     private EmbedBuilder toEmbed(String query, String link, List<List<String>> response) {
         EmbedBuilder builder = new EmbedBuilder()
                                        .setTitle(query, link)
-                                       .addField("Étymologie", response.getFirst().stream().reduce("", (a, b) -> STR."\{a}\n- \{b}"),false)
+                                       .addField(WikitionaryScrapper.ETYMOLOGY, response.getFirst().stream().reduce("", "%s%n- %s"::formatted),false)
                                        .setColor(Color.GREEN);
 
         StringBuilder content = new StringBuilder(response.get(1).getLast());
         boolean first = true;
         int count = 1;
         for (String definition : response.get(2)) {
-            if(content.length() + definition.length() + STR."\n\{count}. ".length() > MAX_FIELD_SIZE) {
+            if(content.length() + definition.length() + ("\n" + count + ". ").length() > MAX_FIELD_SIZE) {
                 builder.addField(new MessageEmbed.Field(first ? response.get(1).getFirst() : "", content.toString(), false));
                 first = false;
                 content = new StringBuilder();
             }
-            content.append(STR."\n\{count++}. ").append(definition);
+            content.append("\n").append(count++).append(". ").append(definition);
         }
         builder.addField(new MessageEmbed.Field(first ? response.get(1).getFirst() : "", content.toString(), false));
         return builder;
@@ -123,7 +123,7 @@ public class WikiCommand implements Command {
     private static class WikitionaryScrapper implements WikiScrapper {
 
         private static final String WIKITIONARY_URL = "https://%s.wiktionary.org";
-        private static final String BASE_LINK = STR."\{WIKITIONARY_URL}/wiki/";
+        private static final String BASE_LINK = WIKITIONARY_URL + "/wiki/";
         private static final String NO_RESULT_FOUND = "Pas de résultat pour";
         private static final String ETYMOLOGY = "Étymologie";
         private static final Strings.RabinKarp LINK_OPENING_TAG_SEARCHER = Strings.getSearcher("<a ");
@@ -231,7 +231,7 @@ public class WikiCommand implements Command {
                     }
                 }
                 int closeOpeningTag = findFirst(html, openingTagIndex, '>');
-                markdown.append(STR."[\{html.substring(closeOpeningTag + 1, closingTagIndex)}](\{link})");
+                markdown.append("[%s](%s)".formatted(html.substring(closeOpeningTag + 1, closingTagIndex), link));
                 textStart = closingTagIndex + 4;
             }
             return markdown.toString();

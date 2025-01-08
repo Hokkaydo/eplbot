@@ -36,7 +36,7 @@ public class ContributeCommand implements Command {
                                 """
                                         Vous pouvez contribuer en soumettant une PR sur le dépôt à l'adresse https://github.com/Hokkaydo/EPLBot.
                                         Pensez à jeter un coup d'œil au kanban d'avancement dans l'onglet `Projects` afin de voir ce qu'il y a à faire.
-                                                """,
+                                        """,
                                 true
                         );
                         StringBuilder contributors = new StringBuilder();

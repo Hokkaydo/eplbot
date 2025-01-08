@@ -31,6 +31,7 @@ public class DatabaseManager {
 
     private DatabaseManager() {}
 
+
     public static void regenerateDatabase(boolean drop) {
         JdbcTemplate template = new JdbcTemplate(DatabaseManager.getDataSource());
         if (drop)
@@ -42,21 +43,22 @@ public class DatabaseManager {
             template.execute(
                     "CREATE TABLE IF NOT EXISTS %s ( id INTEGER PRIMARY KEY AUTOINCREMENT %s ); %s".formatted(
                             model.name(),
-                            model.parameters().entrySet().stream().map(e -> STR."\{e.getKey()} \{e.getValue()}").reduce("", "%s,%s"::formatted),
+                            model.parameters().entrySet().stream().map(e -> "%s %s".formatted(e.getKey(), e.getValue())).reduce("", "%s,%s"::formatted),
                             drop ? "delete from sqlite_sequence where name='%s';".formatted(model.name()) : ""
                     )
             );
 
             // Remove columns that are not in the model
-            template.queryForList(STR."PRAGMA table_info(\{model.name()});")
+            template.queryForList("PRAGMA table_info(%s);".formatted(model.name()))
                     .stream()
                     .map(row -> row.get("name"))
-                    .filter(col -> !model.parameters().containsKey((String)col))
+                    .map(Object::toString)
+                    .filter(col -> !model.parameters().containsKey(col))
                     .filter(col -> !col.equals("id"))
-                    .forEach(col -> template.update(STR."ALTER TABLE \{model.name()} DROP COLUMN \{col};"));
+                    .forEach(col -> template.update("ALTER TABLE %s DROP COLUMN %s;".formatted(model.name(), col)));
 
             // Add columns that are in the model but not in the table
-            List<String> columns = template.queryForList(STR."PRAGMA table_info(\{model.name()});")
+            List<String> columns = template.queryForList("PRAGMA table_info(%s);".formatted(model.name()))
                                            .stream()
                                            .map(row -> row.get("name"))
                                            .map(Object::toString)
@@ -66,16 +68,17 @@ public class DatabaseManager {
                     .entrySet()
                     .stream()
                     .filter(e -> !columns.contains(e.getKey()))
-                    .forEach(e -> template.update(STR."ALTER TABLE \{model.name()} ADD COLUMN \{e.getKey()} \{e.getValue()};"));
+                    .forEach(e -> template.update("ALTER TABLE %s ADD COLUMN %s %s;".formatted(model.name(),e.getKey(), e.getValue())));
         }
 
         // Delete old tables that are still in the database and not in the TABLES list
         template.queryForList("SELECT name FROM sqlite_master WHERE type='table' AND NAME NOT LIKE 'sqlite_%';")
                 .stream()
                 .map(row -> row.get("name"))
-                .filter(name -> !TABLES.stream().map(TableModel::name).toList().contains((String)name))
                 .map(Object::toString)
-                .forEach(name -> template.update(STR."DROP TABLE \{name};"));
+                .filter(name -> !TABLES.stream().map(TableModel::name).toList().contains(name))
+                .map(Object::toString)
+                .forEach(name -> template.update("DROP TABLE %s;".formatted(name)));
 
         if(drop) {
             CourseGroupRepository repository = new CourseGroupRepositorySQLite(dataSource, new CourseRepositorySQLite(dataSource));
@@ -89,7 +92,7 @@ public class DatabaseManager {
 
 
     public static void initialize(String persistenceDirPath) {
-        dataSource = SQLiteDatasourceFactory.create(STR."\{persistenceDirPath}/database.sqlite");
+        dataSource = SQLiteDatasourceFactory.create(persistenceDirPath + "/database.sqlite");
     }
 
 }

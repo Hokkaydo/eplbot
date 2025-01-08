@@ -13,7 +13,7 @@ public class ExamRetrieveThreadRepositorySQLite implements ExamRetrieveThreadRep
 
     private final JdbcTemplate jdbcTemplate;
 
-    private static final RowMapper<ExamsRetrieveThread> mapper = (ResultSet rs, int _) -> new ExamsRetrieveThread(rs.getLong("message_id"), rs.getString("path"));
+    private static final RowMapper<ExamsRetrieveThread> mapper = (ResultSet rs, int ignored) -> new ExamsRetrieveThread(rs.getLong("message_id"), rs.getString("path"));
 
 
     public ExamRetrieveThreadRepositorySQLite(DataSource dataSource) {
@@ -24,7 +24,7 @@ public class ExamRetrieveThreadRepositorySQLite implements ExamRetrieveThreadRep
     public Optional<ExamsRetrieveThread> readByMessageId(Long id) {
         List<ExamsRetrieveThread> l = jdbcTemplate.query("SELECT * FROM exams_thread WHERE message_id = ?", mapper, id);
         if(l.isEmpty()) return Optional.empty();
-        return Optional.of(l.get(0));
+        return Optional.of(l.getFirst());
     }
 
     @Override

@@ -23,7 +23,7 @@ public class HelpCommand implements Command {
     public void executeCommand(CommandContext context) {
         List<String> helps = Main.getCommandManager().getCommands(guildId).stream()
                                      .filter(c -> Main.getCommandManager().isEnabled(guildId, c.getClass()) || context.author().hasPermission(Permission.ADMINISTRATOR))
-                                     .map(c -> STR."__\{c.getName()}__: \n\{c.help().get()}")
+                                     .map(c -> "__%s__: %n%s".formatted(c.getName(), c.help().get()))
                                      .toList();
         StringBuilder stringBuilder = new StringBuilder("__AIDE :__");
         boolean firstSent = false;

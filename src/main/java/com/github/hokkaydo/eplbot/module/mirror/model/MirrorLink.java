@@ -33,7 +33,7 @@ public class MirrorLink {
 
     @Override
     public String toString() {
-        return STR."MirrorLink{first=\{first}, second=\{second}\{'}'}";
+        return "MirrorLink{first=%s, second=%s}".formatted(first, second);
     }
 
 }

@@ -50,23 +50,24 @@ public class MessageBirdTask {
         this.prefix = type.charAt(0) + type.substring(1).toLowerCase();
         this.type = type;
         this.guildName = Optional.ofNullable(Main.getJDA().getGuildById(guildId)).map(Guild::getName).orElse("");
-        this.messagesPath = Path.of(STR."\{Main.PERSISTENCE_DIR_PATH}/\{type.toLowerCase()}_messages.json");
+        this.messagesPath = Path.of("%s/%s_messages.json".formatted(Main.PERSISTENCE_DIR_PATH, type.toLowerCase()));
     }
 
     public void start() {
         reloadMessages();
-        long startSeconds = Config.getGuildVariable(guildId, STR."\{type}_BIRD_RANGE_START_DAY_SECONDS");
-        long endSeconds = Config.getGuildVariable(guildId, STR."\{type}_BIRD_RANGE_END_DAY_SECONDS");
+        long startSeconds = Config.getGuildVariable(guildId, type + "_BIRD_RANGE_START_DAY_SECONDS");
+        long endSeconds = Config.getGuildVariable(guildId, type + "_BIRD_RANGE_END_DAY_SECONDS");
 
         long currentSeconds = LocalTime.now().getLong(ChronoField.SECOND_OF_DAY);
         long deltaStart = startSeconds - currentSeconds;
         if (deltaStart <= 0) {
             deltaStart += 24 * 60 * 60;
         }
-        Main.LOGGER.log(Level.INFO, "[%sBird][%s] Trying to send in %d seconds".formatted(prefix, guildName, deltaStart));
+        long finalDeltaStart = deltaStart;
+        Main.LOGGER.log(Level.INFO, () -> "[%sBird][%s] Trying to send in %d seconds".formatted(prefix, guildName, finalDeltaStart));
         dayLoops.add(EXECUTOR.schedule(() -> {
             int rnd = RANDOM.nextInt(100);
-            int proba = Config.<Integer>getGuildVariable(guildId, STR."\{type}_BIRD_MESSAGE_PROBABILITY");
+            int proba = Config.<Integer>getGuildVariable(guildId, type + "_BIRD_MESSAGE_PROBABILITY");
             String[] logs = LOG_MESSAGES[rnd > proba ? 0 : 1];
             Main.LOGGER.log(Level.INFO, "[%sBird][%s] %s (%d %s %d)".formatted(prefix, guildName, logs[0], proba, logs[1], rnd));
             if (rnd > proba) {
@@ -79,10 +80,10 @@ public class MessageBirdTask {
             Main.LOGGER.log(Level.INFO, "[%sBird][%s] Wait %d seconds before sending".formatted(prefix, guildName, waitTime));
             perfectTimeLoops.add(EXECUTOR.schedule(
                     () -> Optional.ofNullable(Main.getJDA().getGuildById(guildId))
-                                  .map(guild -> guild.getTextChannelById(Config.getGuildVariable(guildId, STR."\{type}_BIRD_CHANNEL_ID")))
+                                  .map(guild -> guild.getTextChannelById(Config.getGuildVariable(guildId, type + "_BIRD_CHANNEL_ID")))
                                   .ifPresentOrElse(
                                           this::sendMessage,
-                                          () -> MessageUtil.sendAdminMessage("%s_BIRD_CHANNEL_ID (%s) not found".formatted(type, Config.getGuildVariable(guildId, STR."\{type}_BIRD_CHANNEL_ID")), guildId)
+                                          () -> MessageUtil.sendAdminMessage("%s_BIRD_CHANNEL_ID (%s) not found".formatted(type, Config.getGuildVariable(guildId, type + "_BIRD_CHANNEL_ID")), guildId)
                                   ),
                     waitTime,
                     TimeUnit.SECONDS
@@ -91,10 +92,10 @@ public class MessageBirdTask {
     }
 
     private void sendMessage(TextChannel channel) {
-        String nextMessage = Config.getGuildState(guildId, STR."\{type}_BIRD_NEXT_MESSAGE");
+        String nextMessage = Config.getGuildState(guildId, type + "_BIRD_NEXT_MESSAGE");
         if (nextMessage != null && !nextMessage.isBlank()) {
             channel.sendMessage(nextMessage).setAllowedMentions(null).queue();
-            Config.updateValue(guildId, STR."\{type}_BIRD_NEXT_MESSAGE", "");
+            Config.updateValue(guildId, type + "_BIRD_NEXT_MESSAGE", "");
             perfectTimeLoops.removeIf(f -> f.isDone() || f.isCancelled());
             dayLoops.removeIf(f -> f.isDone() || f.isCancelled());
             start();
@@ -144,8 +145,8 @@ public class MessageBirdTask {
     }
 
     public void processFirstAnswer(MessageReceivedEvent event) {
-        String messageBirdRoleId = Config.getGuildVariable(guildId, STR."\{type}_BIRD_ROLE_ID");
-        String unicodeEmoji = Config.getGuildVariable(guildId, STR."\{type}_BIRD_UNICODE_REACT_EMOJI");
+        String messageBirdRoleId = Config.getGuildVariable(guildId, type + "_BIRD_ROLE_ID");
+        String unicodeEmoji = Config.getGuildVariable(guildId, type + "_BIRD_UNICODE_REACT_EMOJI");
         Optional.ofNullable(Main.getJDA().getGuildById(guildId)).map(guild -> guild.getRoleById(messageBirdRoleId)).ifPresent(role -> {
             role.getGuild().findMembersWithRoles(role).onSuccess(members -> members.stream().filter(m -> m.getUser().getIdLong() != event.getAuthor().getIdLong()).map(m -> role.getGuild().removeRoleFromMember(m.getUser(), role)).forEach(RestAction::queue));
             role.getGuild().addRoleToMember(event.getAuthor(), role).queue();

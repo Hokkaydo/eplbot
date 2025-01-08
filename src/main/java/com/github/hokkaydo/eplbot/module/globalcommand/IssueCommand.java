@@ -65,7 +65,7 @@ public class IssueCommand extends ListenerAdapter implements Command {
             return;
         }
         Optional<OptionMapping> file = context.options().stream().filter(o -> o.getName().equals("file")).findFirst();
-        String key = STR."\{context.author().getId()}-issue-modal";
+        String key = context.author().getId() + "-issue-modal";
         labelsFileModalTempStore.put(key, new Object[]{labels.get().getAsString(), file.<Object>map(OptionMapping::getAsAttachment).orElse(null)});
 
         Modal modal = Modal.create(key, "Formulaire d'issue")
@@ -105,7 +105,7 @@ public class IssueCommand extends ListenerAdapter implements Command {
         labelsFileModalTempStore.remove(key);
 
         try {
-            GHIssue issue = github.getRepository("Hokkaydo/EPLBot").createIssue(title).body(STR."\{body}\n\{image}").label(label).create();
+            GHIssue issue = github.getRepository("Hokkaydo/EPLBot").createIssue(title).body("%s%n%s".formatted(body, image)).label(label).create();
             event.getHook().editOriginal(Strings.getString("COMMAND_ISSUE_SUCCESSFUL").formatted(issue.getNumber())).queue();
         } catch (IOException e) {
             event.getHook().editOriginal(Strings.getString(ERROR_OCCURRED)).queue();
@@ -115,7 +115,7 @@ public class IssueCommand extends ListenerAdapter implements Command {
 
     private void refreshJwt() {
         try {
-            RSAPrivateKey privateKey = getPrivateKey(new File(STR."\{Main.PERSISTENCE_DIR_PATH}/github.pem"));
+            RSAPrivateKey privateKey = getPrivateKey(new File(Main.PERSISTENCE_DIR_PATH + "/github.pem"));
             Algorithm algorithm = Algorithm.RSA256(privateKey);
             String token = JWT.create()
                                    .withIssuedAt(Instant.now().minusSeconds(60))

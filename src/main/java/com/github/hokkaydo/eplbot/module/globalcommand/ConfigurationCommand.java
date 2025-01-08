@@ -30,8 +30,8 @@ public class ConfigurationCommand implements Command {
                             .keySet()
                             .stream()
                             .sorted()
-                            .map(k -> STR."`\{k}`: \{Config.getGuildVariable(guildId, k)}")
-                            .reduce((s1, s2) -> STR."\{s1}\n\{s2}")
+                            .map(k -> "`%s`: %s".formatted(k, Config.getGuildVariable(guildId, k)))
+                            .reduce("%s%n%s"::formatted)
                             .orElse("")
             ).queue();
             return;
@@ -40,7 +40,7 @@ public class ConfigurationCommand implements Command {
             context.replyCallbackAction().setContent(
                     Config.getDefaultConfiguration().keySet().stream()
                             .filter(k -> k.equals(keyOption.get().getAsString()))
-                            .map(k -> STR."`\{k}`: \{Config.getGuildVariable(guildId, k)}")
+                            .map(k -> "`%s`: %s".formatted(k, Config.getGuildVariable(guildId, k)))
                             .findFirst()
                             .orElse("")
             ).queue();
@@ -89,7 +89,13 @@ public class ConfigurationCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_CONFIG_HELP").formatted(Config.getDefaultConfiguration().keySet().stream().map(key -> STR."`\{key}`: \{Config.getValueFormat(key)}").reduce((s1, s2) -> STR."\{s1}\n\t\{s2}").orElse(""));
+        return () -> Strings.getString("COMMAND_CONFIG_HELP").formatted(
+                Config.getDefaultConfiguration().keySet()
+                        .stream()
+                        .map(k -> "`%s`: %s".formatted(k, Config.getGuildVariable(guildId, k)))
+                        .reduce("%s%n%t%s"::formatted)
+                        .orElse("")
+        );
     }
 
 }

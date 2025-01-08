@@ -28,7 +28,7 @@ public class DisableCommand implements Command {
             return;
         }
         Main.getModuleManager().disableModule(featureOption.getAsString(), guildId);
-        context.replyCallbackAction().setContent(STR."Disabled `\{featureOption.getAsString()}` :x:").queue();
+        context.replyCallbackAction().setContent("Disabled `%s` :x:".formatted(featureOption.getAsString())).queue();
     }
 
     @Override

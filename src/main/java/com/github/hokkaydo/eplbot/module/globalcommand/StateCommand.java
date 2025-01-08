@@ -27,8 +27,8 @@ public class StateCommand implements Command {
         if(subCommand.isEmpty()) {
             context.replyCallbackAction().setContent(
                     Config.getDefaultState().keySet().stream()
-                            .map(k -> STR."`\{k}`: \{Config.getGuildState(guildId, k)}")
-                            .reduce((s1, s2) -> STR."\{s1}\n\{s2}")
+                            .map(k -> "`%s`: %s".formatted(k, Config.getGuildState(guildId, k)))
+                            .reduce("%s%n%s"::formatted)
                             .orElse("")
             ).queue();
             return;

@@ -35,17 +35,17 @@ public class BookMarkCommand implements Command {
                     channel.sendMessage(message).queue();
                     message = new StringBuilder();
                 }
-                message.append(STR."\n\{this.formatter(bookMark)}");
+                message.append("\n").append(this.formatter(bookMark));
             }
             channel.sendMessage(message).queue();
         });
     }
 
     private String formatter(BookMark bookMark) {
-        return STR."""
-        > \{bookMark.description()}
-        \{bookMark.messageLink()}
-        """;
+        return """
+        > %s
+        %s
+        """.formatted(bookMark.messageId(), bookMark.messageLink());
     }
 
     @Override

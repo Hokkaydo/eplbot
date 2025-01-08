@@ -59,7 +59,7 @@ public class RssReader {
                 articles.add(result.hashCode());
                 MessageEmbed embed = new EmbedBuilder()
                                              .setTitle(result.title())
-                                             .addField("", STR."[Voir](\{result.link()})", false)
+                                             .addField("", "[Voir](%s)".formatted(result.link()), false)
                                              .setTimestamp(result.publishedDate().toInstant())
                                              .setThumbnail(result.imgURL())
                                              .setAuthor(URI.create(result.link()).getHost(), result.link())

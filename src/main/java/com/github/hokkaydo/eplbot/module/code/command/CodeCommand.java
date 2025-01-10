@@ -36,7 +36,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class CodeCommand extends ListenerAdapter implements Command {
@@ -98,7 +97,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
                     response.sendSubmittedCode(context.channel(), code, context.options().getFirst().getAsString(), hasSpoiler);
                     response.sendResult(context.channel(), result.getLeft(), result.getRight(), hasSpoiler);
                     if (file != null && !file.delete()) {
-                        Main.LOGGER.log(Level.INFO, "File not deleted");
+                        Main.LOGGER.info("File not deleted");
                     }
                     long sent = Instant.now().toEpochMilli();
                     reply.editOriginal("Processing time: `%d ms`".formatted(sent-current)).queue();

@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 
 public class MenuSender implements MenuRetriever{
 
@@ -54,7 +53,7 @@ public class MenuSender implements MenuRetriever{
             try {
                 channel.sendMessage(menu).queue();
             } catch (ConcurrentModificationException e) {
-                Main.LOGGER.log(Level.WARNING, "[MenuCommand] An error occurred while trying to send the menu", e);
+                Main.LOGGER.warn("[MenuCommand] An error occurred while trying to send the menu", e);
             }
         });
     }
@@ -73,7 +72,7 @@ public class MenuSender implements MenuRetriever{
                         return "https://" + imageUrl.replace("//", "");
                     });
         } catch (IOException e) {
-            Main.LOGGER.log(Level.WARNING, "[MenuCommand] An error occurred while trying to parse the URL", e);
+            Main.LOGGER.warn("[MenuCommand] An error occurred while trying to parse the URL", e);
             return Optional.empty();
         }
     }

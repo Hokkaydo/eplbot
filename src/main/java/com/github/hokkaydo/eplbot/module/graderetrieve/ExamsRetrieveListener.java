@@ -29,7 +29,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -98,7 +97,7 @@ public class ExamsRetrieveListener extends ListenerAdapter {
                         Path nf = fs.getPath(path, t.a);
                         Files.write(nf, Files.readAllBytes(tempPath), StandardOpenOption.CREATE);
                     } catch (IOException e) {
-                        Main.LOGGER.log(Level.WARNING, "Could not update exams zip file");
+                        Main.LOGGER.warn("Could not update exams zip file");
                     }
                 }).join());
         updateSentZip();

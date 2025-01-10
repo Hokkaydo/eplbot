@@ -12,7 +12,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 public class GlobalRunner implements Runner{
@@ -98,10 +97,10 @@ public class GlobalRunner implements Runner{
             Process process = processBuilder.start();
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                Main.LOGGER.log(Level.WARNING, () -> "Couldn't delete the docker with name: %s".formatted(dockerName));
+                Main.LOGGER.warn("Couldn't delete the docker with name: {}", dockerName);
             }
         } catch (IOException | InterruptedException e) {
-            Main.LOGGER.log(Level.WARNING, "Exception when trying to delete the docker: %s%n%s".formatted(dockerName, e));
+            Main.LOGGER.warn("Exception when trying to delete the docker: {}\n{}", dockerName, e.toString());
             if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }

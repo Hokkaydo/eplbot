@@ -28,6 +28,8 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.internal.utils.JDALogger;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -43,8 +45,6 @@ import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -57,7 +57,7 @@ public class Main {
     private static Long prodDiscordId = 0L;
     public static final String PERSISTENCE_DIR_PATH = "./persistence";
     private static final Random RANDOM = new Random();
-    public static final Logger LOGGER = Logger.getLogger("EPLBot");
+    public static final Logger LOGGER = JDALogger.getLog(Main.class);
     private static List<Long> specialDiscordIds;
 
     private static final List<Activity> status = List.of(
@@ -89,7 +89,7 @@ public class Main {
     }
 
     private static void launch(String[] args) throws InterruptedException, IOException {
-        LOGGER.log(Level.INFO, "--------- START ---------");
+        LOGGER.info("--------- START ---------");
         String token = System.getenv("DISCORD_BOT_TOKEN");
         String testDiscordIdStr = System.getenv("TEST_DISCORD_ID");
         Long testDiscordId = testDiscordIdStr == null ? 1108141461498777722L : Long.parseLong(testDiscordIdStr);
@@ -135,8 +135,7 @@ public class Main {
                     for (String module : modules) {
                         log.append("\t%s%n".formatted(module));
                     }
-                    String logS = log.toString();
-                    LOGGER.log(Level.INFO, logS);
+                    LOGGER.info(log.toString());
                     moduleManager.enableModules(guild.getIdLong(), modules);
                 }
         );

@@ -25,7 +25,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 
 public class MessageBirdTask {
 
@@ -64,12 +63,12 @@ public class MessageBirdTask {
             deltaStart += 24 * 60 * 60;
         }
         long finalDeltaStart = deltaStart;
-        Main.LOGGER.log(Level.INFO, () -> "[%sBird][%s] Trying to send in %d seconds".formatted(prefix, guildName, finalDeltaStart));
+        Main.LOGGER.info("[{}Bird][{}] Trying to send in {} seconds", prefix, guildName, finalDeltaStart);
         dayLoops.add(EXECUTOR.schedule(() -> {
             int rnd = RANDOM.nextInt(100);
             int proba = Config.<Integer>getGuildVariable(guildId, type + "_BIRD_MESSAGE_PROBABILITY");
             String[] logs = LOG_MESSAGES[rnd > proba ? 0 : 1];
-            Main.LOGGER.log(Level.INFO, "[%sBird][%s] %s (%d %s %d)".formatted(prefix, guildName, logs[0], proba, logs[1], rnd));
+            Main.LOGGER.info("[{}Bird][{}] {} ({} {} {})", prefix, guildName, logs[0], proba, logs[1], rnd);
             if (rnd > proba) {
                 perfectTimeLoops.removeIf(f -> f.isDone() || f.isCancelled());
                 dayLoops.removeIf(f -> f.isDone() || f.isCancelled());
@@ -77,7 +76,7 @@ public class MessageBirdTask {
                 return;
             }
             long waitTime = RANDOM.nextLong(endSeconds - startSeconds);
-            Main.LOGGER.log(Level.INFO, "[%sBird][%s] Wait %d seconds before sending".formatted(prefix, guildName, waitTime));
+            Main.LOGGER.info("[{}Bird][{}] Wait {} seconds before sending", prefix, guildName, waitTime);
             perfectTimeLoops.add(EXECUTOR.schedule(
                     () -> Optional.ofNullable(Main.getJDA().getGuildById(guildId))
                                   .map(guild -> guild.getTextChannelById(Config.getGuildVariable(guildId, type + "_BIRD_CHANNEL_ID")))
@@ -138,9 +137,9 @@ public class MessageBirdTask {
             this.messages.clear();
             this.messages.addAll(tmpMessages);
         } catch (JSONException e) {
-            Main.LOGGER.log(Level.WARNING, "Could not parse JSON file at %s".formatted(messagesPath), e);
+            Main.LOGGER.warn("Could not parse JSON file at {}", messagesPath, e);
         } catch (Exception e) {
-            Main.LOGGER.log(Level.WARNING, "Could not read JSON file at %s".formatted(messagesPath), e);
+            Main.LOGGER.warn("Could not read JSON file at {}", messagesPath, e);
         }
     }
 

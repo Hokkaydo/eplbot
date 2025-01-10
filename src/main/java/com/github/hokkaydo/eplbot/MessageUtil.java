@@ -21,7 +21,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.logging.Level;
 
 public class MessageUtil {
 
@@ -85,7 +84,7 @@ public class MessageUtil {
         String adminChannelId = Config.getGuildVariable(guildId, "ADMIN_CHANNEL_ID");
         TextChannel adminChannel;
         if(adminChannelId.isBlank() || (adminChannel = Main.getJDA().getChannelById(TextChannel.class, adminChannelId)) == null) {
-            Main.LOGGER.log(Level.WARNING, () -> "Invalid admin channel : %s".formatted(Objects.requireNonNull(Main.getJDA().getGuildById(guildId)).getName()));
+            Main.LOGGER.warn("Invalid admin channel : {}", Objects.requireNonNull(Main.getJDA().getGuildById(guildId)).getName());
             return;
         }
         adminChannel.sendMessage(message).queue();

@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 public class Strings {
 
@@ -33,8 +32,7 @@ public class Strings {
 
     public static String getString(String key) {
         if(!STRINGS_MAP.containsKey(key)) {
-            String formatted = "Missing string : %s%n".formatted(key);
-            Main.LOGGER.log(Level.WARNING, formatted);
+            Main.LOGGER.warn("Missing string : {}", key);
             return STRING_NOT_FOUND;
         }
         return STRINGS_MAP.get(key);

@@ -46,6 +46,8 @@ public class MessageBirdTask {
     private final String guildName;
     private final Logger logger;
 
+    private final ScheduledExecutorService periodicLogger = Executors.newScheduledThreadPool(1);
+
     public MessageBirdTask(Long guildId, String type, Logger logger) {
         this.guildId = guildId;
         this.type = type;
@@ -56,6 +58,8 @@ public class MessageBirdTask {
 
     public void start() {
         reloadMessages();
+        periodicLogger.scheduleAtFixedRate(() -> logger.info("[{}][{}] dayLoops:{}, perfectTimeLoops:{}", Strings.capsFirstLetter(type), guildName, dayLoops.size(), perfectTimeLoops.size()), 0, 10, TimeUnit.MINUTES);
+
         long startSeconds = Config.getGuildVariable(guildId, type + "_BIRD_RANGE_START_DAY_SECONDS");
         long endSeconds = Config.getGuildVariable(guildId, type + "_BIRD_RANGE_END_DAY_SECONDS");
 
@@ -122,6 +126,7 @@ public class MessageBirdTask {
         dayLoops.forEach(scheduledFuture -> scheduledFuture.cancel(true));
         perfectTimeLoops.clear();
         dayLoops.clear();
+        periodicLogger.shutdown();
     }
 
     public void restart() {

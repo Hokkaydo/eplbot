@@ -17,7 +17,9 @@ import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.internal.utils.JDALogger;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -38,8 +40,10 @@ public class MirrorManager extends ListenerAdapter {
 
     private final List<Long> threadWaitingFirstMirror = new ArrayList<>();
 
+    private final Logger logger;
     public MirrorManager() {
         runPeriodicCleaner();
+        this.logger = JDALogger.getLog(MirrorManager.class);
         this.mirrorLinkRepository = new MirrorLinkRepositorySQLite(DatabaseManager.getDataSource());
     }
 
@@ -50,6 +54,7 @@ public class MirrorManager extends ListenerAdapter {
 
     private void runPeriodicCleaner() {
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> mirroredMessages.removeIf(MirroredMessages::isOutdated), 0, 1, TimeUnit.HOURS);
+        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> logger.info("Cached MirroredMessages: {}", mirroredMessages.size()),0, 10, TimeUnit.MINUTES);
     }
 
     List<MirrorLink> getLinks(GuildMessageChannel channel) {

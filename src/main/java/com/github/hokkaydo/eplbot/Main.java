@@ -99,7 +99,7 @@ public class Main {
         if (bossIdStr != null) bossId = Long.parseLong(bossIdStr);
 
         if (token == null && args.length > 0) token = args[0];
-        if (token == null) throw new IllegalStateException("No token specified !");
+        if (token == null) throw new IllegalStateException("No token specified!");
         moduleManager = new ModuleManager();
         commandManager = new CommandManager();
         DatabaseManager.initialize(PERSISTENCE_DIR_PATH);

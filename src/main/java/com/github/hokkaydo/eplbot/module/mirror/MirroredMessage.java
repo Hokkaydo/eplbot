@@ -3,13 +3,9 @@ package com.github.hokkaydo.eplbot.module.mirror;
 import com.github.hokkaydo.eplbot.Main;
 import com.github.hokkaydo.eplbot.MessageUtil;
 import com.github.hokkaydo.eplbot.configuration.Config;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
@@ -17,7 +13,6 @@ import net.dv8tion.jda.api.entities.Webhook;
 import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
@@ -48,7 +43,6 @@ public class MirroredMessage {
     private Consumer<Message> onceMessageSent;
     private OffsetDateTime lastUpdated;
     private boolean threadOwner;
-    private final Map<Emoji, Integer> reactions = new HashMap<>();
     private final String authorNameAndNickname;
     private boolean pinned = false;
     private final boolean threadMirror;
@@ -295,54 +289,6 @@ public class MirroredMessage {
     boolean isMirror() {
         return this.mirrorMessage != null;
     }
-
-
-    /**
-     * @deprecated no viable way to add reactions to messages
-     * */
-    @SuppressWarnings("unused")
-    @Deprecated
-    void addReaction(MessageReaction reaction) {
-        reactions.put(reaction.getEmoji(), reactions.getOrDefault(reaction.getEmoji(), 0) + 1);
-        updateReactionField();
-    }
-
-    /**
-     * @deprecated no viable way to add reactions to messages
-     * */
-    @Deprecated
-    private void updateReactionField() {
-        StringBuilder reactionString = new StringBuilder();
-        List<Map.Entry<Emoji, Integer>> entries = new ArrayList<>(reactions.entrySet());
-        for (int i = 0; i < entries.size() - 1; i++) {
-            reactionString.append(entries.get(i).getKey().getFormatted()).append(": ").append(entries.get(i).getValue()).append(", ");
-        }
-        reactionString.append(entries.getLast().getKey().getFormatted()).append(": ").append(entries.getLast().getValue());
-
-        Optional<MessageEmbed> oldEmbed = originalMessage.getEmbeds().stream().filter(e -> e.getType() == EmbedType.RICH).findFirst();
-        if (oldEmbed.isEmpty()) return;
-        List<MessageEmbed.Field> otherFields = new ArrayList<>(oldEmbed.get().getFields().stream().filter(f -> f.getName() == null || !f.getName().equals("Réactions")).toList());
-        EmbedBuilder newEmbed = new EmbedBuilder(oldEmbed.get()).clearFields();
-        otherFields.add(new MessageEmbed.Field("Réactions", reactionString.toString(), true));
-        for (MessageEmbed.Field otherField : otherFields) {
-            newEmbed.addField(otherField);
-        }
-        List<MessageEmbed> otherEmbeds = new ArrayList<>(originalMessage.getEmbeds().stream().filter(e -> e.getType() != EmbedType.RICH).toList());
-        otherEmbeds.add(newEmbed.build());
-        originalMessage.editMessageEmbeds(otherEmbeds).queue();
-    }
-
-    /**
-     * @deprecated no viable way to add reactions to messages
-     * */
-    @SuppressWarnings("unused")
-    @Deprecated
-    void removeReaction(MessageReaction reaction) {
-        reactions.computeIfPresent(reaction.getEmoji(), (e, i) -> i - 1);
-        if (reactions.getOrDefault(reaction.getEmoji(), 1) <= 0) reactions.remove(reaction.getEmoji());
-        updateReactionField();
-    }
-
 
     private record Tuple3<A, B, C>(A a, B b, C c) {
 

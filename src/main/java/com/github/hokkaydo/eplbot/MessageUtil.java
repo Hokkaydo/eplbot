@@ -22,6 +22,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * Convenience class to handle various message-related operations
+ * */
 public class MessageUtil {
 
     private static final String HASTEBIN_API_POST_URL = "https://hastebin.com/documents/";
@@ -30,7 +33,13 @@ public class MessageUtil {
 
     private static HttpRequest.Builder hastebinPostRequest = null;
 
-
+    /**
+     * Convert a {@link Message} to an embed with original attachments and apply the modification on already existing
+     * {@link EmbedBuilder} then send the message and process the message using the given {@link Consumer}
+     * @param message the message to convert
+     * @param send a {@link Function} mapping an {@link EmbedBuilder} to a {@link MessageCreateAction}
+     * @param processSentMessage a {@link Consumer} to process the message after it has been sent
+     * */
     public static void toEmbedWithAttachements(Message message, Function<EmbedBuilder, MessageCreateAction> send, Consumer<Message> processSentMessage) {
         MessageCreateAction action = send.apply(toEmbed(message)).addFiles();
         message.getAttachments().stream()
@@ -47,6 +56,11 @@ public class MessageUtil {
                 );
     }
 
+    /**
+     * Convert a {@link Message} to an {@link EmbedBuilder}
+     * @param message the message to convert
+     * @return the {@link EmbedBuilder} representing the message
+     * */
     public static EmbedBuilder toEmbed(Message message) {
         return new EmbedBuilder()
                        .setAuthor(message.getAuthor().getName(), message.getJumpUrl(), message.getAuthor().getAvatarUrl())
@@ -55,6 +69,12 @@ public class MessageUtil {
                        .setFooter(message.getGuild().getName() + " - #" + message.getChannel().getName(), message.getGuild().getIconUrl());
     }
 
+    /**
+     * Utility method to map a {@link Tuple3} (filename, file stream, is a spoiler)
+     * to a {@link CompletableFuture} of {@link FileUpload}
+     * @param tuple3 the tuple to map
+     * @return a {@link CompletableFuture} of {@link FileUpload} or null if the file is too big
+     * */
     private static CompletableFuture<FileUpload> mapToFileUpload(Tuple3<String, CompletableFuture<InputStream>, Boolean> tuple3) {
         return tuple3.b()
                        .thenApply(MessageUtil::readInputStream)
@@ -66,6 +86,11 @@ public class MessageUtil {
                        });
     }
 
+    /**
+     * Read an {@link InputStream} and return its content as a byte array
+     * @param i the {@link InputStream} to read
+     * @return the content of the file's {@link InputStream} as a byte array or an empty array if the file is too big
+     * */
     private static byte[] readInputStream(InputStream i) {
         try {
             byte[] bytes = i.readAllBytes();
@@ -80,6 +105,11 @@ public class MessageUtil {
 
     private MessageUtil() {}
 
+    /**
+     * Send a message to the admin channel of the guild
+     * @param message the message to send
+     * @param guildId the id of the guild
+     * */
     public static void sendAdminMessage(String message, Long guildId) {
         String adminChannelId = Config.getGuildVariable(guildId, "ADMIN_CHANNEL_ID");
         TextChannel adminChannel;
@@ -90,16 +120,22 @@ public class MessageUtil {
         adminChannel.sendMessage(message).queue();
     }
 
+    /**
+     * Get the name and nickname of a user
+     * @param member the {@link Member} to get the nickname from
+     * @param user the {@link User} to get the name from
+     * @return the name and nickname of the user
+     * */
     public static String nameAndNickname(@Nullable Member member, User user) {
         boolean hasNickname = member != null && member.getNickname() != null;
         return (hasNickname  ? member.getNickname() + " (" : "") + user.getEffectiveName() + (hasNickname ? ")" : "");
     }
 
     /**
-     * Post content on Hastebin and return shareable link
+     * Post content on Hastebin and return a shareable link
      * @param client an {@link HttpClient} initialized by the caller to make multiple calls on the same client
      * @param data the content to post
-     * @return a {@link CompletableFuture} returning the shareable link or an empty string if an error arise
+     * @return a {@link CompletableFuture} returning the shareable link or an empty string if an error arises
      * */
     public static CompletableFuture<String> hastebinPost(HttpClient client, String data) {
         if(data.length() > HASTEBIN_MAX_CONTENT_LENGTH) throw new IllegalArgumentException("'data' should be shorted than %d".formatted(HASTEBIN_MAX_CONTENT_LENGTH));
@@ -119,7 +155,7 @@ public class MessageUtil {
                            return HASTEBIN_SHARE_BASE_URL.formatted(response.get("key"));
                        });
     }
-    private record Tuple2<A, B> (A a, B b) {}
+
     private record Tuple3<A, B, C>(A a, B b, C c) {}
 
 

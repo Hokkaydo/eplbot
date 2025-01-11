@@ -2,6 +2,7 @@ package com.github.hokkaydo.eplbot.module.messagebird;
 
 import com.github.hokkaydo.eplbot.Main;
 import com.github.hokkaydo.eplbot.MessageUtil;
+import com.github.hokkaydo.eplbot.Strings;
 import com.github.hokkaydo.eplbot.configuration.Config;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -11,6 +12,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONTokener;
+import org.slf4j.Logger;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,17 +41,17 @@ public class MessageBirdTask {
     private final List<ScheduledFuture<?>> dayLoops = new ArrayList<>();
     private final List<ScheduledFuture<?>> perfectTimeLoops = new ArrayList<>();
     private final String type;
-    private final String prefix;
     private final Path messagesPath;
     private final List<String> messages = new ArrayList<>();
     private final String guildName;
+    private final Logger logger;
 
-    public MessageBirdTask(Long guildId, String type) {
+    public MessageBirdTask(Long guildId, String type, Logger logger) {
         this.guildId = guildId;
-        this.prefix = type.charAt(0) + type.substring(1).toLowerCase();
         this.type = type;
         this.guildName = Optional.ofNullable(Main.getJDA().getGuildById(guildId)).map(Guild::getName).orElse("");
         this.messagesPath = Path.of("%s/%s_messages.json".formatted(Main.PERSISTENCE_DIR_PATH, type.toLowerCase()));
+        this.logger = logger;
     }
 
     public void start() {
@@ -63,12 +65,12 @@ public class MessageBirdTask {
             deltaStart += 24 * 60 * 60;
         }
         long finalDeltaStart = deltaStart;
-        Main.LOGGER.info("[{}Bird][{}] Trying to send in {} seconds", prefix, guildName, finalDeltaStart);
+        logger.info("[{}][{}] Trying to send in {} seconds", Strings.capsFirstLetter(type), guildName, finalDeltaStart);
         dayLoops.add(EXECUTOR.schedule(() -> {
             int rnd = RANDOM.nextInt(100);
             int proba = Config.<Integer>getGuildVariable(guildId, type + "_BIRD_MESSAGE_PROBABILITY");
             String[] logs = LOG_MESSAGES[rnd > proba ? 0 : 1];
-            Main.LOGGER.info("[{}Bird][{}] {} ({} {} {})", prefix, guildName, logs[0], proba, logs[1], rnd);
+            logger.info("[{}][{}] {} ({} {} {})", Strings.capsFirstLetter(type), guildName, logs[0], proba, logs[1], rnd);
             if (rnd > proba) {
                 perfectTimeLoops.removeIf(f -> f.isDone() || f.isCancelled());
                 dayLoops.removeIf(f -> f.isDone() || f.isCancelled());
@@ -76,7 +78,7 @@ public class MessageBirdTask {
                 return;
             }
             long waitTime = RANDOM.nextLong(endSeconds - startSeconds);
-            Main.LOGGER.info("[{}Bird][{}] Wait {} seconds before sending", prefix, guildName, waitTime);
+            logger.info("[{}][{}] Wait {} seconds before sending", Strings.capsFirstLetter(type), guildName, waitTime);
             perfectTimeLoops.add(EXECUTOR.schedule(
                     () -> Optional.ofNullable(Main.getJDA().getGuildById(guildId))
                                   .map(guild -> guild.getTextChannelById(Config.getGuildVariable(guildId, type + "_BIRD_CHANNEL_ID")))
@@ -137,9 +139,9 @@ public class MessageBirdTask {
             this.messages.clear();
             this.messages.addAll(tmpMessages);
         } catch (JSONException e) {
-            Main.LOGGER.warn("Could not parse JSON file at {}", messagesPath, e);
+            logger.warn("Could not parse JSON file at {}", messagesPath, e);
         } catch (Exception e) {
-            Main.LOGGER.warn("Could not read JSON file at {}", messagesPath, e);
+            logger.warn("Could not read JSON file at {}", messagesPath, e);
         }
     }
 

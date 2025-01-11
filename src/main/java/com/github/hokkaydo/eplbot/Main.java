@@ -208,6 +208,19 @@ public class Main {
             commandManager.addGlobalCommands(m.getGlobalCommands());
             commandManager.enableGlobalCommands((m.getGlobalCommands().stream().map(Command::getClass).collect(Collectors.toList())));
         });
+        memoryLogger();
+    }
+
+    private static void memoryLogger() {
+        ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
+        service.scheduleAtFixedRate(() -> LOGGER.info(getMemoryUsage()), 0, 10, TimeUnit.MINUTES);
+    }
+
+    public static String getMemoryUsage() {
+        long totalMemory = Runtime.getRuntime().totalMemory();
+        long freeMemory = Runtime.getRuntime().freeMemory();
+        long usedMemory = totalMemory - freeMemory;
+        return "Memory usage : %d / %d (%d%%)".formatted(usedMemory, totalMemory, (usedMemory * 100) / totalMemory);
     }
 
     private static <T> T instantiate(Class<T> clazz, Long guildId) {

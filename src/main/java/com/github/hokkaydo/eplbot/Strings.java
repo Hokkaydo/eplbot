@@ -12,11 +12,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Utility class for strings management.
+ * */
 public class Strings {
 
     private Strings() {}
     private static final Map<String, String> STRINGS_MAP = new HashMap<>();
 
+    /**
+     * Load strings from strings.json file. Allows i18n.
+     * */
     public static void load() throws JSONException {
         InputStream stream = Strings.class.getClassLoader().getResourceAsStream("strings.json");
         assert stream != null;
@@ -30,6 +36,11 @@ public class Strings {
     }
     private static final String STRING_NOT_FOUND = "Erreur de traduction. Veuillez la signaler à la modération";
 
+    /**
+     * Get a string entry from its key
+     * @param key the key of the string
+     * @return the string corresponding to the key or {@link #STRING_NOT_FOUND} if the key is not found
+     * */
     public static String getString(String key) {
         if(!STRINGS_MAP.containsKey(key)) {
             Main.LOGGER.warn("Missing string : {}", key);
@@ -38,10 +49,27 @@ public class Strings {
         return STRINGS_MAP.get(key);
     }
 
+    /**
+     * Capitalize the first letter of a string
+     * @param str the string to capitalize
+     * @return the string with the first letter capitalized
+     * */
+    public static String capsFirstLetter(String str) {
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+
+    /**
+     * Rabbit-Karp algorithm for pattern string search in a later given large text
+     * @param pattern the pattern to search
+     * @return a {@link RabinKarp} object to search pattern in texts
+     * */
     public static RabinKarp getSearcher(String pattern) {
         return new RabinKarp(pattern);
     }
 
+    /**
+     * Rabbit-Karp algorithm for pattern string search in a later given large text
+     * */
     public static class RabinKarp {
 
         private static final long Q = 31;  // a prime number
@@ -74,7 +102,7 @@ public class Strings {
         }
 
         /**
-         * Search for occurrences of a pattern in given text
+         * Search for occurrences of a {@link #pattern} in given text
          *
          * @param text text to search pattern's occurrences in
          * @return a {@link List<Integer>} of first index of pattern's occurrences in given text

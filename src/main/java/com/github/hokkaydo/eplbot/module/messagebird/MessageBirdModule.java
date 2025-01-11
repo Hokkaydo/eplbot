@@ -17,8 +17,8 @@ public class MessageBirdModule extends Module {
     public MessageBirdModule(@NotNull Long guildId) {
         super(guildId);
         tasks = Map.of(
-            "EARLY", new MessageBirdTask(guildId, "EARLY"),
-            "NIGHT", new MessageBirdTask(guildId, "NIGHT")
+            "EARLY", new MessageBirdTask(guildId, "EARLY", getLogger()),
+            "NIGHT", new MessageBirdTask(guildId, "NIGHT", getLogger())
         );
         this.messageBirdNextMessageCommand = new MessageBirdNextMessageCommand(guildId, List.copyOf(tasks.keySet()));
         this.manageMessageBirdCommand = new ManageMessageBirdCommand(tasks);

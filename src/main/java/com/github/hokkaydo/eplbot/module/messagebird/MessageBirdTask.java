@@ -46,8 +46,6 @@ public class MessageBirdTask {
     private final String guildName;
     private final Logger logger;
 
-    private final ScheduledExecutorService periodicLogger = Executors.newScheduledThreadPool(1);
-
     public MessageBirdTask(Long guildId, String type, Logger logger) {
         this.guildId = guildId;
         this.type = type;
@@ -58,7 +56,6 @@ public class MessageBirdTask {
 
     public void start() {
         reloadMessages();
-        periodicLogger.scheduleAtFixedRate(() -> logger.info("[{}][{}] dayLoops:{}, perfectTimeLoops:{}", Strings.capsFirstLetter(type), guildName, dayLoops.size(), perfectTimeLoops.size()), 0, 10, TimeUnit.MINUTES);
 
         long startSeconds = Config.getGuildVariable(guildId, type + "_BIRD_RANGE_START_DAY_SECONDS");
         long endSeconds = Config.getGuildVariable(guildId, type + "_BIRD_RANGE_END_DAY_SECONDS");
@@ -69,7 +66,8 @@ public class MessageBirdTask {
             deltaStart += 24 * 60 * 60;
         }
         long finalDeltaStart = deltaStart;
-        logger.info("[{}][{}] Trying to send in {} seconds", Strings.capsFirstLetter(type), guildName, finalDeltaStart);
+        String capped = Strings.capsFirstLetter(type);
+        logger.info("[{}][{}] Trying to send in {} seconds", capped, guildName, finalDeltaStart);
         dayLoops.add(EXECUTOR.schedule(() -> {
             int rnd = RANDOM.nextInt(100);
             int proba = Config.<Integer>getGuildVariable(guildId, type + "_BIRD_MESSAGE_PROBABILITY");
@@ -101,13 +99,10 @@ public class MessageBirdTask {
         if (nextMessage != null && !nextMessage.isBlank()) {
             channel.sendMessage(nextMessage).setAllowedMentions(null).queue();
             Config.updateValue(guildId, type + "_BIRD_NEXT_MESSAGE", "");
-            perfectTimeLoops.removeIf(f -> f.isDone() || f.isCancelled());
-            dayLoops.removeIf(f -> f.isDone() || f.isCancelled());
-            start();
-            return;
+        }else {
+            int randomMessageIndex = RANDOM.nextInt(messages.size());
+            channel.sendMessage(messages.get(randomMessageIndex)).queue();
         }
-        int randomMessageIndex = RANDOM.nextInt(messages.size());
-        channel.sendMessage(messages.get(randomMessageIndex)).queue();
 
         Main.getJDA().listenOnce(MessageReceivedEvent.class)
                 .filter(e -> e.getChannel().getId().equals(channel.getId()))
@@ -126,7 +121,6 @@ public class MessageBirdTask {
         dayLoops.forEach(scheduledFuture -> scheduledFuture.cancel(true));
         perfectTimeLoops.clear();
         dayLoops.clear();
-        periodicLogger.shutdown();
     }
 
     public void restart() {

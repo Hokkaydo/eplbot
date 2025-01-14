@@ -8,9 +8,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.internal.utils.JDALogger;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +24,7 @@ public class CommandManager extends ListenerAdapter {
     private final Map<Long, Map<String, Command>> commands = new HashMap<>();
     private final Map<String, Command> globalCommands = new HashMap<>();
     private final Map<Class<? extends Command>, Boolean> globalCommandStatus = new HashMap<>();
-    private static final Logger LOGGER = JDALogger.getLog(CommandManager.class);
+
     /**
      * Disables the given commands for the given guild.
      * @param guildId the id of the guild
@@ -135,7 +133,6 @@ public class CommandManager extends ListenerAdapter {
             event.reply(Strings.getString("COMMAND_WRONG_CHANNEL")).setEphemeral(true).queue();
             return;
         }
-        LOGGER.info("Command {} {} executed by {}", command.getName(), event.getOptions().stream().map(o -> o.getName() + ":" + o.getAsString()).toList(), event.getUser().getName());
         command.executeCommand(new CommandContext(event.getName(),
                 event.getOptions(),
                 event.getUser(),

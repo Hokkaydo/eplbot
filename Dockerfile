@@ -20,8 +20,7 @@ RUN ./gradlew shadowJar
 FROM eclipse-temurin:23-jre AS base
 
 LABEL authors="hokkaydo"
-
-RUN mkdir -p /home/eplbot/persistence
+RUN mkdir -p /home/eplbot/persistence && apt-get update && apt-get install -y docker.io && apt-get clean
 COPY --from=build /home/gradle/build/libs/EPLBot-1.0-SNAPSHOT-all.jar /home/eplbot/eplbot.jar
 
 FROM base AS profiler
@@ -41,7 +40,7 @@ ENTRYPOINT ["java", "-jar", "eplbot.jar"]
 
 FROM eclipse-temurin:23-jre AS local-build
 
-RUN mkdir -p /home/eplbot/persistence
+RUN mkdir -p /home/eplbot/persistence && apt-get update && apt-get install -y docker.io && apt-get clean
 COPY build/libs/EPLBot-1.0-SNAPSHOT-all.jar /home/eplbot/eplbot.jar
 
 WORKDIR /home/eplbot

@@ -225,7 +225,7 @@ public class MirrorManager extends ListenerAdapter {
         private MirroredMessages(MirroredMessage initial, Map<Long, MirroredMessage> mirrored) {
             this.initial = initial;
             this.mirrored = mirrored;
-            this.outdatedTime = Instant.now().plus(24, ChronoUnit.HOURS);
+            this.outdatedTime = Instant.now().plus(1, ChronoUnit.HOURS);
         }
 
         /**

@@ -10,18 +10,13 @@ import java.util.List;
 
 public class EPLCommandModule extends Module {
 
-    private final ClearBetween clearBetweenCommand;
-    private final ClearFromCommand clearFromCommand;
-    private final ClearLastCommand clearLastCommand;
-    private final MoveMessagesCommand moveMessagesCommand;
     private final DebugCommand debugCommand;
+    private final FrameworkCommand frameworkCommand;
+
     public EPLCommandModule(@NotNull Long guildId) {
         super(guildId);
-        clearFromCommand = new ClearFromCommand();
-        clearBetweenCommand = new ClearBetween();
-        clearLastCommand = new ClearLastCommand();
-        moveMessagesCommand = new MoveMessagesCommand();
         debugCommand = new DebugCommand();
+        frameworkCommand = new FrameworkCommand(getLogger());
     }
 
     @Override
@@ -31,7 +26,7 @@ public class EPLCommandModule extends Module {
 
     @Override
     public List<Command> getCommands() {
-        return List.of(clearBetweenCommand, clearFromCommand, clearLastCommand, moveMessagesCommand, debugCommand);
+        return List.of(debugCommand, frameworkCommand);
     }
 
     @Override

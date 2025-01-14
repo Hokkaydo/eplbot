@@ -159,5 +159,8 @@
   "CATEGORY_WITHOUT_COURSES": "Une catégorie de cours à tuteurs n'a pas de cours (id: `%s`)",
   "TUTOR_COMMAND_PING_NO_COURSE": "Vous n'avez aucun cours",
   "COMMAND_LOAD_COURSES_DESCRIPTION": "Permet de charger les cours en base de données",
-  "COMMAND_LOAD_COURSES_HELP": "Permet de charger les cours en base de données"
+  "COMMAND_LOAD_COURSES_HELP": "Permet de charger les cours en base de données",
+  "COMMAND_FRAMEWORK_DESCRIPTION": "Le très important framework de LINMA2171",
+  "COMMAND_FRAMEWORK_HELP": "Permet d'afficher le framework de LINMA2171",
+  "COMMAND_FRAMEWORK_DO_NOT_FORGET": "N'oubliez pas de bien étudier le framework de votre cours avant votre examen :)"
 }

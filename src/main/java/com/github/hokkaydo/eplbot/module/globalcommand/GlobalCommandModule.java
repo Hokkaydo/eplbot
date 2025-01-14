@@ -24,6 +24,12 @@ public class GlobalCommandModule extends Module {
     private final LMGTCommand lmgtCommand;
     private final WikiCommand wikiCommand;
     private final SayCommand sayCommand;
+    private final ClearBetween clearBetweenCommand;
+    private final ClearFromCommand clearFromCommand;
+    private final ClearLastCommand clearLastCommand;
+    private final MoveMessagesCommand moveMessagesCommand;
+
+
     public GlobalCommandModule(@NotNull Long guildId) {
         super(guildId);
         enableCommand = new EnableCommand(getGuildId());
@@ -40,6 +46,11 @@ public class GlobalCommandModule extends Module {
         wikiCommand = new WikiCommand();
         sayCommand = new SayCommand();
         sayCommand.periodicCleanup();
+
+        clearBetweenCommand = new ClearBetween();
+        clearFromCommand = new ClearFromCommand();
+        clearLastCommand = new ClearLastCommand();
+        moveMessagesCommand = new MoveMessagesCommand();
     }
 
     @Override
@@ -62,7 +73,11 @@ public class GlobalCommandModule extends Module {
                 issueCommand,
                 lmgtCommand,
                 wikiCommand,
-                sayCommand
+                sayCommand,
+                clearBetweenCommand,
+                clearFromCommand,
+                clearLastCommand,
+                moveMessagesCommand
         );
     }
 

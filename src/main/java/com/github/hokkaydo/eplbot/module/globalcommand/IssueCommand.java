@@ -48,7 +48,7 @@ public class IssueCommand extends ListenerAdapter implements Command {
 
     private Instant nextJwtRefresh;
     private GitHub github;
-    private static final String ERROR_OCCURRED = "ERROR_OCCURRED";
+    private static final String ERROR_OCCURRED = "error_occurred";
 
     private final Map<String, Object[]> labelsFileModalTempStore = new HashMap<>();
 
@@ -106,7 +106,7 @@ public class IssueCommand extends ListenerAdapter implements Command {
 
         try {
             GHIssue issue = github.getRepository("Hokkaydo/EPLBot").createIssue(title).body("%s%n%s".formatted(body, image)).label(label).create();
-            event.getHook().editOriginal(Strings.getString("COMMAND_ISSUE_SUCCESSFUL").formatted(issue.getNumber())).queue();
+            event.getHook().editOriginal(Strings.getString("command.issue.success").formatted(issue.getNumber())).queue();
         } catch (IOException e) {
             event.getHook().editOriginal(Strings.getString(ERROR_OCCURRED)).queue();
         }

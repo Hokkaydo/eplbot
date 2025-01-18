@@ -27,8 +27,8 @@ public class ClearFromCommand implements Command {
                 .map(MessageHistory::getRetrievedHistory)
                 .queue(l -> l.stream().map(Message::delete).forEach(AuditableRestAction::queue));
         context.channel().deleteMessageById(fromIdOption.get().getAsString()).queue(
-                ignored -> context.replyCallbackAction().setContent(Strings.getString("COMMAND_CLEAR_PROCESSING")).queue(),
-                ignored -> context.replyCallbackAction().setContent(Strings.getString("COMMAND_CLEAR_MESSAGE_TOO_OLD")).queue()
+                ignored -> context.replyCallbackAction().setContent(Strings.getString("command.clear.processing")).queue(),
+                ignored -> context.replyCallbackAction().setContent(Strings.getString("command.clear.message_too_old")).queue()
         );
     }
 
@@ -39,13 +39,13 @@ public class ClearFromCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_CLEAR_FROM_DESCRIPTION");
+        return () -> Strings.getString("command.clear.from.description");
     }
 
     @NotNull
     @Override
     public List<OptionData> getOptions() {
-        return Collections.singletonList(new OptionData(OptionType.STRING, "from", Strings.getString("COMMAND_CLEAR_FROM_OPTION_FROM_DESCRIPTION"), true));
+        return Collections.singletonList(new OptionData(OptionType.STRING, "from", Strings.getString("command.clear.from.option.from.description"), true));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ClearFromCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_CLEAR_FROM_HELP");
+        return () -> Strings.getString("command.clear.from.help");
     }
 
 }

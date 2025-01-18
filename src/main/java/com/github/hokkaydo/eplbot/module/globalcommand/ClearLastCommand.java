@@ -25,7 +25,7 @@ public class ClearLastCommand implements Command {
         if(amountOption.isEmpty()) return;
         int amount = amountOption.get().getAsInt();
         if(amount <= 0) {
-            context.replyCallbackAction().setContent(Strings.getString("COMMAND_CLEAR_AMOUNT_POSITIVE"));
+            context.replyCallbackAction().setContent(Strings.getString("command.clear.amount_positive")).queue();
             return;
         }
         if(amount > 1)
@@ -33,8 +33,8 @@ public class ClearLastCommand implements Command {
                     .map(MessageHistory::getRetrievedHistory)
                     .queue(l -> l.stream().map(Message::delete).forEach(AuditableRestAction::queue));
         context.channel().deleteMessageById(context.channel().getLatestMessageIdLong()).queue(
-                ignored -> context.replyCallbackAction().setContent(Strings.getString("COMMAND_CLEAR_PROCESSING")).queue(),
-                ignored -> context.replyCallbackAction().setContent(Strings.getString("COMMAND_CLEAR_MESSAGE_TOO_OLD")).queue()
+                ignored -> context.replyCallbackAction().setContent(Strings.getString("command.clear.processing")).queue(),
+                ignored -> context.replyCallbackAction().setContent(Strings.getString("command.clear.message_too_old")).queue()
         );
     }
 
@@ -45,13 +45,13 @@ public class ClearLastCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_CLEAR_LAST_DESCRIPTION");
+        return () -> Strings.getString("command.clear.last.description");
     }
 
     @NotNull
     @Override
     public List<OptionData> getOptions() {
-        return Collections.singletonList(new OptionData(OptionType.STRING, "amount", Strings.getString("COMMAND_CLEAR_LAST_OPTION_AMOUNT_DESCRIPTION"), true));
+        return Collections.singletonList(new OptionData(OptionType.STRING, "amount", Strings.getString("command.clear.last.option.amount.description"), true));
     }
 
     @Override
@@ -71,7 +71,7 @@ public class ClearLastCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_CLEAR_LAST_HELP");
+        return () -> Strings.getString("command.clear.last.help");
     }
 
 }

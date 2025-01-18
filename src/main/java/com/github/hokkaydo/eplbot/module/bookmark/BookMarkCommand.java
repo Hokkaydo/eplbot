@@ -25,10 +25,10 @@ public class BookMarkCommand implements Command {
     public void executeCommand(CommandContext context) {
         List<BookMark> bookMarks = repository.getByUserId(context.user().getIdLong());
         if(bookMarks.isEmpty()) {
-            context.replyCallbackAction().setContent(Strings.getString("BOOKMARK_EMPTY")).queue();
+            context.replyCallbackAction().setContent(Strings.getString("command.bookmark.empty")).queue();
             return;
         }
-        context.replyCallbackAction().setContent(Strings.getString("CHECK_YOUR_DMS")).queue();
+        context.replyCallbackAction().setContent(Strings.getString("check_your_dms")).queue();
         context.user().openPrivateChannel().queue(channel -> {
             StringBuilder message = new StringBuilder("__Liste de vos signets :__");
             for (BookMark bookMark : bookMarks) {
@@ -56,7 +56,7 @@ public class BookMarkCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("BOOKMARK_COMMAND_DESCRIPTION");
+        return () -> Strings.getString("command.bookmark.description");
     }
 
     @NotNull
@@ -82,7 +82,7 @@ public class BookMarkCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("BOOKMARK_COMMAND_HELP");
+            return () -> Strings.getString("command.bookmark.help");
     }
 
 }

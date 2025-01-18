@@ -33,7 +33,7 @@ public class WikiCommand implements Command {
         String lang = context.options().get(1).getAsString();
         Optional<List<List<String>>> response = scrapper.query(query, lang);
         if(response.isEmpty()) {
-            context.replyCallbackAction().setContent(Strings.getString("WIKI_COMMAND_NOT_FOUND")).queue();
+            context.replyCallbackAction().setContent(Strings.getString("command.wiki.not_found")).queue();
             return;
         }
         context.replyCallbackAction().setEmbeds(toEmbed(query,scrapper.getFormattedQueryLink(query, lang), response.get()).build()).queue();
@@ -67,7 +67,7 @@ public class WikiCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("WIKI_COMMAND_DESCRIPTION");
+        return () -> Strings.getString("command.wiki.description");
     }
 
     @NotNull
@@ -101,7 +101,7 @@ public class WikiCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("WIKI_COMMAND_HELP");
+        return () -> Strings.getString("command.wiki.help");
     }
 
     private interface WikiScrapper {

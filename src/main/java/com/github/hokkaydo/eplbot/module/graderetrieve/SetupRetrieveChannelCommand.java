@@ -41,12 +41,12 @@ public class SetupRetrieveChannelCommand implements Command {
 
     @Override
     public String getName() {
-        return "setupexamsretrievechannel";
+        return "setupgradechannel";
     }
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_SETUPGRADECHANNEL_DESCRIPTION");
+        return () -> Strings.getString("command.setup_grade_channel.description");
     }
 
     @NotNull
@@ -72,7 +72,7 @@ public class SetupRetrieveChannelCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_SETUPGRADECHANNEL_HELP");
+        return () -> Strings.getString("command.setup_grade_channel.help");
     }
 
 }

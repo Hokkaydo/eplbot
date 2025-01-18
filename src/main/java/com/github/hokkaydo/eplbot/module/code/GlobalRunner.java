@@ -26,7 +26,7 @@ public class GlobalRunner implements Runner{
     @Override
     public Pair<String, Integer> run(String code, Integer timeout) {
         if (safeMentions(code)){
-            return Pair.of(Strings.getString("COMMAND_CODE_UNSAFE_MENTIONS_SUBMITTED"),0);
+            return Pair.of(Strings.getString(".code.unsafe_mentions_submitted"),0);
         }
         StringBuilder builder = new StringBuilder();
         AtomicReference<Process> processRef = new AtomicReference<>();
@@ -59,7 +59,7 @@ public class GlobalRunner implements Runner{
         builder.append("\nExited with code: ").append(exitCode);
         timer.cancel(false);
         if (safeMentions(builder.toString())){
-            return Pair.of(Strings.getString("COMMAND_CODE_UNSAFE_MENTIONS_RESPONSE"),0);
+            return Pair.of(Strings.getString(".code.unsafe_mentions_response"),0);
         }
         return Pair.of(builder.toString(),0);
     }

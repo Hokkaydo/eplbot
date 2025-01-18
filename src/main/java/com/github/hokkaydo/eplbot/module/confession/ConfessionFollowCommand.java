@@ -25,7 +25,7 @@ public class ConfessionFollowCommand implements Command {
     @Override
     public void executeCommand(CommandContext context) {
         if(!lastConfession.containsKey(context.user().getIdLong())) {
-            context.replyCallbackAction().setContent(Strings.getString("COMMAND_CONFESSIONCONTINUE_NO_LAST_CONFESSION_FOUND")).queue();
+            context.replyCallbackAction().setContent(Strings.getString("command.confession.continue.no_last_confession_found")).queue();
             return;
         }
         processor.process(context, true);
@@ -38,13 +38,13 @@ public class ConfessionFollowCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_CONFESSIONCONTINUE_DESCRIPTION");
+        return () -> Strings.getString("command.confession.continue.description");
     }
 
     @NotNull
     @Override
     public List<OptionData> getOptions() {
-        return Collections.singletonList(new OptionData(OptionType.STRING, "confession", Strings.getString("COMMAND_CONFESSION_OPTION_DESCRIPTION"), true));
+        return Collections.singletonList(new OptionData(OptionType.STRING, "confession", Strings.getString("command.confession.option.description"), true));
     }
 
     @Override
@@ -64,7 +64,7 @@ public class ConfessionFollowCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_CONFESSIONCONTINUE_HELP");
+        return () -> Strings.getString("command.confession.continue.no_last_confession_found");
     }
 
 }

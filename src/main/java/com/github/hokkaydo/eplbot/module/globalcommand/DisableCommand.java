@@ -39,14 +39,14 @@ public class DisableCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_DISABLE_DESCRIPTION");
+        return () -> Strings.getString("command.disable.description");
     }
 
     @NotNull
     @Override
     public List<OptionData> getOptions() {
         return List.of(
-                new OptionData(OptionType.STRING, "feature", Strings.getString("COMMAND_DISABLE_OPTION_FEATURE_DESCRIPTION"), true)
+                new OptionData(OptionType.STRING, "feature", Strings.getString("command.disable.option.feature.description"), true)
                         .addChoices(Main.getModuleManager()
                                             .getModules(guildId)
                                             .stream()
@@ -74,6 +74,6 @@ public class DisableCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_DISABLE_HELP");
+        return () -> Strings.getString("command.disable.help");
     }
 }

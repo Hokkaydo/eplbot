@@ -60,10 +60,10 @@ public class QuoteListener extends ListenerAdapter {
             MessageUtil.sendAdminMessage("Moderator role ID of %s is no set! Please consider setting it up using `/config MODERATION_ROLE_ID <role_id>".formatted(event.getGuild().getName()), guildId);
         boolean mod = event.getMember().getRoles().stream().max(Comparator.comparing(Role::getPosition)).map(role -> modRole != null && role.getPosition() >= modRole.getPosition()).orElse(false);
         if(!mod && !event.getMember().hasPermission(Permission.MESSAGE_MANAGE) &&  (!quotes.containsKey(event.getMessageIdLong()) || !quotes.get(event.getMessageIdLong()).allowedToDeleteUserIds().contains(event.getUser().getIdLong()))) {
-            event.getInteraction().deferReply(true).setContent(Strings.getString("QUOTE_DELETE_NOT_ALLOWED")).queue();
+            event.getInteraction().deferReply(true).setContent(Strings.getString("quote.delete_not_allowed")).queue();
             return;
         }
-        event.getInteraction().deferReply(true).setContent(Strings.getString("QUOTE_DELETED")).queue();
+        event.getInteraction().deferReply(true).setContent(Strings.getString("quote_deleted")).queue();
         event.getChannel().deleteMessageById(event.getMessageIdLong()).queue();
         quotes.remove(event.getMessageIdLong());
     }

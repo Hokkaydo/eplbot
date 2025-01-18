@@ -139,12 +139,12 @@ public class ExamsRetrieveListener extends ListenerAdapter {
     private void updateSentZip() {
         String channelId = Config.getGuildVariable(guildId, "DRIVE_ADMIN_CHANNEL_ID");
         if(channelId.isBlank()) {
-            MessageUtil.sendAdminMessage(Strings.getString("DRIVE_ADMIN_CHANNEL_NOT_SETUP"),guildId);
+            MessageUtil.sendAdminMessage(Strings.getString("drive_admin_channel_not_setup"),guildId);
             return;
         }
         TextChannel channel = Main.getJDA().getTextChannelById(channelId);
         if(channel == null) {
-            MessageUtil.sendAdminMessage(Strings.getString("DRIVE_ADMIN_CHANNEL_NOT_SETUP"), guildId);
+            MessageUtil.sendAdminMessage(Strings.getString("drive_admin_channel_not_setup"), guildId);
             return;
         }
         if(zipMessageId.isBlank()) {

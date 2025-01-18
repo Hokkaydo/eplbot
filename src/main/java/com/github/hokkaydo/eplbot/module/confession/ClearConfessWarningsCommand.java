@@ -27,7 +27,7 @@ public class ClearConfessWarningsCommand implements Command {
         if(userOpt.isEmpty()) return;
         User user = userOpt.get().getAsUser();
         processor.clearWarnings(user.getIdLong());
-        context.replyCallbackAction().setContent(Strings.getString("COMMAND_CLEARCONFESSWARNINGS_DONE")).queue();
+        context.replyCallbackAction().setContent(Strings.getString("command.clear_confess_warnings.done")).queue();
     }
 
     @Override
@@ -37,13 +37,13 @@ public class ClearConfessWarningsCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_CLEARCONFESSWARNINGS_DESCRIPTION");
+        return () -> Strings.getString("command.clear_confess_warnings.description");
     }
 
     @NotNull
     @Override
     public List<OptionData> getOptions() {
-        return Collections.singletonList(new OptionData(OptionType.USER, "user", Strings.getString("COMMAND_CLEARCONFESSWARNINGS_OPTION_USER_DESCRIPTION"), true));
+        return Collections.singletonList(new OptionData(OptionType.USER, "user", Strings.getString("command.clear_confess_warnings.option.user.description"), true));
     }
 
     @Override
@@ -63,7 +63,7 @@ public class ClearConfessWarningsCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_CLEARCONFESSWARNINGS_HELP");
+        return () -> Strings.getString("command.clear_confess_warnings.help");
     }
 
 }

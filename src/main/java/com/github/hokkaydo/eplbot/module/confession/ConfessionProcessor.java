@@ -66,14 +66,14 @@ public class ConfessionProcessor extends ListenerAdapter {
     void process(CommandContext context, boolean following) {
         String confessionValidationChannelId = Config.getGuildVariable(guildId, "CONFESSION_VALIDATION_CHANNEL_ID");
         if(confessionValidationChannelId.isBlank()) {
-            MessageUtil.sendAdminMessage(Strings.getString("WARNING_CONFESSION_VALIDATION_CHANNEL_ID_INVALID"), guildId);
-            context.replyCallbackAction().setContent(Strings.getString("ERROR_OCCURRED")).queue();
+            MessageUtil.sendAdminMessage(Strings.getString("command.confession.validation_channel_id_invalid"), guildId);
+            context.replyCallbackAction().setContent(Strings.getString("error_occurred")).queue();
             return;
         }
         TextChannel validationChannel = Main.getJDA().getChannelById(TextChannel.class, confessionValidationChannelId);
         if(validationChannel == null) {
-            MessageUtil.sendAdminMessage(Strings.getString("WARNING_CONFESSION_VALIDATION_CHANNEL_ID_INVALID"), guildId);
-            context.replyCallbackAction().setContent(Strings.getString("ERROR_OCCURRED")).queue();
+            MessageUtil.sendAdminMessage(Strings.getString("command.confession.validation_channel_id_invalid"), guildId);
+            context.replyCallbackAction().setContent(Strings.getString("error_occurred")).queue();
             return;
         }
         Optional<OptionMapping> confessionOption = context.options().stream().filter(o -> o.getName().equals(CONFESSION)).findFirst();
@@ -81,12 +81,12 @@ public class ConfessionProcessor extends ListenerAdapter {
         String confession = confessionOption.get().getAsString();
 
         if(confession.length() > MessageEmbed.DESCRIPTION_MAX_LENGTH) {
-            context.replyCallbackAction().applyData(MessageCreateData.fromContent(Strings.getString("COMMAND_CONFESSION_TOO_LONG").formatted(MessageEmbed.DESCRIPTION_MAX_LENGTH))).queue();
+            context.replyCallbackAction().applyData(MessageCreateData.fromContent(Strings.getString("command.confession.too_long").formatted(MessageEmbed.DESCRIPTION_MAX_LENGTH))).queue();
             return;
         }
 
         UUID confessUUID = UUID.randomUUID();
-        context.replyCallbackAction().applyData(MessageCreateData.fromContent(Strings.getString("COMMAND_CONFESSION_SUBMITTED"))).queue();
+        context.replyCallbackAction().applyData(MessageCreateData.fromContent(Strings.getString("command.confession.submitted"))).queue();
 
         MessageCreateBuilder embedBuilder = MessageCreateBuilder.from(MessageCreateData.fromEmbeds(
                 new EmbedBuilder()
@@ -124,13 +124,13 @@ public class ConfessionProcessor extends ListenerAdapter {
 
         String confessionChannelId = Config.getGuildVariable(guildId, "CONFESSION_CHANNEL_ID");
         if(confessionChannelId.isBlank()) {
-            MessageUtil.sendAdminMessage(Strings.getString("WARNING_CONFESSION_CHANNEL_ID_INVALID"), guildId);
+            MessageUtil.sendAdminMessage(Strings.getString("command.confession.channel_id_invalid"), guildId);
             return;
         }
 
         TextChannel confessionChannel = Main.getJDA().getChannelById(TextChannel.class, confessionChannelId);
         if(confessionChannel == null) {
-            MessageUtil.sendAdminMessage(Strings.getString("WARNING_CONFESSION_CHANNEL_ID_INVALID"), guildId);
+            MessageUtil.sendAdminMessage(Strings.getString("command.confession.channel_id_invalid"), guildId);
             return;
         }
         if(confessFollowing.contains(uuid)) {
@@ -139,7 +139,7 @@ public class ConfessionProcessor extends ListenerAdapter {
                 if(channel == null) {
                     m.createThreadChannel("Confession - Follow").queue(t -> {
                         if(t == null) {
-                            MessageUtil.sendAdminMessage(Strings.getString("WARNING_CONFESSION_CHANNEL_ID_INVALID"), guildId);
+                            MessageUtil.sendAdminMessage(Strings.getString("command.confession.channel_id_invalid"), guildId);
                             return;
                         }
                         t.sendMessage(confession.build()).queue();
@@ -192,13 +192,13 @@ public class ConfessionProcessor extends ListenerAdapter {
         if(authorWarnedConfessions.size() < threshold) return;
         TextChannel validationChannel = Main.getJDA().getChannelById(TextChannel.class, Config.getGuildVariable(guildId,"CONFESSION_VALIDATION_CHANNEL_ID"));
         if(validationChannel == null) {
-            MessageUtil.sendAdminMessage(Strings.getString("WARNING_CONFESSION_VALIDATION_CHANNEL_ID_INVALID"), guildId);
+            MessageUtil.sendAdminMessage(Strings.getString("command.confession.validation_channel_id_invalid"), guildId);
             return;
         }
         Member member = guild.getMemberById(confessionAuthorId);
         String username = Optional.ofNullable(Main.getJDA().getUserById(confessionAuthorId)).map(User::getName).orElse("USER NOT ON SERVER: " + confessionAuthorId);
         EmbedBuilder builder = new EmbedBuilder()
-                                       .setDescription(Strings.getString("CONFESSION_TOO_MUCH_WARNS")
+                                       .setDescription(Strings.getString("command.confession.too_much_warnings")
                                                                .formatted(
                                                                        member == null ? username : member.getAsMention(),
                                                                        threshold,
@@ -211,7 +211,7 @@ public class ConfessionProcessor extends ListenerAdapter {
             for (WarnedConfession confession : authorWarnedConfessions) {
                 Member mod = guild.getMemberById(confession.moderatorId());
                 EmbedBuilder warned = new EmbedBuilder()
-                                              .setFooter(Strings.getString("CONFESSION_WARNED_BY").formatted(mod == null ? confession.moderatorId() : mod.getUser().getName()))
+                                              .setFooter(Strings.getString("command.confession.warned_by").formatted(mod == null ? confession.moderatorId() : mod.getUser().getName()))
                                               .setDescription(confession.messageContent())
                                               .setColor(Color.BLACK)
                                               .setTimestamp(confession.timestamp().toInstant())

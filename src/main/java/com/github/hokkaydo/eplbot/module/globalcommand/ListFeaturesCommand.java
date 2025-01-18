@@ -36,7 +36,7 @@ public class ListFeaturesCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_LISTFEATURES_DESCRIPTION");
+        return () -> Strings.getString("command.listfeatures.description");
     }
 
     @NotNull
@@ -62,6 +62,6 @@ public class ListFeaturesCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_ENABLE_HELP");
+        return () -> Strings.getString("command.listfeatures.help");
     }
 }

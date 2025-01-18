@@ -38,8 +38,8 @@ public class ClearBetween implements Command {
                     }
                 });
         context.channel().deleteMessageById(idAOption.get().getAsString()).queue(
-                ignored -> context.replyCallbackAction().setContent(Strings.getString("COMMAND_CLEAR_PROCESSING")).queue(),
-                ignored -> context.replyCallbackAction().setContent(Strings.getString("COMMAND_CLEAR_MESSAGE_TOO_OLD")).queue()
+                ignored -> context.replyCallbackAction().setContent(Strings.getString("command.clear.processing")).queue(),
+                ignored -> context.replyCallbackAction().setContent(Strings.getString("command.clear.message_too_old")).queue()
         );
 
     }
@@ -51,15 +51,15 @@ public class ClearBetween implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_CLEAR_BETWEEN_DESCRIPTION");
+        return () -> Strings.getString("command.clear.between.description");
     }
 
     @NotNull
     @Override
     public List<OptionData> getOptions() {
         return List.of(
-                new OptionData(OptionType.STRING, "id_a", Strings.getString("COMMAND_CLEAR_BETWEEN_OPTION_ID_A_DESCRIPTION"), true),
-                new OptionData(OptionType.STRING, "id_b", Strings.getString("COMMAND_CLEAR_BETWEEN_OPTION_ID_B_DESCRIPTION"), true)
+                new OptionData(OptionType.STRING, "id_a", Strings.getString("command.clear.between.option.id_a.description"), true),
+                new OptionData(OptionType.STRING, "id_b", Strings.getString("command.clear.between.option.id_b.description"), true)
         );
     }
 
@@ -80,7 +80,7 @@ public class ClearBetween implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_CLEAR_BETWEEN_HELP");
+        return () -> Strings.getString("command.clear.between.help");
     }
 
 }

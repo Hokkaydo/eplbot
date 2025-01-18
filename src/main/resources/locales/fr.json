@@ -1,0 +1,267 @@
+{
+	"command": {
+		"enable": {
+			"description": "Permet d'activer un module",
+			"help": "Active le module dont le nom est donné en paramètre",
+			"option.feature.description": "Nom du module à activer"
+		},
+		"disable": {
+			"description": "Permet de désactiver un module",
+			"help": "Désactive le module dont le nom est donné en paramètre",
+			"option.feature.description": "Nom du module à désactiver"
+		},
+		"clear": {
+			"processing": "Suppression en cours...",
+			"message_too_old": "Impossible de supprimer les messages, ceux-ci sont trop vieux.",
+			"amount_positive": "Le nombre de messages à supprimer doit être positif",
+
+			"from": {
+				"description": "Permet de supprimer les derniers messages depuis le message A",
+				"help": "Supprime les derniers messages depuis celui dont l'identifiant est donné en paramètre (N < 100)",
+				"option.from.description": "Identifiant du premier message à supprimer"
+			},
+			"between": {
+				"description": "Permet de supprimer tous les messages compris les messages a et b.",
+				"help": "Supprime les messages compris entre le message ayant pour identifiant `id_a` et le message ayant pour identifiant `id_b` tous deux inclus.",
+				"option": {
+					"id_a.description": "Identifiant du premier message à supprimer",
+					"id_b.description": "Identifiant du dernier message à supprimer"
+				}
+			},
+			"last": {
+				"description": "Permet de supprimer les N derniers messages (< 100)",
+				"help": "Supprime les N derniers messages (< 100)",
+				"option.amount.description": "Nombre de messages à supprimer (< 100)"
+			}
+		},
+		"confession": {
+			"description": "Permet d'effectuer une confession de manière anonyme",
+			"help": "Permet d'effectuer une confession de manière anonyme",
+			"option.description": "La confession à partager",
+			"too_long": "Veuillez vous limiter à %d caractères. N'hésitez pas à faire une seconde confession si besoin ;)",
+			"submitted": "La confession a bien été",
+			"warn_author": ":warning: Votre confession a été refusée pour non-respect des règles en vigueur sur le serveur. \nCela inclut, sans pour autant s'y limiter : \n- Insultes\n- Racisme, homophobie, dénigrement d'une communauté\n- Apologie du terrorisme\n- Publicité sans accord préalable. \nMerci de bien vouloir relire les règles avant de reposter une confession.",
+			"too_much_warnings": "Vous avez dépassé la limite de %d confessions signalées. Veuillez contacter un modérateur pour plus d'informations.",
+			"warned_by": "Signalée par %s",
+			"validation_channel_id_invalid": "Identifiant du canal de validation de confession invalide ! Utilisez /config pour le modifier",
+			"channel_id_invalid": "Identifiant du canal d'envoi de confession invalide ! Utilisez /config pour le modifier",
+			"continue": {
+				"description": "Permet de continuer une confession en anonyme",
+				"help": "Permet de continuer une confession en anonyme",
+				"no_last_confession_found": "Vous n'avez rien confessé dernièrement."
+			}
+		},
+		"clear_confess_warnings": {
+			"description": "Permet de réinitialiser le compteur de confessions signalées d'un utilisateur",
+			"help": "Permet de réinitialiser le compteur de confessions signalées d'un utilisateur",
+			"option.user.description": "Utilisateur",
+			"done": "Le compteur a bien été réinitialisé."
+		},
+		"move_messages": {
+			"description": "Permet de déplacer les messages entre A et B inclus vers un autre canal",
+			"help": "Déplace les messages d'un canal à un autre. \nPermet de décaler une conversation hors-sujet.",
+			"option_channel_description": "Canal dans lequel déplacer les messages",
+			"option": {
+				"id_a.description": "Identifiant du premier message à déplacer",
+				"id_b.description": "Identifiant du dernier message à déplacer",
+				"channel.description": "Canal dans lequel déplacer les messages"
+			},
+			"moved": "Les messages ont bien été déplacés"
+		},
+		"listfeatures": {
+			"description": "Permet d'afficher une liste des modules et leur état (on|off)",
+			"help": "Affiche une liste des modules et leur état (on|off)"
+		},
+		"mirror": {
+			"list": {
+				"description": "Permet de lister les miroirs d'un canal",
+				"help": "Affiche la liste des canaux reliés pour le canal dont l'identifiant est donné en paramètre.",
+				"option.channel.description": "Identifiant du canal à lister",
+				"no_mirror": "Aucun miroir trouvé pour le canal %s",
+				"channel_guild_text": "Le canal doit être un canal lié à un serveur textuel : pas de messages privés ni d'audio."
+			},
+			"link": {
+				"description": "Permet de lier deux canaux",
+				"help": "Crée un lien symbolique entre les deux canaux dont les identifiants sont donnés en paramètre. Si un message est envoyé dans l'un, il est également envoyé dans l'autre.\n Les modifications de messages sont répercutées.\n \nPermet de synchroniser les messages entre deux canaux, voire serveurs.",
+				"option": {
+					"channel_a.description": "Identifiant du premier canal à lier",
+					"channel_b.description": "Identifiant du second canal à lier"
+				},
+				"link_exists": "Un lien existe déjà entre %s et %s.",
+				"link_created": "Lien créé entre %s et %s."
+			},
+			"unlink": {
+				"description": "Permet de détruire un lien entre deux canaux",
+				"help": "Détruit un lien précédemment créé entre deux canaux.",
+				"option": {
+					"channel_a.description": "Identifiant du premier canal à détacher",
+					"channel_b.description": "Identifiant du second canal à détacher"
+				},
+				"link_doesnt_exists": "Aucun lien n'existe entre ces deux canaux",
+				"link_destroyed": "Le lien a bien été détruit"
+			},
+			"invalid_channel_id": "Identifiant de canal %s invalide.",
+			"thread_first_message_not_sent": ":warning: I can't mirror messages sent in threads due to Discord restrictions! Please check by yourself: %s"
+		},
+		"disabled": "Commande désactivée",
+		"not_found": "Commande introuvable",
+		"wrong_channel": "Canal invalide.",
+		"help": {
+			"description": "Permet d'afficher l'aide relative aux commandes",
+			"help": "Affiche l'aide relative aux commandes",
+			"command_not_found": "Cette commande n'existe pas"
+		},
+		"config": {
+			"description": "Permet de modifier les différents paramètres relatifs au serveur.",
+			"help": "Permet de modifier les différents paramètres relatifs au serveur via `/config <name> <value>`.\n- Si la valeur est omise, la commande renverra la valeur actuelle du paramètre `<name>`. \n- Si les 2 paramètres sont omis, la configuration totale du serveur sera affichée.\n- Si le nom est omis, mais pas la valeur, la commande renverra une erreur.",
+			"option": {
+				"key.description": "Nom de la variable à modifier",
+				"value.description": "Valeur à modifier"
+			},
+			"unknown_variable": "Variable introuvable.",
+			"updated": "Variable mise à jour."
+		},
+		"ping": {
+			"description": "Permet d'afficher la latence du bot",
+			"help": "Affiche la latence du bot en millisecondes"
+		},
+		"refresh": {
+			"description": "Permet de resynchroniser la liste des commandes sur le serveur",
+			"help": "Resynchronise la liste des commandes sur le serveur",
+			"success": "Les commandes ont bien été resynchronisées."
+		},
+		"state": {
+			"description": "Permet de gérer les variables d'état du serveur",
+			"help": "Affiche les variables d'états du serveur.\n- `/state reset` pour les réinitialiser",
+			"reset": "Les variables d'état ont bien été réinitialisées.",
+			"action_not_found": "Action d'état %s introuvable.",
+			"option": {
+				"subcommand.description": "Sous-commande optionnelle"
+			}
+		},
+		"contribute": {
+			"description": "Permet d'afficher la liste des contributeurs ainsi que le lien vers le dépôt Github.",
+			"help": "Affiche la liste des contributeurs et le lien vers le dépôt Github"
+		},
+		"setup_grade_channel": {
+			"description": "Permet d'initialiser le canal de récupération de copies et corrigés d'examens",
+			"help": "Définit le canal dans lequel est exécutée la commande comme le channel de récupération de copies et corrigés d'examen"
+		},
+		"issue": {
+			"description": "Permet d'envoyer une suggestion/bug sur le dépôt public.",
+			"help": "Crée une issue sur le dépôt public associée au sujet mentionné. Le sujet peut être un rapport de bug, une proposition de nouvelle fonctionnalité ou une suggestion d'amélioration.",
+			"option": {
+				"label.description": "Label de l'issue",
+				"file.description": "Fichier optionnel à ajouter à l'issue"
+			},
+			"success": "Votre issue a bien été enregistrée : https://github.com/Hokkaydo/EPLBot/issues/%d"
+		},
+		"notice": {
+			"description": "Permet d'ajouter un avis sur un cours ou groupe",
+			"help": "Permet d'ajouter un avis sur un cours ou groupe",
+			"option": {
+				"group.description": "Groupe du cours",
+				"action.description": "Mode d'utilisation",
+				"quarter.description": "Quadrimestre du cours"
+			},
+			"success": "Avis enregistré !",
+			"no_notice_found": "Aucune notion enregistrée pour cette sélection",
+			"select_message": "Veuillez sélectionner le cours pour lequel vous souhaitez donner/consulter un avis",
+			"unknown_subject_id": "Le groupe ou cours spécifié n'existe pas. Les valeurs admises sont les codes de cours (e.g.: LEPL0000) et les identifiants de filière (MAP, INFO, GC, FYKI, MECA, ELEC, GBIO et common pour le tronc commun)"
+		},
+		"message_bird": {
+			"message_too_long": "Votre message dépasse les %d caractères autorisés !\nVeuillez réessayer",
+			"not_valid_bird": "Vous n'êtes assurément pas habilité à utiliser cette capacité spéciale :rage:",
+			"invalid_subcommand": "Invalid subcommand or type",
+			"next_message": {
+				"description": "Permet d'enregistrer le prochain message automatique",
+				"help": "Permet d'enregistrer le prochain message automatique lorsqu'on a été le premier à répondre au précédent message",
+				"registered": "Votre doux message a bien été enregistré :innocent:",
+				"registered_dm": "Votre message a bien été enregistré :\n>>> %s"
+			},
+			"manage": {
+				"description": "Permet de gérer le timer du module MessageBird",
+				"help": "Permet de gérer le timer du module MessageBird"
+			}
+		},
+		"lmgt": {
+			"description": "Permet d'envoyer un lien de cours de Google accéléré à ceux qui ne savent pas s'en servir",
+			"help": "Envoie un lien https://letmegooglethat.com/ avec la recherche passée en argument `subject`",
+			"option.subject.description": "Sujet à rechercher"
+		},
+		"wiki": {
+			"description": "Permet de chercher la définition d'un mot en ligne",
+			"help": "Permet de chercher la définition d'un mot en ligne",
+			"not_found": "Définition introuvable.\n:warning: La recherche peut échouer rapidement si vous utilisez plusieurs mots, pensez à n'en utiliser qu'un seul."
+		},
+		"bookmark": {
+			"description": "Permet de gérer les signets",
+			"help": "Permet de gérer les signets",
+			"empty": "Vous n'avez enregistré aucun signet."
+		},
+		"say": {
+			"description": "Permet d'envoyer un message dans un canal spécifique",
+			"help": "Permet d'envoyer un message dans un canal spécifique",
+			"guild_only": "Cette commande ne peut être utilisée que dans un serveur",
+			"not_text_channel": "Le canal spécifié n'est pas un canal textuel",
+			"message_not_found": "Message introuvable",
+			"success": "Message envoyé",
+			"option": {
+				"message.description": "Message à envoyer",
+				"channel.description": "Canal dans lequel envoyer le message",
+				"reply_to.description": "Message auquel répondre"
+			}
+		},
+		"menu": {
+			"description": "Permet de consulter le menu du restaurant universitaire \"Le Galilée\"",
+			"help": "Permet de consulter le menu du restaurant universitaire \"Le Galilée\"",
+			"not_found": "Menu introuvable"
+		},
+		"code": {
+			"description": "Permet de compiler et exécuter du code",
+			"help": "Permet de compiler et exécuter du code",
+			"option": {
+				"lang.description": "Le language choisi",
+				"file.description": "Le fichier compilé et executé, doit être lié a un language",
+				"spoiler.description": "Le code et le résultat est-il en spoiler?"
+			},
+			"no_language_specified": "Uh oh, il semble qu'un des problèmes suivants aie surgi : aucun code n'a été soumis ou l'interaction a été trop longue. Pour résoudre ce problème, veuillez réessayer. Si le problème persiste, veuillez contacter un administrateur.",
+			"exceeded_hastebin_size": "La sortie dépasse les 350.000 caractères, nous ne pouvons l'envoyer",
+			"inaccessible_file": "Le fichier soumis n'a pas pu être récupéré, veuillez réessayer dans quelques minutes.",
+			"unexpected_error": "Aïe, cette erreur n'est pas censée arriver, c'est comme attraper un Pokémon rare, c'est inattendu. Blague à part, cette erreur peut apparaître à cause d'une mauvaise connection internet.",
+			"no_main_class_found": "Le code doit être englobé dans une classe `Main` contenant une méthode `main`.",
+			"no_main_method_found": "Le code doit être englobé dans une méthode `main`.",
+			"unsafe_mentions_response": "Le résultat contient des mentions de rôles ou utilisateurs, ce n'est pas autorisé.",
+			"unsafe_mentions_submitted": "Le code soumis contient des mentions de rôles ou utilisateurs, ce n'est pas autorisé."
+		},
+		"tutor": {
+			"description": "Permet de consulter/gérer les tuteurs disponibles pour un cours",
+			"help": "Permet de consulter/gérer les tuteurs disponibles pour un cours",
+			"option.action.description": "Action à effectuer",
+			"list.no_tutor": "Aucun tuteur disponible pour ce cours",
+			"ping.no_course": "Vous n'avez aucun cours",
+			"manage.success": "Modifications effectuées !",
+			"ping_description": "Permet gérer l'acceptation des mentions pour un cours",
+			"courses_modal_title": "Cours disponibles",
+			"category_without_course": "Une catégorie de cours à tuteurs n'a pas de cours (id: `%s`)"
+		},
+		"load_courses": {
+			"description": "Permet de charger les cours en base de données",
+			"help": "Permet de charger les cours en base de données"
+		},
+		"framework": {
+			"description": "Permet d'afficher le framework de LINMA2171",
+			"help": "Permet d'afficher le framework de LINMA2171",
+			"do_not_forget": "N'oubliez pas de bien étudier le framework de votre cours avant votre examen :)"
+		}
+	},
+	"warning.rss_channel_id_invalid": "Identifiant de canal d'envoi de flux RSS invalide ! Utilisez /config pour le modifier",
+	"quote": {
+		"delete_not_allowed": "Vous n'êtes pas autorisé à supprimer ce message",
+		"deleted": "Quote supprimée"
+	},
+	"error_occurred": "Une erreur est survenue. Veuillez le signaler à un modérateur.",
+	"check_your_dms": "Veuillez consulter vos messages privés",
+	"category_without_courses": "Une catégorie de cours à tuteurs n'a pas de cours (id: `%s`)",
+	"drive_admin_channel_not_setup": "Le canal de communication avec les administrateurs du Drive EPL n'est pas défini."
+}

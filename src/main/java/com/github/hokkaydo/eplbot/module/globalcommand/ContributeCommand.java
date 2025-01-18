@@ -62,7 +62,7 @@ public class ContributeCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_CONTRIBUTE_DESCRIPTION");
+        return () -> Strings.getString("command.contribute.description");
     }
 
     @NotNull
@@ -88,7 +88,7 @@ public class ContributeCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_CONTRIBUTE_HELP");
+        return () -> Strings.getString("command.contribute.help");
     }
 
 }

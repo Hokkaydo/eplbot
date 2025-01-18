@@ -23,7 +23,7 @@ public class MenuCommand implements Command {
     public void executeCommand(CommandContext context) {
         menuRetriever.retrieveMenu().ifPresentOrElse(
                 menu -> context.replyCallbackAction().setContent(menu).queue(),
-                () -> context.replyCallbackAction().setContent(Strings.getString("MENU_COMMAND_NOT_FOUND")).queue()
+                () -> context.replyCallbackAction().setContent(Strings.getString("command.menu.not_found")).queue()
         );
     }
 
@@ -34,7 +34,7 @@ public class MenuCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("MENU_COMMAND_DESCRIPTION");
+        return () -> Strings.getString("command.menu.description");
     }
 
     @NotNull
@@ -60,7 +60,7 @@ public class MenuCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("MENU_COMMAND_HELP");
+        return () -> Strings.getString("command.menu.help");
     }
 
 }

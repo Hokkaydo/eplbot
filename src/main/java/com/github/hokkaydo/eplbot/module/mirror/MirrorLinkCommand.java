@@ -28,11 +28,11 @@ public class MirrorLinkCommand implements Command {
         GuildMessageChannel channelB = channels.getValue();
 
         if(mirrorManager.existsLink(channelA, channelB)) {
-            context.replyCallbackAction().setContent(Strings.getString("COMMAND_MIRRORLINK_LINK_EXISTS").formatted(channelA.getAsMention(), channelB.getAsMention())).queue();
+            context.replyCallbackAction().setContent(Strings.getString("command.mirror.link.link_exists").formatted(channelA.getAsMention(), channelB.getAsMention())).queue();
             return;
         }
         mirrorManager.createLink(channelA, channelB);
-        context.replyCallbackAction().setContent(Strings.getString("COMMAND_MIRRORLINK_LINK_CREATED").formatted(channelA.getAsMention(), channelB.getAsMention())).queue();
+        context.replyCallbackAction().setContent(Strings.getString("command.mirror.link.link_created").formatted(channelA.getAsMention(), channelB.getAsMention())).queue();
     }
 
     @Override
@@ -42,15 +42,15 @@ public class MirrorLinkCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_MIRRORLINK_DESCRIPTION");
+        return () -> Strings.getString("command.mirror.link.description");
     }
 
     @NotNull
     @Override
     public List<OptionData> getOptions() {
         return List.of(
-                new OptionData(OptionType.STRING, "channel_a", Strings.getString("COMMAND_MIRRORLINK_OPTION_CHANNEL_A_DESCRIPTION"), true),
-                new OptionData(OptionType.STRING, "channel_b", Strings.getString("COMMAND_MIRRORLINK_OPTION_CHANNEL_B_DESCRIPTION"), true)
+                new OptionData(OptionType.STRING, "channel_a", Strings.getString("command.mirror.link.option.channel_a.description"), true),
+                new OptionData(OptionType.STRING, "channel_b", Strings.getString("command.mirror.link.option.channel_b.description"), true)
         );
     }
 
@@ -71,7 +71,7 @@ public class MirrorLinkCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_MIRRORLINK_HELP");
+        return () -> Strings.getString("command.mirror.link.help");
     }
 
 }

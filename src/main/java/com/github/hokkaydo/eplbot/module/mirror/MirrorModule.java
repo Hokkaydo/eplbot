@@ -73,11 +73,11 @@ public class MirrorModule extends Module {
         GuildMessageChannel channelA = Main.getJDA().getChannelById(GuildMessageChannel.class, channelAOption.get().getAsString());
         GuildMessageChannel channelB = Main.getJDA().getChannelById(GuildMessageChannel.class, channelBOption.get().getAsString());
         if(channelA == null) {
-            context.replyCallbackAction().setContent(Strings.getString("COMMAND_MIRROR_INVALID_CHANNEL").formatted(channelAOption.get().getAsString())).queue();
+            context.replyCallbackAction().setContent(Strings.getString("command.mirror.invalid_channel_id").formatted(channelAOption.get().getAsString())).queue();
             return null;
         }
         if(channelB == null) {
-            context.replyCallbackAction().setContent(Strings.getString("COMMAND_MIRROR_INVALID_CHANNEL").formatted(channelBOption.get().getAsString())).queue();
+            context.replyCallbackAction().setContent(Strings.getString("command.mirror.invalid_channel_id").formatted(channelBOption.get().getAsString())).queue();
             return null;
         }
         return Map.entry(channelA, channelB);

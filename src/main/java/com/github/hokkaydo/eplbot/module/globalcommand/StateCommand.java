@@ -36,10 +36,10 @@ public class StateCommand implements Command {
         }
         if(subCommand.get().getAsString().equalsIgnoreCase(RESET)) {
             Config.resetDefaultState(guildId);
-            context.replyCallbackAction().setContent(Strings.getString("COMMAND_STATE_RESET")).queue();
+            context.replyCallbackAction().setContent(Strings.getString("command.state.reset")).queue();
             return;
         }
-        context.replyCallbackAction().setContent(Strings.getString("COMMAND_STATE_ACTION_NOT_FOUND").formatted(subCommand.get().getAsString())).queue();
+        context.replyCallbackAction().setContent(Strings.getString("command.state.action_not_found").formatted(subCommand.get().getAsString())).queue();
     }
 
     @Override
@@ -49,13 +49,13 @@ public class StateCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_STATE_DESCRIPTION");
+        return () -> Strings.getString("command.state.description");
     }
 
     @NotNull
     @Override
     public List<OptionData> getOptions() {
-        return List.of(new OptionData(OptionType.STRING, "subcommand", Strings.getString("COMMAND_STATE_SUBCOMMAND_OPTION_DESCRIPTION"), false)
+        return List.of(new OptionData(OptionType.STRING, "subcommand", Strings.getString("command.state.option.subcommand.description"), false)
                                .addChoice(RESET, RESET));
     }
 
@@ -76,7 +76,7 @@ public class StateCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_STATE_HELP");
+        return () -> Strings.getString("command.state.help");
     }
 
 }

@@ -28,28 +28,28 @@ public class MirrorListCommand implements Command {
 
     @Override
     public void executeCommand(CommandContext context) {
-        Optional<OptionMapping> channelAOption = context.options().stream().filter(o -> o.getName().equals("channel_a")).findFirst();
-        GuildMessageChannel channelA;
+        Optional<OptionMapping> channelAOption = context.options().stream().filter(o -> o.getName().equals("channel")).findFirst();
+        GuildMessageChannel channel;
         if(channelAOption.isEmpty()) {
             if(!context.channel().getType().isGuild() || !context.channel().getType().isMessage()) {
-                context.replyCallbackAction().setContent(Strings.getString("COMMAND_MIRRORLIST_CHANNEL_GUILD_TEXT")).queue();
+                context.replyCallbackAction().setContent(Strings.getString("command.mirror.list.channel_guild_text")).queue();
                 return;
             }
-            channelA = (GuildMessageChannel) Main.getJDA().getGuildChannelById(ChannelType.TEXT, context.channel().getIdLong());
-            if(channelA == null) {
-                context.replyCallbackAction().setContent(Strings.getString("COMMAND_MIRRORLIST_CHANNEL_GUILD_TEXT")).queue();
+            channel = (GuildMessageChannel) Main.getJDA().getGuildChannelById(ChannelType.TEXT, context.channel().getIdLong());
+            if(channel == null) {
+                context.replyCallbackAction().setContent(Strings.getString("command.mirror.list.channel_guild_text")).queue();
                 return;
             }
         }else {
-            channelA = Main.getJDA().getChannelById(GuildMessageChannel.class, channelAOption.get().getAsString());
-            if(channelA == null) {
-                context.replyCallbackAction().setContent(Strings.getString("COMMAND_MIRROR_INVALID_CHANNEL").formatted(channelAOption.get().getAsString())).queue();
+            channel = Main.getJDA().getChannelById(GuildMessageChannel.class, channelAOption.get().getAsString());
+            if(channel == null) {
+                context.replyCallbackAction().setContent(Strings.getString("command.mirror.invalid_channel_id").formatted(channelAOption.get().getAsString())).queue();
                 return;
             }
         }
-        List<MirrorLink> mirrors = mirrorManager.getLinks(channelA);
+        List<MirrorLink> mirrors = mirrorManager.getLinks(channel);
         if(mirrors.isEmpty()) {
-            context.replyCallbackAction().setContent(Strings.getString("COMMAND_MIRRORLIST_NO_MIRROR").formatted(channelA.getAsMention())).queue();
+            context.replyCallbackAction().setContent(Strings.getString("command.mirror.list.no_mirror").formatted(channel.getAsMention())).queue();
             return;
         }
         StringBuilder stringBuilder = new StringBuilder("__Liste des liens existants__ :\n");
@@ -72,13 +72,13 @@ public class MirrorListCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_MIRRORLIST_DESCRIPTION");
+        return () -> Strings.getString("command.mirror.list.description");
     }
 
     @NotNull
     @Override
     public List<OptionData> getOptions() {
-        return Collections.singletonList(new OptionData(OptionType.STRING, "channel_a", Strings.getString("COMMAND_MIRRORLINK_OPTION_CHANNEL_A_DESCRIPTION"), false));
+        return Collections.singletonList(new OptionData(OptionType.STRING, "channel", Strings.getString("command.mirror.list.option.channel.description"), false));
     }
 
     @Override
@@ -98,7 +98,7 @@ public class MirrorListCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_MIRRORLIST_HELP");
+        return () -> Strings.getString("command.mirror.list.help");
     }
 
 }

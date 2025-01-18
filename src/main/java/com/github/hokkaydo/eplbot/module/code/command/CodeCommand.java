@@ -70,7 +70,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
             if (context.options().get(1).getAsBoolean()){
                 modalName += "-spoiler";
             }
-            context.interaction().replyModal(Modal.create(modalName,"Execute du code")
+            context.interaction().replyModal(Modal.create(modalName,"Exécute du code")
                                                      .addActionRow(TextInput.create("body", "Code", TextInputStyle.PARAGRAPH).setPlaceholder("Code").setRequired(true).build())
                                                      .build()).queue();
             return;
@@ -97,7 +97,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
                     response.sendSubmittedCode(context.channel(), code, context.options().getFirst().getAsString(), hasSpoiler);
                     response.sendResult(context.channel(), result.getLeft(), result.getRight(), hasSpoiler);
                     if (file != null && !file.delete()) {
-                        Main.LOGGER.info("File not deleted");
+                        Main.LOGGER.info("File isn't deleted");
                     }
                     long sent = Instant.now().toEpochMilli();
                     reply.editOriginal("Processing time: `%d ms`".formatted(sent-current)).queue();
@@ -106,7 +106,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
             .exceptionally(t -> {
                 context.channel().sendMessage("""
                     %s
-                    The error is: %s""".formatted(Strings.getString("COMMAND_CODE_UNEXPECTED_ERROR"), t.getMessage())).queue();
+                    The error is: %s""".formatted(Strings.getString("command.code.unexpected_error"), t.getMessage())).queue();
                 return null;
             })
         );
@@ -134,9 +134,54 @@ public class CodeCommand extends ListenerAdapter implements Command {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             return Optional.of(reader.lines().collect(Collectors.joining(System.lineSeparator())));
         } catch (IOException e) {
-            textChannel.sendMessage(Strings.getString("COMMAND_CODE_INACCESSIBLE_FILE")).queue();
+            textChannel.sendMessage(Strings.getString("command.code.inaccessible_file")).queue();
             return Optional.empty();
         }
+    }
+
+    @Override
+    public Supplier<String> getDescription() {
+        return () -> Strings.getString("command.code.description");
+    }
+
+
+    @Override
+    public String getName() {
+        return "compile";
+    }
+
+    @NotNull
+    @Override
+    public List<OptionData> getOptions() {
+        OptionData codeOptions = new OptionData(OptionType.STRING, "language", Strings.getString("command.code.option.lang.description"), true);
+        for (Map.Entry<String, Class<? extends Runner>> entry : RUNNERMAP.entrySet()) {
+            codeOptions.addChoice(entry.getKey(), entry.getKey());
+        }
+        return List.of(
+            codeOptions,
+            new OptionData(OptionType.BOOLEAN, "spoiler", Strings.getString("command.code.option.spoiler.description"), true),
+            new OptionData(OptionType.ATTACHMENT, "file", Strings.getString("command.code.option.file.description"), false)
+        );
+    }
+
+    @Override
+    public Supplier<String> help() {
+        return () -> Strings.getString("command.code.help") + String.join(", ", RUNNERMAP.keySet());
+    }
+
+    @Override
+    public boolean ephemeralReply() {
+        return false;
+    }
+
+    @Override
+    public boolean validateChannel(MessageChannel channel) {
+        return true;
+    }
+
+    @Override
+    public boolean adminOnly() {
+        return false;
     }
 
     @Override
@@ -147,7 +192,7 @@ public class CodeCommand extends ListenerAdapter implements Command {
         Optional<ModalMapping> body = Optional.ofNullable(event.getInteraction().getValue("body"));
         Guild guild = event.getGuild();
         if(body.isEmpty() || guild == null){
-            event.getMessageChannel().sendMessage(Strings.getString("COMMAND_CODE_NO_LANGUAGE_SPECIFIED")).queue();
+            event.getMessageChannel().sendMessage(Strings.getString("command.code.no_language_specified")).queue();
             return;
         }
         Integer runTimeout = Config.getGuildVariable(guild.getIdLong(), "COMMAND_CODE_TIMELIMIT");
@@ -168,50 +213,5 @@ public class CodeCommand extends ListenerAdapter implements Command {
                 reply.editOriginal("Processing time: `%d ms`".formatted(sent-current)).queue();
             });
         });
-    }
-
-
-    @Override
-    public String getName() {
-        return "compile";
-    }
-
-    @Override
-    public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_CODE_DESCRIPTION");
-    }
-
-    @NotNull
-    @Override
-    public List<OptionData> getOptions() {
-        OptionData codeOptions = new OptionData(OptionType.STRING, "language", Strings.getString("COMMAND_CODE_LANG_OPTION_DESCRIPTION"), true);
-        for (Map.Entry<String, Class<? extends Runner>> entry : RUNNERMAP.entrySet()) {
-            codeOptions.addChoice(entry.getKey(), entry.getKey());
-        }
-        return List.of(
-            codeOptions,
-            new OptionData(OptionType.BOOLEAN, "spoiler", Strings.getString("COMMAND_CODE_SPOILER_OPTION_DESCRIPTION"), true),
-            new OptionData(OptionType.ATTACHMENT, "file", Strings.getString("COMMAND_CODE_FILE_OPTION_DESCRIPTION"), false)
-        );
-    }
-
-    @Override
-    public boolean ephemeralReply() {
-        return false;
-    }
-
-    @Override
-    public boolean validateChannel(MessageChannel channel) {
-        return true;
-    }
-
-    @Override
-    public boolean adminOnly() {
-        return false;
-    }
-
-    @Override
-    public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_CODE_HELP") + String.join(", ", RUNNERMAP.keySet());
     }
 }

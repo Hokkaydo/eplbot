@@ -109,28 +109,28 @@ public class CommandManager extends ListenerAdapter {
         if(!event.isGuildCommand() || event.getGuild() == null) {
             command = globalCommands.get(event.getFullCommandName());
             if(command == null) {
-                event.reply(Strings.getString("COMMAND_NOT_FOUND")).setEphemeral(true).queue();
+                event.reply(Strings.getString("command.not_found")).setEphemeral(true).queue();
                 return;
             }
             if(Boolean.FALSE.equals(globalCommandStatus.getOrDefault(command.getClass(), false))) {
-                event.reply(Strings.getString("COMMAND_DISABLED")).setEphemeral(true).queue();
+                event.reply(Strings.getString("command.disabled")).setEphemeral(true).queue();
                 return;
             }
         }else {
             if(event.getGuild() == null) return;
             command = commands.getOrDefault(event.getGuild().getIdLong(), new HashMap<>()).getOrDefault(event.getFullCommandName(), null);
             if(command == null) {
-                event.reply(Strings.getString("COMMAND_NOT_FOUND")).setEphemeral(true).queue();
+                event.reply(Strings.getString("command.not_found")).setEphemeral(true).queue();
                 return;
             }
             if(Boolean.FALSE.equals(commandStatus.getOrDefault(event.getGuild().getIdLong(), new HashMap<>()).getOrDefault(command.getClass(), false))) {
-                event.reply(Strings.getString("COMMAND_DISABLED")).setEphemeral(true).queue();
+                event.reply(Strings.getString("command.disabled")).setEphemeral(true).queue();
                 return;
             }
         }
 
         if(!command.validateChannel(event.getMessageChannel())) {
-            event.reply(Strings.getString("COMMAND_WRONG_CHANNEL")).setEphemeral(true).queue();
+            event.reply(Strings.getString("command.wrong_channel")).setEphemeral(true).queue();
             return;
         }
         command.executeCommand(new CommandContext(event.getName(),

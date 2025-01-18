@@ -31,13 +31,13 @@ public class LMGTCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("LMGT_COMMAND_DESCRIPTION");
+        return () -> Strings.getString("command.lmgt.description");
     }
 
     @NotNull
     @Override
     public List<OptionData> getOptions() {
-        return Collections.singletonList(new OptionData(OptionType.STRING, "sujet", "Sujet à chercher", true));
+        return Collections.singletonList(new OptionData(OptionType.STRING, "sujet", Strings.getString("command.lmgt.option.subject.description"), true));
     }
 
     @Override
@@ -57,7 +57,7 @@ public class LMGTCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("LMGT_COMMAND_HELP");
+        return () -> Strings.getString("command.lmgt.help");
     }
 
 }

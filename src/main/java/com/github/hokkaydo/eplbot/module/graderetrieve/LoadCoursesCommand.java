@@ -31,7 +31,7 @@ public class LoadCoursesCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_LOAD_COURSES_DESCRIPTION");
+        return () -> Strings.getString("command.load_courses.description");
     }
 
     @NotNull
@@ -57,7 +57,7 @@ public class LoadCoursesCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_LOAD_COURSES_HELP");
+        return () -> Strings.getString("command.load_courses.help");
     }
 
 }

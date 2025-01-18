@@ -18,7 +18,7 @@ public class RefreshCommandsCommand implements Command {
     @Override
     public void executeCommand(CommandContext context) {
         Main.getCommandManager().refreshCommands(context.author().getGuild());
-        context.replyCallbackAction().setContent(Strings.getString("COMMAND_REFRESH_DONE")).queue();
+        context.replyCallbackAction().setContent(Strings.getString("command.refresh.success")).queue();
     }
 
     @Override
@@ -28,7 +28,7 @@ public class RefreshCommandsCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_REFRESH_DESCRIPTION");
+        return () -> Strings.getString("command.refresh.description");
     }
 
     @NotNull
@@ -54,7 +54,7 @@ public class RefreshCommandsCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_REFRESH_HELP");
+        return () -> Strings.getString("command.refresh.help");
     }
 
 }

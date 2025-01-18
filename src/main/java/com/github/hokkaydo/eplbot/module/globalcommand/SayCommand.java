@@ -45,29 +45,29 @@ public class SayCommand implements Command {
         }
 
         if (context.interaction().getGuild() == null) {
-            context.replyCallbackAction().setEphemeral(true).setContent(Strings.getString("SAY_COMMAND_GUILD_ONLY")).queue();
+            context.replyCallbackAction().setEphemeral(true).setContent(Strings.getString("command.say.guild_only")).queue();
             return;
         }
         channel = channel == null ? context.channel() : channel;
 
         if (!(channel instanceof MessageChannel textChannel)) {
-            context.replyCallbackAction().setEphemeral(true).setContent(Strings.getString("SAY_COMMAND_NOT_TEXT_CHANNEL")).queue();
+            context.replyCallbackAction().setEphemeral(true).setContent(Strings.getString("command.say.text_channel_only")).queue();
             return;
         }
 
         if (!replyTo.isBlank()) {
             if (replyTo.length() > 20 || !Helpers.isNumeric(replyTo)) {
-                context.replyCallbackAction().setEphemeral(true).setContent(Strings.getString("SAY_COMMAND_MESSAGE_NOT_FOUND")).queue();
+                context.replyCallbackAction().setEphemeral(true).setContent(Strings.getString("command.say.message_not_found")).queue();
                 return;
             }
             textChannel.retrieveMessageById(replyTo).queue(msg -> msg.reply(message).queue(res -> {
                 records.add(new SayRecord(res.getJumpUrl(), context.user().getName(), System.currentTimeMillis()));
-                context.replyCallbackAction().setEphemeral(true).setContent(Strings.getString("SAY_COMMAND_SUCCESS")).queue();
-            }), ignored -> context.replyCallbackAction().setEphemeral(true).setContent(Strings.getString("SAY_COMMAND_MESSAGE_NOT_FOUND")).queue());
+                context.replyCallbackAction().setEphemeral(true).setContent(Strings.getString("command.say.success")).queue();
+            }), ignored -> context.replyCallbackAction().setEphemeral(true).setContent(Strings.getString("command.say.message_not_found")).queue());
         } else {
             textChannel.sendMessage(message).queue(res -> {
                 records.add(new SayRecord(res.getJumpUrl(), context.user().getName(), System.currentTimeMillis()));
-                context.replyCallbackAction().setEphemeral(true).setContent(Strings.getString("SAY_COMMAND_SUCCESS")).queue();
+                context.replyCallbackAction().setEphemeral(true).setContent(Strings.getString("command.say.success")).queue();
             });
         }
     }
@@ -88,16 +88,16 @@ public class SayCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("SAY_COMMAND_DESCRIPTION");
+            return () -> Strings.getString("command.say.description");
     }
 
     @NotNull
     @Override
     public List<OptionData> getOptions() {
         return List.of(
-                new OptionData(OptionType.STRING, "message", Strings.getString("SAY_COMMAND_OPTION_MESSAGE_DESCRIPTION"), true),
-                new OptionData(OptionType.CHANNEL, "channel", Strings.getString("SAY_COMMAND_OPTION_CHANNEL_DESCRIPTION"), false),
-                new OptionData(OptionType.STRING, "reply-to", Strings.getString("SAY_COMMAND_OPTION_REPLY_TO_DESCRIPTION"), false)
+                new OptionData(OptionType.STRING, "message", Strings.getString("command.say.option.message.description"), true),
+                new OptionData(OptionType.CHANNEL, "channel", Strings.getString("command.say.option.channel.description"), false),
+                new OptionData(OptionType.STRING, "reply-to", Strings.getString("command.say.option.reply_to.description"), false)
         );
     }
 
@@ -118,7 +118,7 @@ public class SayCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("SAY_COMMAND_HELP");
+        return () -> Strings.getString("command.say.help");
     }
 
     private record SayRecord(String url, String author, long timestamp) {}

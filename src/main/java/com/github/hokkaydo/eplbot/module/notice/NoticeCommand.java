@@ -82,7 +82,7 @@ public class NoticeCommand extends ListenerAdapter implements Command {
         int quarter = quarterOption.get();
 
         if (courses.stream().noneMatch(c -> c.code().equalsIgnoreCase(group)) && groupRepository.readAll().stream().noneMatch(g -> g.groupCode().equalsIgnoreCase(group))) {
-            context.replyCallbackAction().setContent(Strings.getString("COMMAND_NOTICE_UNKNOWN_SUBJECT_ID")).queue();
+            context.replyCallbackAction().setContent(Strings.getString("command.notice.unknown_subject_id")).queue();
             return;
         }
 
@@ -100,7 +100,7 @@ public class NoticeCommand extends ListenerAdapter implements Command {
                                               .build();
         noticeData.put(key, new Object[]{group, action});
 
-        context.replyCallbackAction().setContent(Strings.getString("COMMAND_NOTICE_SELECT_MESSAGE")).addActionRow(selectMenu).queue();
+        context.replyCallbackAction().setContent(Strings.getString("command.notice.select_message")).addActionRow(selectMenu).queue();
     }
 
     @Override
@@ -110,22 +110,27 @@ public class NoticeCommand extends ListenerAdapter implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_NOTICE_DESCRIPTION");
+        return () -> Strings.getString("command.notice_description");
     }
 
     @NotNull
     @Override
     public List<OptionData> getOptions() {
         return List.of(
-                new OptionData(OptionType.STRING, GROUP, Strings.getString("COMMAND_NOTICE_OPTION_GROUP_DESCRIPTION"), true)
+                new OptionData(OptionType.STRING, GROUP, Strings.getString("command.notice.option.group.description"), true)
                         .addChoices(groupRepository.readAll().stream().map(g -> new Choice(g.groupCode(), g.groupCode())).toList()),
-                new OptionData(OptionType.INTEGER, "quarter", Strings.getString("COMMAND_NOTICE_OPTION_QUARTER_DESCRIPTION"), true)
+                new OptionData(OptionType.INTEGER, "quarter", Strings.getString("command.notice.option.quarter.description"), true)
                         .setMinValue(1)
                         .setMaxValue(6),
-                new OptionData(OptionType.STRING, "action", Strings.getString("COMMAND_NOTICE_OPTION_ACTION_DESCRIPTION"), true)
+                new OptionData(OptionType.STRING, "action", Strings.getString("command.notice.option.action.description"), true)
                         .addChoice(WRITE_ACTION, WRITE_ACTION)
                         .addChoice(READ_ACTION, READ_ACTION)
         );
+    }
+
+    @Override
+    public Supplier<String> help() {
+        return () -> Strings.getString("command.notice.help");
     }
 
     @Override
@@ -141,7 +146,7 @@ public class NoticeCommand extends ListenerAdapter implements Command {
         String content = Objects.requireNonNull(event.getInteraction().getValue(NOTICE)).getAsString();
 
         storeNotice(authorId, subjectId, timestamp, type, content);
-        callbackAction.setContent(Strings.getString("COMMAND_NOTICE_SUCCESSFUL")).queue();
+        callbackAction.setContent(Strings.getString("command.notice.success")).queue();
     }
 
     @Override
@@ -152,7 +157,7 @@ public class NoticeCommand extends ListenerAdapter implements Command {
         String authorId = name.split(NOTICE_SELECT_MENU_NAME_SUFFIX)[0];
 
         if(!noticeData.containsKey(name)) {
-            event.reply("Interaction expirée").queue();
+            event.reply("Expired").queue();
             return;
         }
 
@@ -183,7 +188,7 @@ public class NoticeCommand extends ListenerAdapter implements Command {
             event.replyModal(writeNotice(authorId + NOTICE_MODAL_NAME_SUFFIX, selectedCourse, authorId, groupName)).queue();
         } else if(action.equals(READ_ACTION)) {
             String notices = readNotices(selectedCourse);
-            event.reply(notices.isEmpty() ? Strings.getString("COMMAND_NOTICE_NO_NOTICE_FOUND") : notices).queue();
+            event.reply(notices.isEmpty() ? Strings.getString("command.notice.no_notice_found") : notices).queue();
         }
     }
 
@@ -198,30 +203,6 @@ public class NoticeCommand extends ListenerAdapter implements Command {
         return Modal.create(modalKey, String.format("Avis - %s", name))
                        .addActionRow(textBuilder.build())
                        .build();
-    }
-
-    private String readNotices(String selectedCourse) {
-        String type = courses.stream().anyMatch(c -> c.code().equals(selectedCourse)) ? "course" : GROUP;
-        List<Notice> notices = getNotices(selectedCourse, type);
-
-        StringBuilder contentBuilder = new StringBuilder();
-        for (Notice notice : notices) {
-            contentBuilder.append(notice.content()).append("\n\n");
-        }
-
-        String content = contentBuilder.toString();
-
-        HttpClient client = HttpClient.newHttpClient();
-        List<String> links =  new ArrayList<>();
-        List<CompletableFuture<Void>> requests = new ArrayList<>();
-
-        while(content.length() > HASTEBIN_MAX_CONTENT_LENGTH) {
-            requests.add(MessageUtil.hastebinPost(client, content.substring(0, HASTEBIN_MAX_CONTENT_LENGTH)).thenAccept(links::add));
-            content = content.substring(HASTEBIN_MAX_CONTENT_LENGTH);
-        }
-        requests.add(MessageUtil.hastebinPost(client, content).thenAccept(links::add));
-        requests.forEach(CompletableFuture::join);
-        return links.isEmpty() ? Strings.getString("COMMAND_NOTICE_NO_NOTICE_FOUND") : toString(links);
     }
 
     private List<Notice> getNotices(String subjectId, String type) {
@@ -272,9 +253,28 @@ public class NoticeCommand extends ListenerAdapter implements Command {
         return false;
     }
 
-    @Override
-    public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_NOTICE_HELP");
+    private String readNotices(String selectedCourse) {
+        String type = courses.stream().anyMatch(c -> c.code().equals(selectedCourse)) ? "course" : GROUP;
+        List<Notice> notices = getNotices(selectedCourse, type);
+
+        StringBuilder contentBuilder = new StringBuilder();
+        for (Notice notice : notices) {
+            contentBuilder.append(notice.content()).append("\n\n");
+        }
+
+        String content = contentBuilder.toString();
+
+        HttpClient client = HttpClient.newHttpClient();
+        List<String> links =  new ArrayList<>();
+        List<CompletableFuture<Void>> requests = new ArrayList<>();
+
+        while(content.length() > HASTEBIN_MAX_CONTENT_LENGTH) {
+            requests.add(MessageUtil.hastebinPost(client, content.substring(0, HASTEBIN_MAX_CONTENT_LENGTH)).thenAccept(links::add));
+            content = content.substring(HASTEBIN_MAX_CONTENT_LENGTH);
+        }
+        requests.add(MessageUtil.hastebinPost(client, content).thenAccept(links::add));
+        requests.forEach(CompletableFuture::join);
+        return links.isEmpty() ? Strings.getString("command.notice.no_notice_found") : toString(links);
     }
 
 }

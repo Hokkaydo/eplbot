@@ -26,7 +26,7 @@ public class PingCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_PING_DESCRIPTION");
+        return () -> Strings.getString("command.ping.description");
     }
 
     @NotNull
@@ -52,7 +52,7 @@ public class PingCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_PING_HELP");
+            return () -> Strings.getString("command.ping.help");
     }
 
 }

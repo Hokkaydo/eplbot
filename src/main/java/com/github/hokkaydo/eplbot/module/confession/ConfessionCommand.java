@@ -35,13 +35,13 @@ public class ConfessionCommand extends ListenerAdapter implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_CONFESSION_DESCRIPTION");
+        return () -> Strings.getString("command.confession.description");
     }
 
     @NotNull
     @Override
     public List<OptionData> getOptions() {
-        return Collections.singletonList(new OptionData(OptionType.STRING, CONFESSION, Strings.getString("COMMAND_CONFESSION_OPTION_DESCRIPTION"), true));
+        return Collections.singletonList(new OptionData(OptionType.STRING, CONFESSION, Strings.getString("command.confession.option.description"), true));
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ConfessionCommand extends ListenerAdapter implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_CONFESSION_HELP");
+        return () -> Strings.getString("command.confession.help");
     }
 
 }

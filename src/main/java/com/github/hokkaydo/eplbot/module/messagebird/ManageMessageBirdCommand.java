@@ -27,7 +27,7 @@ public class ManageMessageBirdCommand implements Command {
         String type = context.getOption("type").map(OptionMapping::getAsString).orElse(null);
 
         if (subcommand == null || type == null) {
-            context.replyCallbackAction().setContent("Invalid subcommand or type").queue();
+            context.replyCallbackAction().setContent("command.message_bird.invalid_subcommand").queue();
             return;
         }
         MessageBirdTask l = tasks.get(type);
@@ -36,7 +36,7 @@ public class ManageMessageBirdCommand implements Command {
             case "stop" -> l.stop();
             case "reload_messages" -> l.reloadMessages();
             default -> {
-                context.replyCallbackAction().setContent("Invalid subcommand").queue();
+                context.replyCallbackAction().setContent(Strings.getString("command.message_bird.invalid_subcommand")).queue();
                 return;
             }
         }
@@ -50,7 +50,7 @@ public class ManageMessageBirdCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("MESSAGE_BIRD_MANAGE_COMMAND_DESCRIPTION");
+        return () -> Strings.getString("command.message_bird.manage.description");
     }
 
     @NotNull
@@ -83,7 +83,7 @@ public class ManageMessageBirdCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("MESSAGE_BIRD_MANAGE_COMMAND_HELP");
+        return () -> Strings.getString("command.message_bird.manage.help");
     }
 
 }

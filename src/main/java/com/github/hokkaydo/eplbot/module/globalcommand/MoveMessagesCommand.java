@@ -61,7 +61,7 @@ public class MoveMessagesCommand implements Command {
     }
 
     private void sendMovedAmountMessage(CommandContext context, int amount) {
-        context.hook().sendMessage(String.format(Strings.getString("COMMAND_MOVE_MESSAGES_MOVED"), amount)).queue();
+        context.hook().sendMessage(String.format(Strings.getString("command.move_messages.moved"), amount)).queue();
     }
 
     @Override
@@ -71,16 +71,16 @@ public class MoveMessagesCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_MOVE_MESSAGES_DESCRIPTION");
+        return () -> Strings.getString("command.move_messages.description");
     }
 
     @NotNull
     @Override
     public List<OptionData> getOptions() {
         return List.of(
-                new OptionData(OptionType.STRING, "id_a", Strings.getString("COMMAND_MOVE_MESSAGES_OPTION_ID_A_DESCRIPTION"), true),
-                new OptionData(OptionType.STRING, "id_b", Strings.getString("COMMAND_MOVE_MESSAGES_OPTION_ID_B_DESCRIPTION"), true),
-                new OptionData(OptionType.CHANNEL, "channel", Strings.getString("COMMAND_MOVE_MESSAGES_OPTION_CHANNEL_DESCRIPTION"), true)
+                new OptionData(OptionType.STRING, "id_a", Strings.getString("command.move_messages.option.id_a.description"), true),
+                new OptionData(OptionType.STRING, "id_b", Strings.getString("command.move_messages.option.id_b.description"), true),
+                new OptionData(OptionType.CHANNEL, "channel", Strings.getString("command.move_messages.option.channel.description"), true)
         );
     }
 
@@ -101,7 +101,7 @@ public class MoveMessagesCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_MOVE_MESSAGES_HELP");
+        return () -> Strings.getString("command.move_messages.help");
     }
 
 }

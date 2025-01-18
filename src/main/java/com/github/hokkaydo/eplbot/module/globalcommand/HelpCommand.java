@@ -58,7 +58,7 @@ public class HelpCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_HELP_DESCRIPTION");
+        return () -> Strings.getString("command.help.description");
     }
 
     @NotNull
@@ -84,7 +84,7 @@ public class HelpCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_HELP_HELP");
+        return () -> Strings.getString("command.help.help");
     }
 
 }

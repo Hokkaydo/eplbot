@@ -40,10 +40,10 @@ public class JavaRunner implements Runner {
             code = WRAPPER_TEMPLATE.formatted(code);
         }
         if (!containsMainClass(code)){
-            return Pair.of(Strings.getString("COMMAND_CODE_NO_MAIN_CLASS_FOUND"),1);
+            return Pair.of(Strings.getString("command.code.no_main_class_found"),1);
         }
         if (!hasMainMethod(code)){
-            return Pair.of(Strings.getString("COMMAND_CODE_NO_MAIN_METHOD_FOUND"),1);
+            return Pair.of(Strings.getString(".code.no_main_method_found"),1);
         }
         return this.runner.run(code, timeout);
     }

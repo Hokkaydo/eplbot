@@ -67,7 +67,7 @@ public class RssReader {
                                              .build();
                 TextChannel textChannel = Main.getJDA().getChannelById(TextChannel.class, Config.getGuildVariable(guildId, "RSS_FEEDS_CHANNEL_ID"));
                 if(textChannel == null) {
-                    MessageUtil.sendAdminMessage(Strings.getString("WARNING_RSS_CHANNEL_ID_INVALID"), guildId);
+                    MessageUtil.sendAdminMessage(Strings.getString("warning.rss_channel_id_invalid"), guildId);
                     futures.get(guildId).cancel(true);
                     return;
                 }

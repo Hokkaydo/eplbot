@@ -35,14 +35,14 @@ public class EnableCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_ENABLE_DESCRIPTION");
+        return () -> Strings.getString("command.enable.description");
     }
 
     @NotNull
     @Override
     public List<OptionData> getOptions() {
         return List.of(
-                new OptionData(OptionType.STRING, "feature", Strings.getString("COMMAND_ENABLE_OPTION_FEATURE_DESCRIPTION"), true)
+                new OptionData(OptionType.STRING, "feature", Strings.getString("command.enable.option.feature.description"), true)
                         .addChoices(Main.getModuleManager()
                                             .getModules(guildId)
                                             .stream()
@@ -70,6 +70,6 @@ public class EnableCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_ENABLE_HELP");
+        return () -> Strings.getString("command.enable.help");
     }
 }

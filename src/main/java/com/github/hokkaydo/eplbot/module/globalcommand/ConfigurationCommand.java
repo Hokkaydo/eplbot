@@ -49,9 +49,9 @@ public class ConfigurationCommand implements Command {
         }
         boolean success = Config.parseAndUpdate(guildId, keyOption.get().getAsString(), valueOption.get().getAsString());
         if(success) {
-            context.replyCallbackAction().setContent(String.format(Strings.getString("COMMAND_CONFIG_UPDATED"), keyOption.get().getAsString(), valueOption.get().getAsString())).queue();
+            context.replyCallbackAction().setContent(String.format(Strings.getString("command.config.updated"), keyOption.get().getAsString(), valueOption.get().getAsString())).queue();
         } else {
-            context.replyCallbackAction().setContent(Strings.getString("COMMAND_CONFIG_UNKNOWN_VARIABLE")).queue();
+            context.replyCallbackAction().setContent(Strings.getString("command.config.unknown_variable")).queue();
         }
     }
 
@@ -62,15 +62,15 @@ public class ConfigurationCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_CONFIG_DESCRIPTION");
+        return () -> Strings.getString("command.config.description");
     }
 
     @NotNull
     @Override
     public List<OptionData> getOptions() {
         return Arrays.asList(
-                new OptionData(OptionType.STRING, "key", Strings.getString("COMMAND_CONFIG_OPTION_KEY_DESCRIPTION"), false),
-                new OptionData(OptionType.STRING, "value", Strings.getString("COMMAND_CONFIG_OPTION_VALUE_DESCRIPTION"), false)
+                new OptionData(OptionType.STRING, "key", Strings.getString("command.config.option.key.description"), false),
+                new OptionData(OptionType.STRING, "value", Strings.getString("command.config.option.value.description"), false)
         );
     }
 
@@ -91,7 +91,7 @@ public class ConfigurationCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_CONFIG_HELP").formatted(
+        return () -> Strings.getString("command.config.help").formatted(
                 Config.getDefaultConfiguration().keySet()
                         .stream()
                         .map(k -> "`%s`: %s".formatted(k, Config.getGuildVariable(guildId, k)))

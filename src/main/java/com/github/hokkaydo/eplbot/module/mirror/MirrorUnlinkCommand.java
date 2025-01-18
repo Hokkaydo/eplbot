@@ -27,11 +27,11 @@ public class MirrorUnlinkCommand implements Command {
         GuildMessageChannel channelB = channels.getValue();
 
         if(!mirrorManager.existsLink(channelA, channelB)) {
-            context.replyCallbackAction().setContent(Strings.getString("COMMAND_MIRRORUNLINK_LINK_DOESNT_EXISTS").formatted(channelA.getAsMention(), channelB.getAsMention())).queue();
+            context.replyCallbackAction().setContent(Strings.getString("command.mirror.unlink.link_doesnt_exists").formatted(channelA.getAsMention(), channelB.getAsMention())).queue();
             return;
         }
         mirrorManager.destroyLink(channelA, channelB);
-        context.replyCallbackAction().setContent(Strings.getString("COMMAND_MIRRORLINK_LINK_DESTROYED").formatted(channelA.getAsMention(), channelB.getAsMention())).queue();
+        context.replyCallbackAction().setContent(Strings.getString("command.mirror.unlink.link_destroyed").formatted(channelA.getAsMention(), channelB.getAsMention())).queue();
     }
 
     @Override
@@ -41,15 +41,15 @@ public class MirrorUnlinkCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_MIRRORUNLINK_DESCRIPTION");
+        return () -> Strings.getString("command.mirror.unlink.description");
     }
 
     @NotNull
     @Override
     public List<OptionData> getOptions() {
         return List.of(
-                new OptionData(OptionType.STRING, "channel_a", Strings.getString("COMMAND_MIRRORUNLINK_OPTION_CHANNEL_A_DESCRIPTION"), true),
-                new OptionData(OptionType.STRING, "channel_b", Strings.getString("COMMAND_MIRRORUNLINK_OPTION_CHANNEL_B_DESCRIPTION"), true)
+                new OptionData(OptionType.STRING, "channel_a", Strings.getString("command.mirror.unlink.option.channel_a.description"), true),
+                new OptionData(OptionType.STRING, "channel_b", Strings.getString("command.mirror.unlink.option.channel_b.description"), true)
         );
     }
 
@@ -70,7 +70,7 @@ public class MirrorUnlinkCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_MIRRORUNLINK_HELP");
+        return () -> Strings.getString("command.mirror.unlink.help");
     }
 
 }

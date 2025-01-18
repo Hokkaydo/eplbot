@@ -25,7 +25,7 @@ public class FrameworkCommand implements Command {
 
     @Override
     public void executeCommand(CommandContext context) {
-        context.replyCallbackAction().setContent(Strings.getString("COMMAND_FRAMEWORK_DO_NOT_FORGET")).setFiles(FileUpload.fromData(getFramework(), FRAMEWORK_FILE)).queue();
+        context.replyCallbackAction().setContent(Strings.getString("command.framework.do_not_forget")).setFiles(FileUpload.fromData(getFramework(), FRAMEWORK_FILE)).queue();
     }
 
     private byte[] getFramework() {
@@ -48,7 +48,7 @@ public class FrameworkCommand implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_FRAMEWORK_DESCRIPTION");
+        return () -> Strings.getString("command.framework.description");
     }
 
     @NotNull
@@ -74,7 +74,7 @@ public class FrameworkCommand implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_FRAMEWORK_HELP");
+        return () -> Strings.getString("command.framework.help");
     }
 
 }

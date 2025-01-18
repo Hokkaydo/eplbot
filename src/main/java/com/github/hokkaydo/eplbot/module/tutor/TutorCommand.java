@@ -89,7 +89,7 @@ public class TutorCommand extends ListenerAdapter implements Command {
         context.replyCallbackAction()
                 .setContent(
                         tutors.isEmpty() ?
-                                Strings.getString("TUTOR_COMMAND_LIST_NO_TUTOR") :
+                                Strings.getString("command.tutor.list.no_tutor") :
                                 tutors.stream()
                                         .map(r -> r.user.getAsMention() + (r.allowsPing ? ":loudspeaker:" : ""))
                                         .reduce("__Liste des tuteurs :__\n", "%s%n%s"::formatted)
@@ -100,7 +100,7 @@ public class TutorCommand extends ListenerAdapter implements Command {
     private void ping(CommandContext context) {
         List<CourseTutor> courses = courseTutorRepository.readByTutorId(context.user().getIdLong());
         if(courses.isEmpty()) {
-            context.replyCallbackAction().setContent(Strings.getString("TUTOR_COMMAND_PING_NO_COURSE")).queue();
+            context.replyCallbackAction().setContent(Strings.getString("command.tutor.ping.no_course")).queue();
             return;
         }
 
@@ -130,13 +130,13 @@ public class TutorCommand extends ListenerAdapter implements Command {
             case "category" -> handleCategoryMenu(event);
             case "courses" -> handleCourseMenu(event);
             case "ping" -> handlePingMenu(event);
-            default -> event.reply(Strings.getString("ERROR_OCCURRED")).setEphemeral(true).queue();
+            default -> event.reply(Strings.getString("error_occurred")).setEphemeral(true).queue();
         }
     }
 
     private void handleCategoryMenu(StringSelectInteractionEvent event) {
         if(event.getSelectedOptions().isEmpty()) {
-            event.reply(Strings.getString("ERROR_OCCURRED")).setEphemeral(true).queue();
+            event.reply(Strings.getString("error_occurred")).setEphemeral(true).queue();
             return;
         }
         String category = event.getSelectedOptions().getFirst().getValue();
@@ -153,8 +153,8 @@ public class TutorCommand extends ListenerAdapter implements Command {
                                                                       .toList());
 
         if(availableCourses.isEmpty()) {
-            MessageUtil.sendAdminMessage(Strings.getString("CATEGORY_WITHOUT_COURSES").formatted(category), guildId);
-            event.getInteraction().reply(Strings.getString("ERROR_OCCURRED")).setEphemeral(true).queue();
+            MessageUtil.sendAdminMessage(Strings.getString("command.tutor.category_without_course").formatted(category), guildId);
+            event.getInteraction().reply(Strings.getString("error_occurred")).setEphemeral(true).queue();
             return;
         }
         menu.setRequiredRange(0, availableCourses.size());
@@ -166,7 +166,7 @@ public class TutorCommand extends ListenerAdapter implements Command {
     private void handleCourseMenu(StringSelectInteractionEvent event) {
         Guild guild = Main.getJDA().getGuildById(guildId);
         if (guild == null) {
-            event.reply(Strings.getString("ERROR_OCCURRED")).queue();
+            event.reply(Strings.getString("error_occurred")).queue();
             return;
         }
 
@@ -203,28 +203,7 @@ public class TutorCommand extends ListenerAdapter implements Command {
                             .queue();
                     courseTutorRepository.create(new CourseTutor(channel.getIdLong(), event.getUser().getIdLong(), false));
                 });
-        event.reply(Strings.getString("TUTOR_COMMAND_MANAGE_SUCCESS")).setEphemeral(true).queue();
-    }
-
-    @NotNull
-    @Override
-    public List<OptionData> getOptions() {
-        return List.of(
-                new OptionData(OptionType.STRING,"action", Strings.getString("TUTOR_COMMAND_ACTION_OPTION_DESCRIPTION"),true)
-                        .addChoice("manage", "manage")
-                        .addChoice("list", "list")
-                        .addChoice("ping", "ping")
-        );
-    }
-
-    @Override
-    public String getName() {
-        return "tutor";
-    }
-
-    @Override
-    public Supplier<String> getDescription() {
-        return () -> Strings.getString("TUTOR_COMMAND_DESCRIPTION");
+        event.reply(Strings.getString("command.tutor.manage.success")).setEphemeral(true).queue();
     }
 
     private void handlePingMenu(StringSelectInteractionEvent event) {
@@ -234,7 +213,28 @@ public class TutorCommand extends ListenerAdapter implements Command {
                 .stream()
                 .filter(o -> !event.getSelectedOptions().contains(o))
                 .forEach(o -> courseTutorRepository.updatePing(Long.parseLong(o.getValue()), event.getUser().getIdLong(), false));
-        event.reply(Strings.getString("TUTOR_COMMAND_MANAGE_SUCCESS")).setEphemeral(true).queue();
+        event.reply(Strings.getString("command.tutor.manage.success")).setEphemeral(true).queue();
+    }
+
+    @Override
+    public String getName() {
+        return "tutor";
+    }
+
+    @Override
+    public Supplier<String> getDescription() {
+        return () -> Strings.getString("command.tutor.description");
+    }
+
+    @NotNull
+    @Override
+    public List<OptionData> getOptions() {
+        return List.of(
+                new OptionData(OptionType.STRING,"action", Strings.getString("command.tutor.option.action.description"),true)
+                        .addChoice("manage", "manage")
+                        .addChoice("list", "list")
+                        .addChoice("ping", "ping")
+        );
     }
 
     @Override
@@ -254,7 +254,7 @@ public class TutorCommand extends ListenerAdapter implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("TUTOR_COMMAND_HELP");
+        return () -> Strings.getString("command.tutor.help");
     }
 
     private record TutorPing(User user, boolean allowsPing) {}

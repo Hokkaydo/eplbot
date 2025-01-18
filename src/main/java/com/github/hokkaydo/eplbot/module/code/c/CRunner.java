@@ -34,7 +34,7 @@ public class CRunner implements Runner {
             code = WRAPPER_TEMPLATE.formatted(code);
         }
         if (!containsMainFunction(code)){
-            return Pair.of(Strings.getString("COMMAND_CODE_NO_MAIN_METHOD_FOUND"),1);
+            return Pair.of(Strings.getString("command.code.no_main_method_found"),1);
         }
         return this.runner.run(code, timeout);
     }

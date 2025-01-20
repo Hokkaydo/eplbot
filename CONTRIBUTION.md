@@ -27,7 +27,7 @@ que vous êtes bien dans la guilde ciblée afin de ne pas exécuter le même cod
 
 #### Module de code
 
-- L'utilitaire [`build_code_docker.sh`](build_code_docker.sh) permet de build les dockers pour la commande [`code`](src/main/java/com/github/hokkaydo/eplbot/module/code/command/CodeCommand.java). Il n'est pas nécessaire de l'utiliser si vous ne comptez pas travailler sur le module de [`code`](src/main/java/com/github/hokkaydo/eplbot/module/code/CodeModule.java)
+- L'utilitaire [`build_code_docker.sh`](build_runners.sh) permet de build les dockers pour la commande [`code`](src/main/java/com/github/hokkaydo/eplbot/module/code/command/CodeCommand.java). Il n'est pas nécessaire de l'utiliser si vous ne comptez pas travailler sur le module de [`code`](src/main/java/com/github/hokkaydo/eplbot/module/code/CodeModule.java)
 
 ###### Fonctionnement
 Pour chaque commande une classe [`Runner`](src/main/java/com/github/hokkaydo/eplbot/module/code/Runner.java) est appelée, cette classe s'occupe de formatter le code si nécessaire
@@ -81,7 +81,9 @@ module/
 
 ## Messages
 ### Strings
-Ce projet propose une centralisation des messages dans [`resources/strings.json`](src/main/resources/strings.json). 
+Ce projet propose une centralisation des messages dans [`resources/locales`](src/main/resources/locales). 
+Une internationalisation est possible en rajoutant un fichier `<language>.json` dans ce dossier.
+
 Une fois votre message défini, il vous est possible de le récupérer par sa clé via la classe [`Strings`](src/main/java/com/github/hokkaydo/eplbot/Strings.java) et sa méthode `Strings.getString(String key)`
 
 ### `MessageUtil`
@@ -90,10 +92,16 @@ d'envoyer automatiquement un message dans le salon administrateur.
 
 # Utilisation et test
 
-### Utilitaires
-- L'utilitaire [`build.sh`](build.sh) permet de build le projet, créer une image du bot, créer un conteneur Docker et le lancer.
-- L'utilitaire [`updatehub.sh`](updatehub.sh) permet de build le projet, crée une image du bot et la push sur DockerHub afin de mettre à jour l'image existante (nécessite les credentials)
+## Build
 
+### Gradle
+Gradle étant le gestionnaire de dépendances utilisé, il est vivement recommandé de l'utiliser pour build le projet.
+La tâche `buildAndRun` permet de build le projet, créer une image du bot, créer un conteneur Docker et le lancer.
+
+### Script 
+Il est possible de build le projet sans avoir Gradle installé sur sa machine, dans ce cas il suffit de supprimer l'argument `--target local-build` de la ligne `docker-compose`.
+
+## Utilisation
 ### Commandes utiles
 - `/refreshcommands`: Permet de resynchroniser les commandes du bot sur votre serveur (à faire après ajout/retrait d'une commande uniquement)
 - `/enable|disable <module>`: Permet d'activer|désactiver un module

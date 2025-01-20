@@ -5,7 +5,7 @@ RUN mkdir -p "$HOME"/.gradle
 WORKDIR $HOME
 
 # Copy gradle files
-COPY build.gradle settings.gradle gradlew ./
+COPY build.gradle.kts settings.gradle gradlew ./
 COPY gradle/ gradle/
 
 # Download dependencies

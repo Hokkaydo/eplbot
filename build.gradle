@@ -1,42 +1,131 @@
 plugins {
-    id 'java'
+    id("java")
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
-group = 'be.hokkaydo'
-version = '1.0-SNAPSHOT'
+group = "be.hokkaydo"
+version = "1.0-SNAPSHOT"
+
+var jsoupVersion = "1.14.3"
+var jsonVersion = "20231013"
+var JDAVersion = "5.2.1"
+var dotenvVersion = "3.0.0"
+var discordWebhooksVersion = "0.8.4"
+var javaJwtVersion = "4.4.0"
+var springJdbcVersion = "6.0.11"
+var sqliteJdbcVersion = "3.42.0.0"
+var githubApiVersion = "1.315"
+var logbackClassicVersion = "1.5.6"
+var romeVersion = "1.0"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.9.1')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    implementation("net.dv8tion:JDA:5.2.1")
+    testImplementation(platform("org.junit:junit-bom:5.9.1"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    implementation("net.dv8tion:JDA:${JDAVersion}")
     // RSS helper
-    implementation("rome:rome:1.0")
+    implementation("rome:rome:${romeVersion}")
     // https://mvnrepository.com/artifact/org.json/json
-    implementation group: 'org.json', name: 'json', version: '20231013'
-    implementation 'io.github.cdimascio:dotenv-java:3.0.0'
-    implementation("club.minnced:discord-webhooks:0.8.4")
-    implementation 'com.auth0:java-jwt:4.4.0'
-    implementation 'org.springframework:spring-jdbc:6.0.11'
-    implementation 'org.xerial:sqlite-jdbc:3.42.0.0'
+    implementation("org.json:json:${jsonVersion}")
+    implementation("io.github.cdimascio:dotenv-java:${dotenvVersion}")
+    implementation("club.minnced:discord-webhooks:${discordWebhooksVersion}")
+    implementation("com.auth0:java-jwt:${javaJwtVersion}")
+    implementation("org.springframework:spring-jdbc:${springJdbcVersion}")
+    implementation("org.xerial:sqlite-jdbc:${sqliteJdbcVersion}")
     // https://mvnrepository.com/artifact/org.kohsuke/github-api
-    implementation group: 'org.kohsuke', name: 'github-api', version: '1.315'
-    implementation 'org.jsoup:jsoup:1.17.2'
-    implementation("ch.qos.logback:logback-classic:1.5.6")
-}
-
-test {
-    useJUnitPlatform()
+    implementation ("org.kohsuke:github-api:${githubApiVersion}")
+    implementation("org.jsoup:jsoup:${jsoupVersion}")
+    implementation("ch.qos.logback:logback-classic:${logbackClassicVersion}")
 }
 
 jar {
     manifest {
-        attributes(
-                'Main-Class': 'com.github.hokkaydo.eplbot.Main'
-        )
+        attributes["Main-Class"] = "com.github.hokkaydo.eplbot.Main"
     }
+}
+
+tasks.register("buildLocal") {
+    group = "Docker"
+    description = "Builds the shadowJar locally and the Docker container."
+
+    dependsOn("shadowJar")
+    doLast {
+        providers.exec {
+            commandLine("docker", "build", "-t", "eplbot:latest", "--target", "local-build", "./")
+        }.result.get()
+    }
+}
+
+tasks.register("run") {
+    group = "Docker"
+    description = "Runs the Docker container."
+    doLast {
+        providers.exec {
+            commandLine("docker", "compose", "-f", "docker-compose-local.yml", "up", "eplbot", "--remove-orphans", "--force-recreate")
+        }.result.get()
+    }
+}
+
+tasks.register("buildAndRun") {
+    group = "Docker"
+    description = "Builds the shadowJar locally, builds the Docker image, and runs the Docker container."
+    dependsOn("buildLocal")
+    finalizedBy("run")
+}
+
+tasks.register("pushMain") {
+    group = "Docker"
+    description = "Pushes the Docker image to the Docker Hub."
+    dependsOn("buildLocal")
+    doLast {
+        providers.exec {
+            commandLine("docker", "image", "tag", "eplbot:latest", "hokkaydo/eplbot:latest")
+            commandLine("docker", "image", "push", "hokkaydo/eplbot:latest")
+        }.result.get()
+    }
+}
+
+tasks.register("buildRunners") {
+    group = "Docker"
+    description = "Builds and tags code runner containers"
+
+    doLast {
+        providers.exec {
+            commandLine("bash", "-c", """
+                LIST=\$(ls -d src/main/java/com/github/hokkaydo/eplbot/module/code/*/)
+                for dir in \$LIST
+                do
+                    DIRNAME=\$(basename \$dir)
+                    if [ "\$DIRNAME" == "command" ]; then
+                        continue
+                    fi
+                    docker build -t \$DIRNAME-runner -f \$dir/Dockerfile .
+                    docker image tag \$DIRNAME-runner:latest hokkaydo/\$DIRNAME-runner:latest
+                done
+            """.trim())
+        }.result.get()
+    }
+}
+
+tasks.register("pushRunners") {
+    group = "Docker"
+    description = "Pushes the Docker image to the Docker Hub."
+    doLast {
+        providers.exec {
+            commandLine(
+                    "bash", "-c",
+                    "docker images | grep -E '^[A-Za-z]*-runner' | awk '{print \\\$1}' | xargs -I {} docker image push {}:latest"
+            )
+        }.result.get()
+    }
+}
+
+tasks.register("buildPushRunners") {
+    group = "Docker"
+    description = "Builds and push code runner containers"
+    dependsOn("buildRunners")
+    finalizedBy("pushRunners")
 }

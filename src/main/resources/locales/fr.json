@@ -58,7 +58,7 @@
 			"too_long": "Veuillez vous limiter à %d caractères. N'hésitez pas à faire une seconde confession si besoin ;)",
 			"submitted": "La confession a bien été",
 			"warn_author": ":warning: Votre confession a été refusée pour non-respect des règles en vigueur sur le serveur. \nCela inclut, sans pour autant s'y limiter : \n- Insultes\n- Racisme, homophobie, dénigrement d'une communauté\n- Apologie du terrorisme\n- Publicité sans accord préalable. \nMerci de bien vouloir relire les règles avant de reposter une confession.",
-			"too_much_warnings": "Vous avez dépassé la limite de %d confessions signalées. Veuillez contacter un modérateur pour plus d'informations.",
+			"too_much_warnings": ":warning: L'utilisateur %s a dépassé la limite de %d confessions signalées.\nVoici les %d confessions signalées ainsi que les auteurs des signalements :\n\n*Pour rappel, vous pouvez supprimer les signalements de confession de cet utilisateur en tapant la commande `/clearconfesswarnings %s`",
 			"warned_by": "Signalée par %s",
 			"validation_channel_id_invalid": "Identifiant du canal de validation de confession invalide ! Utilisez /config pour le modifier",
 			"channel_id_invalid": "Identifiant du canal d'envoi de confession invalide ! Utilisez /config pour le modifier",

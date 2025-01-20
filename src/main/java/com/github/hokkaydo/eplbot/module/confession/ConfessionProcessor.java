@@ -16,11 +16,14 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.text.TextInput;
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
@@ -32,6 +35,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -76,17 +80,28 @@ public class ConfessionProcessor extends ListenerAdapter {
             context.replyCallbackAction().setContent(Strings.getString("error_occurred")).queue();
             return;
         }
-        Optional<OptionMapping> confessionOption = context.options().stream().filter(o -> o.getName().equals(CONFESSION)).findFirst();
-        if(confessionOption.isEmpty()) return;
-        String confession = confessionOption.get().getAsString();
+        TextInput.Builder textBuilder = TextInput.create(CONFESSION, "Confession", TextInputStyle.PARAGRAPH)
+                                                .setPlaceholder("Confessez-vous ici");
+        Modal confession = Modal.create(CONFESSION, "Confession")
+                                   .addActionRow(textBuilder.build())
+                                   .build();
+        context.interaction().replyModal(confession).queue();
 
+        Main.getJDA().listenOnce(ModalInteractionEvent.class)
+                .filter(e -> e.getUser().getIdLong() == context.user().getIdLong())
+                .filter(e -> e.getModalId().equals(CONFESSION))
+                .subscribe(e -> processConfession(Objects.requireNonNull(e.getValue(CONFESSION)).getAsString(), e, following, validationChannel));
+    }
+
+    private void processConfession(String confession, ModalInteractionEvent event, boolean following, TextChannel validationChannel) {
+        long userId = event.getUser().getIdLong();
         if(confession.length() > MessageEmbed.DESCRIPTION_MAX_LENGTH) {
-            context.replyCallbackAction().applyData(MessageCreateData.fromContent(Strings.getString("command.confession.too_long").formatted(MessageEmbed.DESCRIPTION_MAX_LENGTH))).queue();
+            event.reply(Strings.getString("command.confession.too_long").formatted(MessageEmbed.DESCRIPTION_MAX_LENGTH)).queue();
             return;
         }
 
         UUID confessUUID = UUID.randomUUID();
-        context.replyCallbackAction().applyData(MessageCreateData.fromContent(Strings.getString("command.confession.submitted"))).queue();
+        event.reply(Strings.getString("command.confession.submitted")).queue();
 
         MessageCreateBuilder embedBuilder = MessageCreateBuilder.from(MessageCreateData.fromEmbeds(
                 new EmbedBuilder()
@@ -97,8 +112,8 @@ public class ConfessionProcessor extends ListenerAdapter {
                         .build()
         ));
         confessions.put(confessUUID, embedBuilder);
-        confessionsContent.put(confessUUID, confessionOption.get().getAsString());
-        confessionAuthor.put(confessUUID, context.user().getIdLong());
+        confessionsContent.put(confessUUID, confession);
+        confessionAuthor.put(confessUUID, userId);
         MessageCreateBuilder data = MessageCreateBuilder.from(embedBuilder.build())
                                             .addActionRow(
                                                     Button.primary("validate-confession;" + confessUUID, Emoji.fromUnicode("✅")),
@@ -107,14 +122,14 @@ public class ConfessionProcessor extends ListenerAdapter {
                                             );
         if(following) {
             confessFollowing.add(confessUUID);
-            if(lastFollowingConfessionValidation.containsKey(context.user().getIdLong())) {
-                validationChannel.retrieveMessageById(lastFollowingConfessionValidation.get(context.user().getIdLong())).queue(lastValidation -> lastValidation.reply(data.build()).queue());
+            if(lastFollowingConfessionValidation.containsKey(userId)) {
+                validationChannel.retrieveMessageById(lastFollowingConfessionValidation.get(userId)).queue(lastValidation -> lastValidation.reply(data.build()).queue());
                 return;
             }
-            validationChannel.retrieveMessageById(lastMainConfessionValidation.get(context.user().getIdLong())).queue(lastValidation -> lastValidation.reply(data.build()).queue(m -> lastFollowingConfessionValidation.put(context.user().getIdLong(), m.getIdLong())));
+            validationChannel.retrieveMessageById(lastMainConfessionValidation.get(userId)).queue(lastValidation -> lastValidation.reply(data.build()).queue(m -> lastFollowingConfessionValidation.put(userId, m.getIdLong())));
             return;
         }
-        validationChannel.sendMessage(data.build()).queue(m -> lastMainConfessionValidation.put(context.user().getIdLong(), m.getIdLong()));
+        validationChannel.sendMessage(data.build()).queue(m -> lastMainConfessionValidation.put(userId, m.getIdLong()));
     }
 
     private void sendConfession(UUID uuid, Long guildId) {
@@ -187,7 +202,7 @@ public class ConfessionProcessor extends ListenerAdapter {
         if(guild == null) return;
 
         List<WarnedConfession> authorWarnedConfessions = warnedConfessionRepository.readByAuthor(confessionAuthorId);
-        Main.getJDA().retrieveUserById(confessionAuthorId).flatMap(User::openPrivateChannel).queue(privateChannel -> privateChannel.sendMessage(Strings.getString("COMMAND_CONFESSION_WARN_AUTHOR")).queue());
+        Main.getJDA().retrieveUserById(confessionAuthorId).flatMap(User::openPrivateChannel).queue(privateChannel -> privateChannel.sendMessage(Strings.getString("command.confession.warn_author")).queue());
 
         if(authorWarnedConfessions.size() < threshold) return;
         TextChannel validationChannel = Main.getJDA().getChannelById(TextChannel.class, Config.getGuildVariable(guildId,"CONFESSION_VALIDATION_CHANNEL_ID"));

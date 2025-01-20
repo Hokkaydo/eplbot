@@ -6,7 +6,7 @@ plugins {
 group = "be.hokkaydo"
 version = "1.0-SNAPSHOT"
 
-var jsoupVersion = "1.14.3"
+var jsoupVersion = "1.18.3"
 var jsonVersion = "20231013"
 var JDAVersion = "5.2.1"
 var dotenvVersion = "3.0.0"

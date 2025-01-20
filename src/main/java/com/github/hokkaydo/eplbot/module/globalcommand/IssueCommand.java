@@ -148,18 +148,18 @@ public class IssueCommand extends ListenerAdapter implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("COMMAND_ISSUE_DESCRIPTION");
+        return () -> Strings.getString("command.issue.description");
     }
 
     @NotNull
     @Override
     public List<OptionData> getOptions() {
         return List.of(
-                new OptionData(OptionType.STRING, "label", Strings.getString("COMMAND_ISSUE_LABEL_OPTION_DESCRIPTION"), true)
+                new OptionData(OptionType.STRING, "label", Strings.getString("command.issue.option.label.description"), true)
                         .addChoice("bug", "bug")
                         .addChoice("new feature", "new feature")
                         .addChoice("changes", "changes"),
-                new OptionData(OptionType.ATTACHMENT, "file", Strings.getString("COMMAND_ISSUE_FILE_OPTION_DESCRIPTION"), false)
+                new OptionData(OptionType.ATTACHMENT, "file", Strings.getString("command.issue.option.file.description"), false)
         );
     }
 

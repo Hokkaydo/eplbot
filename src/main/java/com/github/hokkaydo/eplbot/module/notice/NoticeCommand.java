@@ -110,7 +110,7 @@ public class NoticeCommand extends ListenerAdapter implements Command {
 
     @Override
     public Supplier<String> getDescription() {
-        return () -> Strings.getString("command.notice_description");
+        return () -> Strings.getString("command.notice.description");
     }
 
     @NotNull

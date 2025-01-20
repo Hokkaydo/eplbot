@@ -171,10 +171,7 @@ public class CommandManager extends ListenerAdapter {
         for (Command command : commands) {
             newGlobals.put(command.getName(), command);
         }
-        Main.getJDA().retrieveCommands().queue(s -> {
-            if(s.size() == commands.size()) return;
-            Main.getJDA().updateCommands().addCommands(newGlobals.values().stream().map(this::mapToCommandData).toList()).queue();
-        });
+        Main.getJDA().retrieveCommands().queue(_ -> Main.getJDA().updateCommands().addCommands(newGlobals.values().stream().map(this::mapToCommandData).toList()).queue());
         this.globalCommands.clear();
         this.globalCommands.putAll(newGlobals);
     }

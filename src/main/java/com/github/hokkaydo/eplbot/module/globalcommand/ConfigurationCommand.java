@@ -95,7 +95,7 @@ public class ConfigurationCommand implements Command {
                 Config.getDefaultConfiguration().keySet()
                         .stream()
                         .map(k -> "`%s`: %s".formatted(k, Config.getGuildVariable(guildId, k)))
-                        .reduce("%s%n%t%s"::formatted)
+                        .reduce("%s\n\t%s"::formatted)
                         .orElse("")
         );
     }

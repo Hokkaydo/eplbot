@@ -180,7 +180,7 @@ public class IssueCommand extends ListenerAdapter implements Command {
 
     @Override
     public Supplier<String> help() {
-        return () -> Strings.getString("COMMAND_ISSUE_HELP");
+        return () -> Strings.getString("command.issue.help");
     }
 
 }
